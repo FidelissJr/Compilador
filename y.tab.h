@@ -131,7 +131,22 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 5 "parser1.y"
+ 
+	struct var_nome { 
+		char nome[100]; 
+		struct funcao* funcao;
+		struct parametro* parametro;
+		struct raiz* head;
+		//struct funcao* ndFuncao;
+	} nd_obj; 
+
+#line 147 "y.tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

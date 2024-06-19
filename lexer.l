@@ -1,6 +1,5 @@
 %{
-    #include "y.tab.h"
-    int countn=0;
+#include "y.tab.h"
 %}
 
 %option yylineno
@@ -10,47 +9,45 @@ digito [0-9]
 
 %%
 
-"print"                    { return PRINT; }
-"read"                     { return READ; }
-"int"                       { return INT; }
-"float"                     { return FLOAT; }
-"void"                      { return VOID; }
-"return"                    { return RETURN; }
-"while"	                    { return WHILE; }
-"if"	                    { return IF; }
-"else"	                    { return ELSE; }
-[-]?{digito}+                { return NUMBER; }
-[-]?{digito}+\.{digito}{1,6}  { return FLOAT_NUM; }
-{letras}({letras}|{digito})*   { return ID; }
-"<="                        { return TMEIG; }
-">="                        { return TMAIG; }
-"=="                        { return TIGUA; }
-"!="                        { return TDIFE; }
-">"	                    { return TMAIO; }
-"<"	                    { return TMENO; }
-"&&"	                    { return AND; }
-"||"	                    { return OR; }
-"+"                         { return ADD; }
-"-"                         { return SUBTRACT; }
-"/"                         { return DIVIDE; }
-"*"                         { return MULTIPLY; }
-"("                         { return TAPAR; }
-")"                         { return TFPAR; }
-"{"                         { return TACHA; }
-"}"                         { return TFCHA; }
-";"                         { return TPEVI; }
-"="                         { return TATRI; }
-","                         { return TVIRG; }
-\/\/.*                      { ; }
-\/\*(.*\n)*.*\*\/           { ; } 
-[ \t\r\n]+                  { /* Ignora espaços em branco */ }
-[\n]                        { countn++; }
-.	                    { return *yytext; }
-["].*["]                    { return STRING; }
-['].[']                     { return CHARACTER; }
+"read"                     {strcpy(yylval.nd_obj.nome,(yytext)); return READ; }
+"print"                    {strcpy(yylval.nd_obj.nome,(yytext)); return PRINT; }
+"int"                      {strcpy(yylval.nd_obj.nome,(yytext)); return INT; }
+"float"                    {strcpy(yylval.nd_obj.nome,(yytext)); return FLOAT; }
+"void"                     {strcpy(yylval.nd_obj.nome,(yytext)); return VOID; }
+"return"                   {strcpy(yylval.nd_obj.nome,(yytext)); return RETURN; }
+"while"                    {strcpy(yylval.nd_obj.nome,(yytext)); return WHILE; }
+"if"                       {strcpy(yylval.nd_obj.nome,(yytext)); return IF; }
+"else"                     {strcpy(yylval.nd_obj.nome,(yytext)); return ELSE; }
+[-]?{digito}+              {strcpy(yylval.nd_obj.nome,(yytext)); return NUMBER; }
+[-]?{digito}+\.{digito}+   {strcpy(yylval.nd_obj.nome,(yytext)); return FLOAT_NUM; }
+{letras}({letras}|{digito})* {strcpy(yylval.nd_obj.nome,(yytext)); return ID; }
+"<="                       {strcpy(yylval.nd_obj.nome,(yytext)); return TMEIG; }
+">="                       {strcpy(yylval.nd_obj.nome,(yytext)); return TMAIG; }
+"=="                       {strcpy(yylval.nd_obj.nome,(yytext)); return TIGUA; }
+"!="                       {strcpy(yylval.nd_obj.nome,(yytext)); return TDIFE; }
+">"                        {strcpy(yylval.nd_obj.nome,(yytext)); return TMAIO; }
+"<"                        {strcpy(yylval.nd_obj.nome,(yytext)); return TMENO; }
+"&&"                       {strcpy(yylval.nd_obj.nome,(yytext)); return AND; }
+"||"                       {strcpy(yylval.nd_obj.nome,(yytext)); return OR; }
+"+"                        {strcpy(yylval.nd_obj.nome,(yytext)); return ADD; }
+"-"                        {strcpy(yylval.nd_obj.nome,(yytext)); return SUBTRACT; }
+"/"                        {strcpy(yylval.nd_obj.nome,(yytext)); return DIVIDE; }
+"*"                        {strcpy(yylval.nd_obj.nome,(yytext)); return MULTIPLY; }
+"("                        {return TAPAR; }
+")"                        {return TFPAR; }
+"{"                        {return TACHA; }
+"}"                        { return TFCHA; }
+";"                        { return TPEVI; }
+"="                        {return TATRI; }
+","                        { return TVIRG; }
+"//"[^"\n"]*                { /* Ignora comentários de linha única */ }
+[ \t\r]+                   { /* Ignora espaços em branco */ }
+\n                         { }
+.                          { return *yytext; }
+["].*["]                   { return STRING; }
+['].[']                    { return CHARACTER; }
 
 %%
-
 int yywrap() {
     return 1;
 }

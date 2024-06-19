@@ -1,34 +1,34 @@
-int teste(int f)
+int main()
 {
-    int teste, t, a;
-
-    a = 10;
-    t = "asa";
-    print(1 + 2);
-    print("asa");
-    teste(1, "asas");
-    if (a > 10 || t > 20)
+    int a;
+    int x;
+    int y;
+    int z;
+    x = 3;
+    y = 10;
+    z = 5;
+    if (x > 5)
     {
-        return 1;
+        while (k < 10)
+        {
+            y = x + 3;
+        }
     }
     else
     {
-        return;
+        int idx;
+        idx = 1;
     }
-}
-int teste()
-{
-    int teste, t, a;
-    float b;
-    read(b);
-    while (3 + 8 > 4 && 5 > 6 || teste <= 9)
+    while (i < 10)
     {
-        return;
+        if (x > 5)
+        {
+            printf("Hi");
+        }
+        while (j > z)
+        {
+            a = 1;
+        }
     }
-}
-{
-    while (3 > 6)
-    {
-        return;
-    }
+    return 1;
 }
