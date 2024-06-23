@@ -25,6 +25,7 @@ float fat(int n1)
 }
 float teste2(int n1)
 {
+    fat(10);
     if (n1 > 0)
     {
         return 1;
@@ -34,7 +35,7 @@ float teste2(int n1)
         return 0;
     }
 
-    return n1;
+    return fat(0);
 }
 {
     int a, b;

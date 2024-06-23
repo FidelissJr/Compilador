@@ -13,6 +13,7 @@ typedef enum
     CMD_ATRIB,
     CMD_WHILE,
     CMD_IF,
+    CMD_CHAMADAFUNCAO,
     CMD_NODE
 } CommandType;
 
@@ -42,11 +43,14 @@ struct comando *criarComando(CommandType identificador);
 struct funcao *adicionarFuncao(struct funcao *listaFuncao, struct funcao *novaFuncao);
 struct ifCmd *criarIfCmd(struct node *condition, struct bloco *trueBlock, struct bloco *falseBlock);
 struct chamadaFuncao *criarChamadaFuncao(char *nome, struct node *parametros);
+struct atribuicao *criarAtribuicao(char *nome, struct node *node, struct chamadaFuncao *chamadaFuncao);
+void imprimirAtribuicao(struct atribuicao *atribuicao);
 
 void printNode(struct node *n);
 void printWhileCmd(struct whileCmd *whileCmd);
 void printListaCmd(struct listaCmd *lista);
 void printIfCmd(struct ifCmd *ifCmd);
+void printChamadaFuncao(struct chamadaFuncao *chamadaFuncao);
 
 struct dataType
 {
@@ -132,9 +136,16 @@ struct comando
         struct ifCmd *ifCmd;
         struct whileCmd *whileCmd;
         struct chamadaFuncao *chamadaFuncao;
+        struct atribuicao *atribuicao;
     } tipoComando;
 };
 
+struct atribuicao
+{
+    char *nome;
+    struct node *node;
+    struct chamadaFuncao *chamadaFuncao;
+};
 struct chamadaFuncao
 {
     char *nome;

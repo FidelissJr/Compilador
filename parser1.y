@@ -18,6 +18,7 @@
 		struct comando* comando;
 		struct whileCmd* whileCmd;
 		struct chamadaFuncao* chamadaFuncao;
+		struct atribuicao* atribuicao;
 
 	} nd_obj; 
 } 
@@ -116,10 +117,10 @@ ListaCmd: ListaCmd Comando {
 
 Comando: CmdSe { $$.comando = criarComando(CMD_IF); $$.comando->tipoComando.ifCmd = $1.ifCmd;}
 | CmdEnquanto { $$.comando = criarComando(CMD_WHILE); $$.comando->tipoComando.whileCmd = $1.whileCmd;}
-| CmdAtrib { $$.comando = criarComando(CMD_ATRIB); $$.comando->tipoComando.node = $1.node;}
+| CmdAtrib { $$.comando = criarComando(CMD_ATRIB); $$.comando->tipoComando.node = $1.node; $$.comando->tipoComando.atribuicao = $1.atribuicao;}
 | CmdEscrita { $$.comando = criarComando(CMD_NODE); $$.comando->tipoComando.node = $1.node;}
 | CmdLeitura//Nao sera implmentado
-| ChamadaProc
+| ChamadaProc {$$.comando = criarComando(CMD_CHAMADAFUNCAO); $$.comando->tipoComando.chamadaFuncao = $1.chamadaFuncao;}
 | Retorno { $$.comando = criarComando(CMD_NODE); $$.comando->tipoComando.node = $1.node;}
 ;
 
@@ -144,8 +145,8 @@ CmdSe: IF TAPAR ExpressaoLogica TFPAR Bloco {$$.ifCmd = criarIfCmd($3.node, $5.b
 | IF TAPAR ExpressaoLogica TFPAR Bloco ELSE Bloco {$$.ifCmd = criarIfCmd($3.node, $5.bloco, $7.bloco);}
 ;
 
-CmdAtrib: ID TATRI ExpressaoAritmetica TPEVI {$$.node = criarNode(criarNode(NULL, NULL, $1.nome), $3.node, "=");}
-| ID TATRI STRING TPEVI {$$.node = criarNode(criarNode(NULL, NULL, $1.nome), criarNode(NULL, NULL, $3.nome), "=");}
+CmdAtrib: ID TATRI ExpressaoAritmetica TPEVI {$$.atribuicao = criarAtribuicao($1.nome, $3.node, $3.chamadaFuncao);}
+| ID TATRI STRING TPEVI {$$.atribuicao = criarAtribuicao($1.nome, criarNode(NULL, NULL, $3.nome), NULL);}
 ;
 
 CmdEscrita: PRINT TAPAR STRING TFPAR TPEVI {$$.node = criarNode(NULL, criarNode(NULL, NULL, $3.nome), "print");}
@@ -155,14 +156,14 @@ CmdEscrita: PRINT TAPAR STRING TFPAR TPEVI {$$.node = criarNode(NULL, criarNode(
 CmdLeitura: READ { add('F'); } TAPAR ID TFPAR TPEVI
 ; //Nao sera utilizado
 
-ChamadaProc: ChamadaFuncao TPEVI { $$.node = $1.node; }
+ChamadaProc: ChamadaFuncao TPEVI {$$.chamadaFuncao = $1.chamadaFuncao;} 
 ;
 
-ChamadaFuncao: ID TAPAR ListaParametros TFPAR { $$.node = criarNode($3.node, NULL, $1.nome); }
-| ID TAPAR TFPAR { $$.node = criarNode(NULL, NULL, $1.nome); }
+ChamadaFuncao: ID TAPAR ListaParametros TFPAR { $$.chamadaFuncao = criarChamadaFuncao($1.nome, $3.node);}
+| ID TAPAR TFPAR { $$.chamadaFuncao = criarChamadaFuncao($1.nome, NULL);}
 
-ListaParametros: ListaParametros TVIRG ExpressaoAritmetica { $$.node = criarNode($1.node, $3.node, ""); }	
-| ListaParametros TVIRG STRING { $$.node = criarNode($1.node, criarNode(NULL, NULL, $3.nome), ""); }
+ListaParametros: ListaParametros TVIRG ExpressaoAritmetica { $$.node = criarNode($1.node, $3.node, ","); }	
+| ListaParametros TVIRG STRING { $$.node = criarNode($1.node, criarNode(NULL, NULL, $3.nome), ","); }
 | ExpressaoAritmetica { $$.node = $1.node; }
 | STRING { $$.node = criarNode(NULL, NULL, $1.nome); }
 ;
@@ -194,7 +195,7 @@ ExpressaoLogica: ExpressaoLogica OperadoresLogicos ExpressaoLogica { $$.node = c
 
 ExpressaoAritmetica: ExpressaoAritmetica OperadoresAritmeticos ExpressaoAritmetica { $$.node = criarNode($1.node, $3.node, $2.nome); }
 | value { $$.node = criarNode(NULL, NULL, $1.nome);}
-| ChamadaFuncao
+| ChamadaFuncao{$$.chamadaFuncao = $1.chamadaFuncao;}
 ;
 
 %%
@@ -476,8 +477,6 @@ struct comando * criarComando(CommandType identificador) {
 	struct comando *novoComando = (struct comando*) malloc(sizeof(struct comando));
 
 	novoComando->identificador = identificador;
-	novoComando->tipoComando.node = NULL;
-	novoComando->tipoComando.whileCmd = NULL;
 
 	if (novoComando == NULL) {
 		fprintf(stderr, "Falha na alocação de memória para o comando.\n");
@@ -508,13 +507,25 @@ struct chamadaFuncao* criarChamadaFuncao(char* nome, struct node* parametros) {
 	return novaChamadaFuncao;
 }
 
+struct atribuicao* criarAtribuicao(char* nome, struct node* node, struct chamadaFuncao* chamadaFuncao) {
+	struct atribuicao* novaAtribuicao = (struct atribuicao*) malloc(sizeof(struct atribuicao));
+	if (novaAtribuicao == NULL) {
+		// Handle memory allocation failure if needed
+		return NULL; // Or NULL, depending on how you want to handle failure
+	}
+	novaAtribuicao->nome = strdup(nome);
+	novaAtribuicao->node = node;
+	novaAtribuicao->chamadaFuncao = chamadaFuncao;
+	return novaAtribuicao;
+}
+
 void printChamadaFuncao(struct chamadaFuncao* chamadaFuncao) {
 	if (chamadaFuncao != NULL) {
 		printf("%s(", chamadaFuncao->nome);
 		if (chamadaFuncao->parametros != NULL) {
 			printNode(chamadaFuncao->parametros);
 		}
-		printf(")");
+		printf(");\n");
 	}
 }
 
@@ -614,6 +625,8 @@ void printListaCmd(struct listaCmd *lista) {
         if (lista->comando != NULL) {
             switch (lista->comando->identificador) {
                 case CMD_ATRIB:
+					imprimirAtribuicao(lista->comando->tipoComando.atribuicao);
+					break;
                 case CMD_NODE:
                     printNode(lista->comando->tipoComando.node);
 					printf(";\n");
@@ -624,6 +637,9 @@ void printListaCmd(struct listaCmd *lista) {
 				case CMD_IF:
                     printIfCmd(lista->comando->tipoComando.ifCmd);
                     break;
+				case CMD_CHAMADAFUNCAO:
+					printChamadaFuncao(lista->comando->tipoComando.chamadaFuncao);
+					break;
                 default:
                     printf("Unknown command type.\n");
                     break;
@@ -645,6 +661,19 @@ void printIfCmd(struct ifCmd *ifCmd) {
 			printf("else {\n");
 			printListaCmd(ifCmd->falseBlock->listaCmd);
 			printf("}\n");
+		}
+	}
+}
+
+void imprimirAtribuicao(struct atribuicao *atribuicao) {
+	if (atribuicao != NULL) {
+		if(atribuicao->node != NULL){
+		printf("%s = ", atribuicao->nome);
+		printNode(atribuicao->node);
+		printf(";\n");
+		}
+		else if(atribuicao->chamadaFuncao != NULL){
+			printChamadaFuncao(atribuicao->chamadaFuncao);
 		}
 	}
 }

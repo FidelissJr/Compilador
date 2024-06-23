@@ -150,10 +150,11 @@ union YYSTYPE
 		struct comando* comando;
 		struct whileCmd* whileCmd;
 		struct chamadaFuncao* chamadaFuncao;
+		struct atribuicao* atribuicao;
 
 	} nd_obj; 
 
-#line 157 "y.tab.h"
+#line 158 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -211,10 +211,11 @@ union YYSTYPE
 		struct comando* comando;
 		struct whileCmd* whileCmd;
 		struct chamadaFuncao* chamadaFuncao;
+		struct atribuicao* atribuicao;
 
 	} nd_obj; 
 
-#line 218 "y.tab.c"
+#line 219 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -694,14 +695,14 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    35,    35,    41,    44,    47,    50,    50,    51,    51,
-      54,    55,    58,    66,    69,    72,    73,    76,    85,    88,
-     100,   103,   106,   107,   108,   111,   114,   117,   118,   119,
-     120,   121,   122,   123,   126,   127,   128,   129,   132,   133,
-     134,   137,   137,   140,   143,   144,   147,   148,   151,   152,
-     155,   155,   158,   161,   162,   164,   165,   166,   167,   170,
-     171,   172,   173,   176,   177,   178,   179,   180,   181,   184,
-     185,   188,   191,   192,   195,   196,   197
+       0,    36,    36,    42,    45,    48,    51,    51,    52,    52,
+      55,    56,    59,    67,    70,    73,    74,    77,    86,    89,
+     101,   104,   107,   108,   109,   112,   115,   118,   119,   120,
+     121,   122,   123,   124,   127,   128,   129,   130,   133,   134,
+     135,   138,   138,   141,   144,   145,   148,   149,   152,   153,
+     156,   156,   159,   162,   163,   165,   166,   167,   168,   171,
+     172,   173,   174,   177,   178,   179,   180,   181,   182,   185,
+     186,   189,   192,   193,   196,   197,   198
 };
 #endif
 
@@ -1366,68 +1367,68 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Programa: ListaFuncoes BlocoPrincipal  */
-#line 35 "parser1.y"
+#line 36 "parser1.y"
                                       { 
 	struct funcao* main = criarFuncao("", "", NULL, (yyvsp[0].nd_obj).blocoPrincipal);
 	(yyvsp[-1].nd_obj).funcao = adicionarFuncao((yyvsp[-1].nd_obj).funcao, main);
 	(yyval.nd_obj).head = criarRaiz((yyvsp[-1].nd_obj).funcao); 
 	head = (yyval.nd_obj).head;
 	}
-#line 1377 "y.tab.c"
+#line 1378 "y.tab.c"
     break;
 
   case 3: /* Programa: BlocoPrincipal  */
-#line 41 "parser1.y"
+#line 42 "parser1.y"
                  {(yyval.nd_obj).head = criarRaiz((yyvsp[0].nd_obj).funcao); head = (yyval.nd_obj).head;}
-#line 1383 "y.tab.c"
+#line 1384 "y.tab.c"
     break;
 
   case 4: /* ListaFuncoes: ListaFuncoes Funcao  */
-#line 44 "parser1.y"
+#line 45 "parser1.y"
                                   {
     (yyval.nd_obj).funcao = adicionarFuncao((yyvsp[-1].nd_obj).funcao, (yyvsp[0].nd_obj).funcao);
 }
-#line 1391 "y.tab.c"
+#line 1392 "y.tab.c"
     break;
 
   case 5: /* ListaFuncoes: Funcao  */
-#line 47 "parser1.y"
+#line 48 "parser1.y"
          {(yyval.nd_obj).funcao = (yyvsp[0].nd_obj).funcao;}
-#line 1397 "y.tab.c"
+#line 1398 "y.tab.c"
     break;
 
   case 6: /* $@1: %empty  */
-#line 50 "parser1.y"
+#line 51 "parser1.y"
                        { add('F');}
-#line 1403 "y.tab.c"
+#line 1404 "y.tab.c"
     break;
 
   case 7: /* Funcao: TipoRetorno ID $@1 TAPAR DeclParametros TFPAR BlocoPrincipal  */
-#line 50 "parser1.y"
+#line 51 "parser1.y"
                                                                               {(yyval.nd_obj).funcao = criarFuncao((yyvsp[-6].nd_obj).nome, (yyvsp[-5].nd_obj).nome, (yyvsp[-2].nd_obj).parametro, (yyvsp[0].nd_obj).blocoPrincipal);}
-#line 1409 "y.tab.c"
+#line 1410 "y.tab.c"
     break;
 
   case 8: /* $@2: %empty  */
-#line 51 "parser1.y"
+#line 52 "parser1.y"
                  { add('F');}
-#line 1415 "y.tab.c"
+#line 1416 "y.tab.c"
     break;
 
   case 9: /* Funcao: TipoRetorno ID $@2 TAPAR TFPAR BlocoPrincipal  */
-#line 51 "parser1.y"
+#line 52 "parser1.y"
                                                          {(yyval.nd_obj).funcao = criarFuncao((yyvsp[-5].nd_obj).nome, (yyvsp[-4].nd_obj).nome, NULL, (yyvsp[0].nd_obj).blocoPrincipal);}
-#line 1421 "y.tab.c"
+#line 1422 "y.tab.c"
     break;
 
   case 11: /* TipoRetorno: VOID  */
-#line 55 "parser1.y"
+#line 56 "parser1.y"
        { insert_type(); }
-#line 1427 "y.tab.c"
+#line 1428 "y.tab.c"
     break;
 
   case 12: /* DeclParametros: DeclParametros TVIRG Parametro  */
-#line 58 "parser1.y"
+#line 59 "parser1.y"
                                                {
 	struct parametro* atual = (yyvsp[-2].nd_obj).parametro;
     while (atual->next != NULL) {
@@ -1436,35 +1437,35 @@ yyreduce:
     atual->next = (yyvsp[0].nd_obj).parametro;
     (yyval.nd_obj).parametro = (yyvsp[-2].nd_obj).parametro;
 }
-#line 1440 "y.tab.c"
+#line 1441 "y.tab.c"
     break;
 
   case 13: /* DeclParametros: Parametro  */
-#line 66 "parser1.y"
+#line 67 "parser1.y"
             {(yyval.nd_obj).parametro = (yyvsp[0].nd_obj).parametro;}
-#line 1446 "y.tab.c"
+#line 1447 "y.tab.c"
     break;
 
   case 14: /* Parametro: Tipo ID  */
-#line 69 "parser1.y"
+#line 70 "parser1.y"
                    { add('V'); (yyval.nd_obj).parametro = criarParametro((yyvsp[-1].nd_obj).nome, (yyvsp[0].nd_obj).nome);}
-#line 1452 "y.tab.c"
+#line 1453 "y.tab.c"
     break;
 
   case 15: /* BlocoPrincipal: TACHA Declaracoes ListaCmd TFCHA  */
-#line 72 "parser1.y"
+#line 73 "parser1.y"
                                                  { (yyval.nd_obj).blocoPrincipal = criarBlocoPrincipal((yyvsp[-2].nd_obj).tabelaSimbolos, (yyvsp[-1].nd_obj).listaCmd);}
-#line 1458 "y.tab.c"
+#line 1459 "y.tab.c"
     break;
 
   case 16: /* BlocoPrincipal: TACHA ListaCmd TFCHA  */
-#line 73 "parser1.y"
+#line 74 "parser1.y"
                        { (yyval.nd_obj).blocoPrincipal = criarBlocoPrincipal(NULL, (yyvsp[-1].nd_obj).listaCmd);}
-#line 1464 "y.tab.c"
+#line 1465 "y.tab.c"
     break;
 
   case 17: /* Declaracoes: Declaracoes Declaracao  */
-#line 76 "parser1.y"
+#line 77 "parser1.y"
                                    {
 	(yyval.nd_obj).tabelaSimbolos = (yyvsp[-1].nd_obj).tabelaSimbolos;
 	// Atualiza a tabela de símbolos com as declarações da derivação atual
@@ -1474,17 +1475,17 @@ yyreduce:
 	temp = temp->next;
 	}
 }
-#line 1478 "y.tab.c"
+#line 1479 "y.tab.c"
     break;
 
   case 18: /* Declaracoes: Declaracao  */
-#line 85 "parser1.y"
+#line 86 "parser1.y"
              {(yyval.nd_obj).tabelaSimbolos = (yyvsp[0].nd_obj).tabelaSimbolos;}
-#line 1484 "y.tab.c"
+#line 1485 "y.tab.c"
     break;
 
   case 19: /* Declaracao: Tipo ListaId TPEVI  */
-#line 88 "parser1.y"
+#line 89 "parser1.y"
                                {
 	struct listaIdentificadores *id = (yyvsp[-1].nd_obj).listaIdentificadores;
 	struct tabelaSimbolos *tabelaSimbolos = NULL;
@@ -1495,255 +1496,267 @@ yyreduce:
 	(yyval.nd_obj).tabelaSimbolos = tabelaSimbolos;
 	printf("\n\n\n\n\n");
 }
-#line 1499 "y.tab.c"
+#line 1500 "y.tab.c"
     break;
 
   case 20: /* ListaId: ListaId TVIRG ID  */
-#line 100 "parser1.y"
+#line 101 "parser1.y"
                           { 
 	(yyval.nd_obj).listaIdentificadores = adicionarListaIdentificadores((yyvsp[-2].nd_obj).listaIdentificadores, (yyvsp[0].nd_obj).nome);
 }
-#line 1507 "y.tab.c"
+#line 1508 "y.tab.c"
     break;
 
   case 21: /* ListaId: ID  */
-#line 103 "parser1.y"
+#line 104 "parser1.y"
      { (yyval.nd_obj).listaIdentificadores = criarListaIdentificadores((yyvsp[0].nd_obj).nome);}
-#line 1513 "y.tab.c"
+#line 1514 "y.tab.c"
     break;
 
   case 22: /* Tipo: INT  */
-#line 106 "parser1.y"
+#line 107 "parser1.y"
           { insert_type(); }
-#line 1519 "y.tab.c"
+#line 1520 "y.tab.c"
     break;
 
   case 23: /* Tipo: FLOAT  */
-#line 107 "parser1.y"
+#line 108 "parser1.y"
         { insert_type(); }
-#line 1525 "y.tab.c"
+#line 1526 "y.tab.c"
     break;
 
   case 24: /* Tipo: STRING  */
-#line 108 "parser1.y"
+#line 109 "parser1.y"
         { insert_type(); }
-#line 1531 "y.tab.c"
+#line 1532 "y.tab.c"
     break;
 
   case 25: /* ListaCmd: ListaCmd Comando  */
-#line 111 "parser1.y"
+#line 112 "parser1.y"
                            {
 	(yyval.nd_obj).listaCmd = adicionarComando((yyvsp[-1].nd_obj).listaCmd, (yyvsp[0].nd_obj).comando);
 }
-#line 1539 "y.tab.c"
+#line 1540 "y.tab.c"
     break;
 
   case 26: /* ListaCmd: Comando  */
-#line 114 "parser1.y"
+#line 115 "parser1.y"
           { (yyval.nd_obj).listaCmd = criarListaCmd((yyvsp[0].nd_obj).comando);}
-#line 1545 "y.tab.c"
+#line 1546 "y.tab.c"
     break;
 
   case 27: /* Comando: CmdSe  */
-#line 117 "parser1.y"
+#line 118 "parser1.y"
                { (yyval.nd_obj).comando = criarComando(CMD_IF); (yyval.nd_obj).comando->tipoComando.ifCmd = (yyvsp[0].nd_obj).ifCmd;}
-#line 1551 "y.tab.c"
+#line 1552 "y.tab.c"
     break;
 
   case 28: /* Comando: CmdEnquanto  */
-#line 118 "parser1.y"
+#line 119 "parser1.y"
               { (yyval.nd_obj).comando = criarComando(CMD_WHILE); (yyval.nd_obj).comando->tipoComando.whileCmd = (yyvsp[0].nd_obj).whileCmd;}
-#line 1557 "y.tab.c"
+#line 1558 "y.tab.c"
     break;
 
   case 29: /* Comando: CmdAtrib  */
-#line 119 "parser1.y"
-           { (yyval.nd_obj).comando = criarComando(CMD_ATRIB); (yyval.nd_obj).comando->tipoComando.node = (yyvsp[0].nd_obj).node;}
-#line 1563 "y.tab.c"
+#line 120 "parser1.y"
+           { (yyval.nd_obj).comando = criarComando(CMD_ATRIB); (yyval.nd_obj).comando->tipoComando.node = (yyvsp[0].nd_obj).node; (yyval.nd_obj).comando->tipoComando.atribuicao = (yyvsp[0].nd_obj).atribuicao;}
+#line 1564 "y.tab.c"
     break;
 
   case 30: /* Comando: CmdEscrita  */
-#line 120 "parser1.y"
+#line 121 "parser1.y"
              { (yyval.nd_obj).comando = criarComando(CMD_NODE); (yyval.nd_obj).comando->tipoComando.node = (yyvsp[0].nd_obj).node;}
-#line 1569 "y.tab.c"
+#line 1570 "y.tab.c"
+    break;
+
+  case 32: /* Comando: ChamadaProc  */
+#line 123 "parser1.y"
+              {(yyval.nd_obj).comando = criarComando(CMD_CHAMADAFUNCAO); (yyval.nd_obj).comando->tipoComando.chamadaFuncao = (yyvsp[0].nd_obj).chamadaFuncao;}
+#line 1576 "y.tab.c"
     break;
 
   case 33: /* Comando: Retorno  */
-#line 123 "parser1.y"
+#line 124 "parser1.y"
           { (yyval.nd_obj).comando = criarComando(CMD_NODE); (yyval.nd_obj).comando->tipoComando.node = (yyvsp[0].nd_obj).node;}
-#line 1575 "y.tab.c"
+#line 1582 "y.tab.c"
     break;
 
   case 34: /* value: NUMBER  */
-#line 126 "parser1.y"
+#line 127 "parser1.y"
               { add('C'); }
-#line 1581 "y.tab.c"
+#line 1588 "y.tab.c"
     break;
 
   case 35: /* value: FLOAT_NUM  */
-#line 127 "parser1.y"
+#line 128 "parser1.y"
             { add('C'); }
-#line 1587 "y.tab.c"
+#line 1594 "y.tab.c"
     break;
 
   case 36: /* value: CHARACTER  */
-#line 128 "parser1.y"
+#line 129 "parser1.y"
             { add('C'); }
-#line 1593 "y.tab.c"
+#line 1600 "y.tab.c"
     break;
 
   case 38: /* Retorno: RETURN ExpressaoAritmetica TPEVI  */
-#line 132 "parser1.y"
+#line 133 "parser1.y"
                                           {(yyval.nd_obj).node = criarNode(NULL, (yyvsp[-1].nd_obj).node, "return ");}
-#line 1599 "y.tab.c"
+#line 1606 "y.tab.c"
     break;
 
   case 39: /* Retorno: RETURN STRING TPEVI  */
-#line 133 "parser1.y"
+#line 134 "parser1.y"
                      {(yyval.nd_obj).node = criarNode(NULL, criarNode(NULL, NULL, (yyvsp[-1].nd_obj).nome), "return ");}
-#line 1605 "y.tab.c"
+#line 1612 "y.tab.c"
     break;
 
   case 40: /* Retorno: RETURN TPEVI  */
-#line 134 "parser1.y"
+#line 135 "parser1.y"
               {(yyval.nd_obj).node = criarNode(NULL, NULL, "return");}
-#line 1611 "y.tab.c"
+#line 1618 "y.tab.c"
     break;
 
   case 41: /* $@3: %empty  */
-#line 137 "parser1.y"
+#line 138 "parser1.y"
                    { add('K'); }
-#line 1617 "y.tab.c"
+#line 1624 "y.tab.c"
     break;
 
   case 42: /* CmdEnquanto: WHILE $@3 TAPAR ExpressaoLogica TFPAR Bloco  */
-#line 137 "parser1.y"
+#line 138 "parser1.y"
                                                                     {(yyval.nd_obj).whileCmd = criarWhileCmd((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).bloco);}
-#line 1623 "y.tab.c"
+#line 1630 "y.tab.c"
     break;
 
   case 43: /* Bloco: TACHA ListaCmd TFCHA  */
-#line 140 "parser1.y"
+#line 141 "parser1.y"
                             { (yyval.nd_obj).bloco = criarBloco((yyvsp[-1].nd_obj).listaCmd);}
-#line 1629 "y.tab.c"
+#line 1636 "y.tab.c"
     break;
 
   case 44: /* CmdSe: IF TAPAR ExpressaoLogica TFPAR Bloco  */
-#line 143 "parser1.y"
+#line 144 "parser1.y"
                                             {(yyval.nd_obj).ifCmd = criarIfCmd((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).bloco, NULL);}
-#line 1635 "y.tab.c"
+#line 1642 "y.tab.c"
     break;
 
   case 45: /* CmdSe: IF TAPAR ExpressaoLogica TFPAR Bloco ELSE Bloco  */
-#line 144 "parser1.y"
+#line 145 "parser1.y"
                                                   {(yyval.nd_obj).ifCmd = criarIfCmd((yyvsp[-4].nd_obj).node, (yyvsp[-2].nd_obj).bloco, (yyvsp[0].nd_obj).bloco);}
-#line 1641 "y.tab.c"
+#line 1648 "y.tab.c"
     break;
 
   case 46: /* CmdAtrib: ID TATRI ExpressaoAritmetica TPEVI  */
-#line 147 "parser1.y"
-                                             {(yyval.nd_obj).node = criarNode(criarNode(NULL, NULL, (yyvsp[-3].nd_obj).nome), (yyvsp[-1].nd_obj).node, "=");}
-#line 1647 "y.tab.c"
+#line 148 "parser1.y"
+                                             {(yyval.nd_obj).atribuicao = criarAtribuicao((yyvsp[-3].nd_obj).nome, (yyvsp[-1].nd_obj).node, (yyvsp[-1].nd_obj).chamadaFuncao);}
+#line 1654 "y.tab.c"
     break;
 
   case 47: /* CmdAtrib: ID TATRI STRING TPEVI  */
-#line 148 "parser1.y"
-                        {(yyval.nd_obj).node = criarNode(criarNode(NULL, NULL, (yyvsp[-3].nd_obj).nome), criarNode(NULL, NULL, (yyvsp[-1].nd_obj).nome), "=");}
-#line 1653 "y.tab.c"
+#line 149 "parser1.y"
+                        {(yyval.nd_obj).atribuicao = criarAtribuicao((yyvsp[-3].nd_obj).nome, criarNode(NULL, NULL, (yyvsp[-1].nd_obj).nome), NULL);}
+#line 1660 "y.tab.c"
     break;
 
   case 48: /* CmdEscrita: PRINT TAPAR STRING TFPAR TPEVI  */
-#line 151 "parser1.y"
+#line 152 "parser1.y"
                                            {(yyval.nd_obj).node = criarNode(NULL, criarNode(NULL, NULL, (yyvsp[-2].nd_obj).nome), "print");}
-#line 1659 "y.tab.c"
+#line 1666 "y.tab.c"
     break;
 
   case 49: /* CmdEscrita: PRINT TAPAR ExpressaoAritmetica TFPAR TPEVI  */
-#line 152 "parser1.y"
+#line 153 "parser1.y"
                                               {(yyval.nd_obj).node = criarNode(NULL, (yyvsp[-2].nd_obj).node, "print");}
-#line 1665 "y.tab.c"
+#line 1672 "y.tab.c"
     break;
 
   case 50: /* $@4: %empty  */
-#line 155 "parser1.y"
+#line 156 "parser1.y"
                  { add('F'); }
-#line 1671 "y.tab.c"
+#line 1678 "y.tab.c"
     break;
 
   case 52: /* ChamadaProc: ChamadaFuncao TPEVI  */
-#line 158 "parser1.y"
-                                 { (yyval.nd_obj).node = (yyvsp[-1].nd_obj).node; }
-#line 1677 "y.tab.c"
+#line 159 "parser1.y"
+                                 {(yyval.nd_obj).chamadaFuncao = (yyvsp[-1].nd_obj).chamadaFuncao;}
+#line 1684 "y.tab.c"
     break;
 
   case 53: /* ChamadaFuncao: ID TAPAR ListaParametros TFPAR  */
-#line 161 "parser1.y"
-                                              { (yyval.nd_obj).node = criarNode((yyvsp[-1].nd_obj).node, NULL, (yyvsp[-3].nd_obj).nome); }
-#line 1683 "y.tab.c"
+#line 162 "parser1.y"
+                                              { (yyval.nd_obj).chamadaFuncao = criarChamadaFuncao((yyvsp[-3].nd_obj).nome, (yyvsp[-1].nd_obj).node);}
+#line 1690 "y.tab.c"
     break;
 
   case 54: /* ChamadaFuncao: ID TAPAR TFPAR  */
-#line 162 "parser1.y"
-                 { (yyval.nd_obj).node = criarNode(NULL, NULL, (yyvsp[-2].nd_obj).nome); }
-#line 1689 "y.tab.c"
+#line 163 "parser1.y"
+                 { (yyval.nd_obj).chamadaFuncao = criarChamadaFuncao((yyvsp[-2].nd_obj).nome, NULL);}
+#line 1696 "y.tab.c"
     break;
 
   case 55: /* ListaParametros: ListaParametros TVIRG ExpressaoAritmetica  */
-#line 164 "parser1.y"
-                                                           { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).node, ""); }
-#line 1695 "y.tab.c"
+#line 165 "parser1.y"
+                                                           { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).node, ","); }
+#line 1702 "y.tab.c"
     break;
 
   case 56: /* ListaParametros: ListaParametros TVIRG STRING  */
-#line 165 "parser1.y"
-                               { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, criarNode(NULL, NULL, (yyvsp[0].nd_obj).nome), ""); }
-#line 1701 "y.tab.c"
+#line 166 "parser1.y"
+                               { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, criarNode(NULL, NULL, (yyvsp[0].nd_obj).nome), ","); }
+#line 1708 "y.tab.c"
     break;
 
   case 57: /* ListaParametros: ExpressaoAritmetica  */
-#line 166 "parser1.y"
+#line 167 "parser1.y"
                       { (yyval.nd_obj).node = (yyvsp[0].nd_obj).node; }
-#line 1707 "y.tab.c"
+#line 1714 "y.tab.c"
     break;
 
   case 58: /* ListaParametros: STRING  */
-#line 167 "parser1.y"
+#line 168 "parser1.y"
          { (yyval.nd_obj).node = criarNode(NULL, NULL, (yyvsp[0].nd_obj).nome); }
-#line 1713 "y.tab.c"
+#line 1720 "y.tab.c"
     break;
 
   case 71: /* expressaoRelacional: ExpressaoAritmetica OperadoresRelacionais ExpressaoAritmetica  */
-#line 188 "parser1.y"
+#line 189 "parser1.y"
                                                                                    { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).node, (yyvsp[-1].nd_obj).nome); }
-#line 1719 "y.tab.c"
+#line 1726 "y.tab.c"
     break;
 
   case 72: /* ExpressaoLogica: ExpressaoLogica OperadoresLogicos ExpressaoLogica  */
-#line 191 "parser1.y"
+#line 192 "parser1.y"
                                                                    { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).node, (yyvsp[-1].nd_obj).nome); }
-#line 1725 "y.tab.c"
+#line 1732 "y.tab.c"
     break;
 
   case 73: /* ExpressaoLogica: expressaoRelacional  */
-#line 192 "parser1.y"
+#line 193 "parser1.y"
                       { (yyval.nd_obj).node = (yyvsp[0].nd_obj).node; }
-#line 1731 "y.tab.c"
+#line 1738 "y.tab.c"
     break;
 
   case 74: /* ExpressaoAritmetica: ExpressaoAritmetica OperadoresAritmeticos ExpressaoAritmetica  */
-#line 195 "parser1.y"
+#line 196 "parser1.y"
                                                                                    { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).node, (yyvsp[-1].nd_obj).nome); }
-#line 1737 "y.tab.c"
+#line 1744 "y.tab.c"
     break;
 
   case 75: /* ExpressaoAritmetica: value  */
-#line 196 "parser1.y"
+#line 197 "parser1.y"
         { (yyval.nd_obj).node = criarNode(NULL, NULL, (yyvsp[0].nd_obj).nome);}
-#line 1743 "y.tab.c"
+#line 1750 "y.tab.c"
+    break;
+
+  case 76: /* ExpressaoAritmetica: ChamadaFuncao  */
+#line 198 "parser1.y"
+               {(yyval.nd_obj).chamadaFuncao = (yyvsp[0].nd_obj).chamadaFuncao;}
+#line 1756 "y.tab.c"
     break;
 
 
-#line 1747 "y.tab.c"
+#line 1760 "y.tab.c"
 
       default: break;
     }
@@ -1936,7 +1949,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 200 "parser1.y"
+#line 201 "parser1.y"
 
 
 int main() {
@@ -2216,8 +2229,6 @@ struct comando * criarComando(CommandType identificador) {
 	struct comando *novoComando = (struct comando*) malloc(sizeof(struct comando));
 
 	novoComando->identificador = identificador;
-	novoComando->tipoComando.node = NULL;
-	novoComando->tipoComando.whileCmd = NULL;
 
 	if (novoComando == NULL) {
 		fprintf(stderr, "Falha na alocação de memória para o comando.\n");
@@ -2248,13 +2259,25 @@ struct chamadaFuncao* criarChamadaFuncao(char* nome, struct node* parametros) {
 	return novaChamadaFuncao;
 }
 
+struct atribuicao* criarAtribuicao(char* nome, struct node* node, struct chamadaFuncao* chamadaFuncao) {
+	struct atribuicao* novaAtribuicao = (struct atribuicao*) malloc(sizeof(struct atribuicao));
+	if (novaAtribuicao == NULL) {
+		// Handle memory allocation failure if needed
+		return NULL; // Or NULL, depending on how you want to handle failure
+	}
+	novaAtribuicao->nome = strdup(nome);
+	novaAtribuicao->node = node;
+	novaAtribuicao->chamadaFuncao = chamadaFuncao;
+	return novaAtribuicao;
+}
+
 void printChamadaFuncao(struct chamadaFuncao* chamadaFuncao) {
 	if (chamadaFuncao != NULL) {
 		printf("%s(", chamadaFuncao->nome);
 		if (chamadaFuncao->parametros != NULL) {
 			printNode(chamadaFuncao->parametros);
 		}
-		printf(")");
+		printf(");\n");
 	}
 }
 
@@ -2354,6 +2377,8 @@ void printListaCmd(struct listaCmd *lista) {
         if (lista->comando != NULL) {
             switch (lista->comando->identificador) {
                 case CMD_ATRIB:
+					imprimirAtribuicao(lista->comando->tipoComando.atribuicao);
+					break;
                 case CMD_NODE:
                     printNode(lista->comando->tipoComando.node);
 					printf(";\n");
@@ -2364,6 +2389,9 @@ void printListaCmd(struct listaCmd *lista) {
 				case CMD_IF:
                     printIfCmd(lista->comando->tipoComando.ifCmd);
                     break;
+				case CMD_CHAMADAFUNCAO:
+					printChamadaFuncao(lista->comando->tipoComando.chamadaFuncao);
+					break;
                 default:
                     printf("Unknown command type.\n");
                     break;
@@ -2385,6 +2413,19 @@ void printIfCmd(struct ifCmd *ifCmd) {
 			printf("else {\n");
 			printListaCmd(ifCmd->falseBlock->listaCmd);
 			printf("}\n");
+		}
+	}
+}
+
+void imprimirAtribuicao(struct atribuicao *atribuicao) {
+	if (atribuicao != NULL) {
+		if(atribuicao->node != NULL){
+		printf("%s = ", atribuicao->nome);
+		printNode(atribuicao->node);
+		printf(";\n");
+		}
+		else if(atribuicao->chamadaFuncao != NULL){
+			printChamadaFuncao(atribuicao->chamadaFuncao);
 		}
 	}
 }
