@@ -140,10 +140,16 @@ union YYSTYPE
 		struct funcao* funcao;
 		struct parametro* parametro;
 		struct raiz* head;
-		//struct funcao* ndFuncao;
+		struct bloco* bloco;
+		struct node* node;
+		struct ifStatement* ifStatement;
+		struct listaCmd *listaCmd;
+		struct tabelaSimbolos* tabelaSimbolos;
+		struct listaIdentificadores* listaIdentificadores;
+		struct blocoPrincipal* blocoPrincipal;
 	} nd_obj; 
 
-#line 147 "y.tab.h"
+#line 153 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

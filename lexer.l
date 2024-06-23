@@ -44,7 +44,7 @@ digito [0-9]
 [ \t\r]+                   { /* Ignora espaços em branco */ }
 \n                         { }
 .                          { return *yytext; }
-["].*["]                   { return STRING; }
+\"([^\\"]|\\.)*\"            { strncpy(yylval.nd_obj.nome, yytext, 100); return STRING; }
 ['].[']                    { return CHARACTER; }
 
 %%

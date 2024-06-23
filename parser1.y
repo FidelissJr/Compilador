@@ -8,7 +8,16 @@
 		struct funcao* funcao;
 		struct parametro* parametro;
 		struct raiz* head;
-		//struct funcao* ndFuncao;
+		struct bloco* bloco;
+		struct node* node;
+		struct ifStatement* ifStatement;
+		struct listaCmd *listaCmd;
+		struct tabelaSimbolos* tabelaSimbolos;
+		struct listaIdentificadores* listaIdentificadores;
+		struct blocoPrincipal* blocoPrincipal;
+		struct comando* comando;
+		struct whileCmd* whileCmd;
+
 	} nd_obj; 
 } 
 
@@ -17,12 +26,13 @@ NUMBER FLOAT_NUM ID TMEIG TMAIG TIGUA TDIFE TMAIO TMENO AND OR STRING ADD MULTIP
 TAPAR TFPAR TACHA TFCHA TPEVI TATRI TVIRG
 
 %type <nd_obj> Programa ListaFuncoes DeclParametros BlocoPrincipal Declaracoes Tipo ListaId Bloco ListaCmd Comando Retorno Funcao
-TipoRetorno Parametro Declaracao CmdSe CmdEnquanto CmdAtrib CmdEscrita CmdLeitura ChamadaProc ChamadaFuncao
+TipoRetorno Parametro Declaracao CmdSe CmdEnquanto CmdAtrib CmdEscrita CmdLeitura ChamadaProc ChamadaFuncao ExpressaoAritmetica value
+OperadoresAritmeticos OperadoresRelacionais OperadoresLogicos expressaoRelacional ExpressaoLogica ListaParametros 
 
 %%
 
 Programa: ListaFuncoes BlocoPrincipal {$$.head = criarRaiz($1.funcao); head = $$.head;}
-| BlocoPrincipal {{$$.head = criarRaiz($1.funcao); head = $$.head;}}
+| BlocoPrincipal {$$.head = criarRaiz($1.funcao); head = $$.head;}
 ;
 
 ListaFuncoes: ListaFuncoes Funcao {
@@ -36,11 +46,11 @@ ListaFuncoes: ListaFuncoes Funcao {
 | Funcao {$$.funcao = $1.funcao;}
 ;
 
-Funcao: TipoRetorno ID { add('F');} TAPAR DeclParametros TFPAR BlocoPrincipal {$$.funcao = criarFuncao($1.nome, $2.nome, $5.parametro, NULL);}
-| TipoRetorno ID { add('F');} TAPAR TFPAR BlocoPrincipal {$$.funcao = criarFuncao($1.nome, $2.nome, NULL, NULL);}
+Funcao: TipoRetorno ID { add('F');} TAPAR DeclParametros TFPAR BlocoPrincipal {$$.funcao = criarFuncao($1.nome, $2.nome, $5.parametro, $7.blocoPrincipal);} 
+| TipoRetorno ID { add('F');} TAPAR TFPAR BlocoPrincipal {$$.funcao = criarFuncao($1.nome, $2.nome, NULL, $6.blocoPrincipal);}
 ;
 
-TipoRetorno: Tipo
+TipoRetorno: Tipo 
 | VOID { insert_type(); }
 ;
 
@@ -58,15 +68,38 @@ DeclParametros: DeclParametros TVIRG Parametro {
 Parametro: Tipo ID { add('V'); $$.parametro = criarParametro($1.nome, $2.nome);}
 ;
 
-BlocoPrincipal: TACHA Declaracoes ListaCmd TFCHA //{$$.nd = mknode($3.nd, NULL, "BlocoPrincipal");}
-| TACHA ListaCmd TFCHA //{$$.nd = mknode($2.nd, NULL, "BlocoPrincipal");}
+BlocoPrincipal: TACHA Declaracoes ListaCmd TFCHA { $$.blocoPrincipal = criarBlocoPrincipal($2.tabelaSimbolos, $3.listaCmd);}
+| TACHA ListaCmd TFCHA { $$.blocoPrincipal = criarBlocoPrincipal(NULL, $2.listaCmd);}
 ;
 
-Declaracoes: Declaracoes Declaracao
-| Declaracao
+Declaracoes: Declaracoes Declaracao{
+	$$.tabelaSimbolos = $1.tabelaSimbolos;
+	// Atualiza a tabela de símbolos com as declarações da derivação atual
+	struct tabelaSimbolos *temp = $2.tabelaSimbolos;
+	while (temp != NULL) {
+		$$.tabelaSimbolos = adicionarTabelaSimbolos($$.tabelaSimbolos, temp->nome, temp->tipoDado, temp->tipo);
+	temp = temp->next;
+	}
+}
+| Declaracao {$$.tabelaSimbolos = $1.tabelaSimbolos;}
 ;
 
-Declaracao: Tipo ListaId TPEVI
+Declaracao: Tipo ListaId TPEVI {
+	struct listaIdentificadores *id = $2.listaIdentificadores;
+	struct tabelaSimbolos *tabelaSimbolos = NULL;
+	while (id != NULL) {
+		tabelaSimbolos = adicionarTabelaSimbolos(tabelaSimbolos, id->nome, $1.nome, "Variável");
+		id = id->next;
+	}
+	$$.tabelaSimbolos = tabelaSimbolos;
+	printf("\n\n\n\n\n");
+}
+;
+
+ListaId: ListaId TVIRG ID { 
+	$$.listaIdentificadores = adicionarListaIdentificadores($1.listaIdentificadores, $3.nome);
+}
+| ID { $$.listaIdentificadores = criarListaIdentificadores($1.nome);}
 ;
 
 Tipo: INT { insert_type(); }
@@ -74,21 +107,15 @@ Tipo: INT { insert_type(); }
 | STRING{ insert_type(); }
 ;
 
-
-ListaId: ListaId TVIRG ID { add('V'); }
-| ID { add('V'); }
-;
-
-Bloco: TACHA ListaCmd TFCHA
-;
-
-ListaCmd: ListaCmd Comando
-| Comando
+ListaCmd: ListaCmd Comando {
+	$$.listaCmd = adicionarComando($1.listaCmd, $2.node);
+}
+| Comando { $$.listaCmd = criarListaCmd($1.node); }
 ;
 
 Comando: CmdSe
-|CmdEnquanto
-| CmdAtrib
+|CmdEnquanto { $$.node = $1.node; }
+| CmdAtrib { $$.node = $1.node; }
 | CmdEscrita
 | CmdLeitura
 | ChamadaProc
@@ -106,15 +133,18 @@ Retorno: RETURN ExpressaoAritmetica TPEVI
 |RETURN TPEVI
 ;
 
-CmdEnquanto: WHILE { add('K'); } TAPAR ExpressaoLogica TFPAR Bloco 
+CmdEnquanto: WHILE { add('K'); } TAPAR ExpressaoLogica TFPAR Bloco  {$$.node = criarNode($4.node, $6.bloco->listaCmd->node, "WHILE"); imprimirListaCmd($6.bloco->listaCmd);}
 ;
 
-CmdSe: IF { add('K'); } TAPAR ExpressaoLogica TFPAR Bloco 
-| IF { add('K'); } TAPAR ExpressaoLogica TFPAR Bloco ELSE { add('K'); } Bloco
+Bloco: TACHA ListaCmd TFCHA { $$.bloco = criarBloco($2.listaCmd); }
 ;
 
-CmdAtrib: ID TATRI ExpressaoAritmetica TPEVI
-| ID TATRI STRING TPEVI
+CmdSe: IF { add('K'); } TAPAR ExpressaoLogica TFPAR Bloco //{$$.ifStatement = criarIfStatement($3.node, $5.bloco, NULL);}
+| IF { add('K'); } TAPAR ExpressaoLogica TFPAR Bloco ELSE { add('K'); } Bloco //{$$.ifStatement = criarIfStatement($4.node, $6.bloco, $9.bloco);}
+;
+
+CmdAtrib: ID TATRI ExpressaoAritmetica TPEVI {$$.node = criarNode(criarNode(NULL, NULL, $1.nome), $3.node, "=");}
+| ID TATRI STRING TPEVI {$$.node = criarNode(criarNode(NULL, NULL, $1.nome), criarNode(NULL, NULL, $3.nome), "=");}
 ;
 
 CmdEscrita: PRINT { add('F'); } TAPAR ExpressaoAritmetica TFPAR TPEVI
@@ -122,21 +152,21 @@ CmdEscrita: PRINT { add('F'); } TAPAR ExpressaoAritmetica TFPAR TPEVI
 ;
 
 CmdLeitura: READ { add('F'); } TAPAR ID TFPAR TPEVI
+; //Nao sera utilizado
+
+ChamadaProc: ChamadaFuncao TPEVI { $$.node = $1.node; }
 ;
 
-ChamadaProc: ChamadaFuncao TPEVI
+ChamadaFuncao: ID TAPAR ListaParametros TFPAR { $$.node = criarNode($3.node, NULL, $1.nome); }
+| ID TAPAR TFPAR { $$.node = criarNode(NULL, NULL, $1.nome); }
+
+ListaParametros: ListaParametros TVIRG ExpressaoAritmetica { $$.node = criarNode($1.node, $3.node, ","); }	
+| ListaParametros TVIRG STRING { $$.node = criarNode($1.node, criarNode(NULL, NULL, $3.nome), ","); }
+| ExpressaoAritmetica { $$.node = $1.node; }
+| STRING { $$.node = criarNode(NULL, NULL, $1.nome); }
 ;
 
-ChamadaFuncao: ID TAPAR ListaParametros TFPAR
-| ID TAPAR TFPAR
-
-ListaParametros: ListaParametros TVIRG ExpressaoAritmetica
-| ListaParametros TVIRG STRING
-| ExpressaoAritmetica
-| STRING
-;
-
-OperadoresAritmeticos:  ADD 
+OperadoresAritmeticos:  ADD
 | SUBTRACT 
 | MULTIPLY
 | DIVIDE
@@ -154,15 +184,15 @@ OperadoresLogicos: AND
 | OR
 ; 
 
-expressaoRelacional: ExpressaoAritmetica OperadoresRelacionais ExpressaoAritmetica
+expressaoRelacional: ExpressaoAritmetica OperadoresRelacionais ExpressaoAritmetica { $$.node = criarNode($1.node, $3.node, $2.nome); }
 ;
 
-ExpressaoLogica: ExpressaoLogica OperadoresLogicos ExpressaoLogica
-| expressaoRelacional
+ExpressaoLogica: ExpressaoLogica OperadoresLogicos ExpressaoLogica { $$.node = criarNode($1.node, $3.node, $2.nome); }
+| expressaoRelacional { $$.node = $1.node; }
 ;
 
-ExpressaoAritmetica: ExpressaoAritmetica OperadoresAritmeticos ExpressaoAritmetica
-| value
+ExpressaoAritmetica: ExpressaoAritmetica OperadoresAritmeticos ExpressaoAritmetica { $$.node = criarNode($1.node, $3.node, $2.nome); }
+| value { $$.node = criarNode(NULL, NULL, $1.nome);}
 | ChamadaFuncao
 ;
 
@@ -192,8 +222,7 @@ int main() {
 	printf("\t\t\t\t\t\t PHASE 2: SYNTAX ANALYSIS \n\n");
 	printf("\n\n");
 	
-	imprimir();
-
+	imprimir(head);
 
 	free(head);
 }
@@ -252,7 +281,7 @@ void yyerror(const char* msg) {
 }
 
 //Métodos para STA
-struct node* mknode(struct node *left, struct node *right, char *token) {
+struct node* criarNode(struct node *left, struct node *right, char *token) {
   struct node *newnode = (struct node*) malloc(sizeof(struct node));
   char *newstr = (char*) malloc(strlen(token)+1);
   strcpy(newstr, token);
@@ -262,34 +291,12 @@ struct node* mknode(struct node *left, struct node *right, char *token) {
   return(newnode);
 }
 
-
-/* void printAST(struct node* node, int depth) {
-    if (node == NULL)
-        return;
-
-    // Imprime tabs de acordo com a profundidade atual
-    for (int i = 0; i < depth; i++) {
-        printf("\t");
-    }
-
-    // Imprime o nome do nó
-    printf("%s\n", node->token);
-
-    // Chamadas recursivas para imprimir subárvores esquerda e direita
-    printAST(node->left, depth + 1);
-    printAST(node->right, depth + 1);
-} */
-
-
-struct funcao* criarFuncao(char* tipoRetorno, char* nome, struct parametro* parametros, struct node* bloco){
+struct funcao* criarFuncao(char* tipoRetorno, char* nome, struct parametro* parametros, struct blocoPrincipal* blocoPrincipal){
 	struct funcao* novaFuncao = malloc(sizeof(struct funcao));
     if (novaFuncao == NULL) {
 		printf("Falha ao inicializar Função");
         return NULL; // Falha na alocação de memória
     }
-
-	if(parametros == NULL)
-		printf("NULLLL");
 
     // copiar o nome da função e o tipo de retorno
     novaFuncao->nome = strdup(nome);
@@ -297,7 +304,7 @@ struct funcao* criarFuncao(char* tipoRetorno, char* nome, struct parametro* para
 
     // Associar os parâmetros e o bloco de código já existentes
     novaFuncao->parametros = parametros;
-    novaFuncao->bloco = bloco;
+    novaFuncao->blocoPrincipal = blocoPrincipal;
     novaFuncao->next = NULL; // Inicialmente, o próximo é NULL
 	return novaFuncao;
 }
@@ -309,16 +316,6 @@ struct raiz* criarRaiz(struct funcao* funcao){
         return NULL;
     }
 
-	/* if(novaFuncao == NULL){
-		printf("AQUI Funcao NUll");
-		novaRaiz->funcao = NULL;  
-	}
-	else{
-		novaRaiz->funcao = novaFuncao;
-	} */
-
-//    novaRaiz->funcao = NULL;  // Inicializa a lista de funções como vazia
-	
 	if(funcao == NULL)
 		printf("FUNCAO NULA");
 
@@ -343,11 +340,191 @@ struct parametro* criarParametro(char* tipo, char* nome){
 	return novoParametro;
 }
 
-// Função para imprimir os nomes das funções na lista
-void imprimir() {
+struct bloco* criarBloco(struct listaCmd* listaCmd){
+	struct bloco* novoBloco = (struct bloco*) malloc(sizeof(struct bloco));
+    if (novoBloco == NULL) {
+        fprintf(stderr, "Falha na alocação de memória para o bloco.\n");
+        return NULL;
+    }
+	novoBloco->listaCmd = listaCmd;
+	return novoBloco;
+}
 
-	printf("%s", head->funcao->parametros->nome);
-	printf("%s", head->funcao->next->parametros->nome);
+struct ifStatement *criarIfStatement(struct node *condition, struct bloco *trueBlock, struct bloco *falseBlock){
+	struct ifStatement *newIfStatement = (struct ifStatement*) malloc(sizeof(struct ifStatement));
+	if (newIfStatement == NULL) {
+		fprintf(stderr, "Falha na alocação de memória para o ifStatement.\n");
+		return NULL;
+	}
+	newIfStatement->condition = condition;
+	newIfStatement->trueBlock = trueBlock;
+	newIfStatement->falseBlock = falseBlock;
+	return newIfStatement;
+
+}
+// Função para imprimir os nomes das funções na lista
+
+struct listaCmd* adicionarComando(struct listaCmd *lista, struct node *cmd) {
+    struct listaCmd *novo = criarListaCmd(cmd);
+    if (novo == NULL) {
+        // Handle memory allocation failure if needed
+        return lista; // Or NULL, depending on how you want to handle failure
+    }
+    struct listaCmd *temp = lista;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = novo;
+    return lista;
+}
+
+struct listaCmd* criarListaCmd(struct node *node) {
+	struct listaCmd *lista = (struct listaCmd*) malloc(sizeof(struct listaCmd));
+	if (lista == NULL) {
+		// Handle memory allocation failure if needed
+		return NULL; // Or NULL, depending on how you want to handle failure
+	}
+	lista->node = node;
+	lista->next = NULL; // Ensure the new node is properly terminated
+	return lista;
+}
+
+struct tabelaSimbolos* criarTabelaSimbolos(char* nome, char* tipoDado, char* tipo) {
+	struct tabelaSimbolos* novaTabela = (struct tabelaSimbolos*) malloc(sizeof(struct tabelaSimbolos));
+	if (novaTabela == NULL) {
+		// Handle memory allocation failure if needed
+		return NULL; // Or NULL, depending on how you want to handle failure
+	}
+	novaTabela->nome = strdup(nome);
+	novaTabela->tipoDado = strdup(tipoDado);
+	novaTabela->tipo = strdup(tipo);
+	return novaTabela;
+}
+
+struct tabelaSimbolos* adicionarTabelaSimbolos(struct tabelaSimbolos *tabela, char* nome, char* tipoDado, char* tipo) {
+	struct tabelaSimbolos *novo = criarTabelaSimbolos(nome, tipoDado, tipo);
+	if (tabela == NULL) {
+        return novo;
+    }
+
+	if (novo == NULL) {
+		// Handle memory allocation failure if needed
+		printf("Falha ao criar nova tabela de símbolos");
+		return tabela; // Or NULL, depending on how you want to handle failure
+	}
+	struct tabelaSimbolos *temp = tabela;
+	while (temp->next != NULL) {
+		temp = temp->next;
+	}
+	temp->next = novo;
+	return tabela;
+}
+
+void imprimirListaidentificadores(struct listaIdentificadores *lista) {
+	struct listaIdentificadores *atual = lista;
+	while (atual != NULL) {
+		printf("Nome: %s\n", atual->nome);
+		atual = atual->next;
+	}
+}
+
+struct listaIdentificadores* criarListaIdentificadores(char* nome){
+	struct listaIdentificadores* novaLista = malloc(sizeof(struct listaIdentificadores));
+	novaLista->nome = strdup(nome);
+	novaLista->next = NULL;
+
+	if (novaLista == NULL) {
+		printf("Falha ao inicializar lista de identificadores");
+		return NULL; // Falha na alocação de memória
+	}
+
+	return novaLista;
+}
+
+struct listaIdentificadores* adicionarListaIdentificadores(struct listaIdentificadores* lista, char* novoIdentificador){
+    struct listaIdentificadores* novo = criarListaIdentificadores(novoIdentificador);
+    if (novo == NULL) {
+        // Handle memory allocation failure if needed
+        return lista; // Or NULL, depending on how you want to handle failure
+    }
+    if (lista == NULL) {
+		printf("LISTA NULA");
+        // If the list is initially empty, return the new node as the start of the list
+        return novo;
+    }
+    struct listaIdentificadores* temp = lista;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = novo; // Append the new node at the end of the list
+    return lista;
+}
+
+void imprimirTabelaSimbolos(struct tabelaSimbolos *tabela) {
+	struct tabelaSimbolos *atual = tabela;
+	while (atual != NULL) {
+		printf("Nome: %s\n", atual->nome);
+		printf("Tipo de Dado: %s\n", atual->tipoDado);
+		printf("Tipo: %s\n", atual->tipo);
+		atual = atual->next;
+	}
+}
+
+struct blocoPrincipal* criarBlocoPrincipal(struct tabelaSimbolos* tabelaSimbolos, struct listaCmd* listaCmd) {
+	struct blocoPrincipal* novoBlocoPrincipal = (struct blocoPrincipal*) malloc(sizeof(struct blocoPrincipal));
+	if (novoBlocoPrincipal == NULL) {
+		// Handle memory allocation failure if needed
+		return NULL; // Or NULL, depending on how you want to handle failure
+	}
+	novoBlocoPrincipal->tabelaSimbolos = tabelaSimbolos;
+	novoBlocoPrincipal->listaCmd = listaCmd;
+	return novoBlocoPrincipal;
+}
+
+void imprimir(struct raiz* raiz) {
+
+	if (raiz == NULL) {
+		printf("A raiz é nula.\n");
+		return;
+	}
+	
+	struct funcao *atual = raiz->funcao;
+
+	while(atual != NULL) {
+		printf("%s %s", raiz->funcao->tipoRetorno, raiz->funcao->nome);
+
+		struct parametro *parametroAtual = atual->parametros;
+		while(parametroAtual != NULL) {
+			printf("(%s %s){", parametroAtual->tipo, parametroAtual->nome);
+			parametroAtual = parametroAtual->next;
+		}
+
+		struct tabelaSimbolos *tabelaAtual = raiz->funcao->blocoPrincipal->tabelaSimbolos;
+		while(tabelaAtual != NULL) {
+			printf("\n%s %s;", tabelaAtual->tipoDado, tabelaAtual->nome);
+			tabelaAtual = tabelaAtual->next;
+		}
+
+		struct listaCmd *listaCmdAtual = raiz->funcao->blocoPrincipal->listaCmd;
+		imprimirListaCmd(listaCmdAtual);
+		/* while(listaCmdAtual != NULL) {
+			imprimirListaCmd(listaCmdAtual);
+			listaCmdAtual = listaCmdAtual->next;
+		} */
+
+		atual = atual->next;
+		
+	}
+
+	/* if(node == NULL) {
+		printf("NULL");
+		return;
+	} */
+
+	//printf("%s", node->token);
+	/* printf("E %s", node->left->token);
+	printf("D %s", node->right->token); */
+	//printf("%s", head->funcao->next->parametros->nome); 
 
 	//if(head->funcao == NULL)
 		//printf("NAO FUNCAO");
@@ -373,3 +550,38 @@ void imprimir() {
     } */
 }
 
+void imprimirAST(struct node *tree) {
+    if(tree == NULL) {
+        return;
+    }
+    
+    // Check if the node is a "WHILE" command
+    if (strcmp(tree->token, "WHILE") == 0) {
+        printf("\nwhile(");
+        imprimirAST(tree->left); // Print condition
+        printf(")\n {");
+        imprimirAST(tree->right); // Print body
+        printf("}");
+    } else {
+        // For non-"WHILE" nodes, print left child, token, then right child
+        if (tree->left) {
+            imprimirAST(tree->left);
+        }
+        
+        printf("%s", tree->token);
+        
+        if (tree->right) {
+            imprimirAST(tree->right);
+        }
+    }
+}
+
+void imprimirListaCmd(struct listaCmd *lista) {
+	struct listaCmd *atual = lista;
+
+	while (atual != NULL) {
+		if(atual->node != NULL)
+			imprimirAST(atual->node);
+		atual = atual->next;
+	}
+}
