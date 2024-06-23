@@ -203,14 +203,18 @@ union YYSTYPE
 		struct raiz* head;
 		struct bloco* bloco;
 		struct node* node;
-		struct ifStatement* ifStatement;
+		struct ifCmd* ifCmd;
 		struct listaCmd *listaCmd;
 		struct tabelaSimbolos* tabelaSimbolos;
 		struct listaIdentificadores* listaIdentificadores;
 		struct blocoPrincipal* blocoPrincipal;
+		struct comando* comando;
+		struct whileCmd* whileCmd;
+		struct chamadaFuncao* chamadaFuncao;
+
 	} nd_obj; 
 
-#line 214 "y.tab.c"
+#line 218 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -288,24 +292,19 @@ enum yysymbol_kind_t
   YYSYMBOL_55_3 = 55,                      /* $@3  */
   YYSYMBOL_Bloco = 56,                     /* Bloco  */
   YYSYMBOL_CmdSe = 57,                     /* CmdSe  */
-  YYSYMBOL_58_4 = 58,                      /* $@4  */
-  YYSYMBOL_59_5 = 59,                      /* $@5  */
-  YYSYMBOL_60_6 = 60,                      /* $@6  */
-  YYSYMBOL_CmdAtrib = 61,                  /* CmdAtrib  */
-  YYSYMBOL_CmdEscrita = 62,                /* CmdEscrita  */
-  YYSYMBOL_63_7 = 63,                      /* $@7  */
-  YYSYMBOL_64_8 = 64,                      /* $@8  */
-  YYSYMBOL_CmdLeitura = 65,                /* CmdLeitura  */
-  YYSYMBOL_66_9 = 66,                      /* $@9  */
-  YYSYMBOL_ChamadaProc = 67,               /* ChamadaProc  */
-  YYSYMBOL_ChamadaFuncao = 68,             /* ChamadaFuncao  */
-  YYSYMBOL_ListaParametros = 69,           /* ListaParametros  */
-  YYSYMBOL_OperadoresAritmeticos = 70,     /* OperadoresAritmeticos  */
-  YYSYMBOL_OperadoresRelacionais = 71,     /* OperadoresRelacionais  */
-  YYSYMBOL_OperadoresLogicos = 72,         /* OperadoresLogicos  */
-  YYSYMBOL_expressaoRelacional = 73,       /* expressaoRelacional  */
-  YYSYMBOL_ExpressaoLogica = 74,           /* ExpressaoLogica  */
-  YYSYMBOL_ExpressaoAritmetica = 75        /* ExpressaoAritmetica  */
+  YYSYMBOL_CmdAtrib = 58,                  /* CmdAtrib  */
+  YYSYMBOL_CmdEscrita = 59,                /* CmdEscrita  */
+  YYSYMBOL_CmdLeitura = 60,                /* CmdLeitura  */
+  YYSYMBOL_61_4 = 61,                      /* $@4  */
+  YYSYMBOL_ChamadaProc = 62,               /* ChamadaProc  */
+  YYSYMBOL_ChamadaFuncao = 63,             /* ChamadaFuncao  */
+  YYSYMBOL_ListaParametros = 64,           /* ListaParametros  */
+  YYSYMBOL_OperadoresAritmeticos = 65,     /* OperadoresAritmeticos  */
+  YYSYMBOL_OperadoresRelacionais = 66,     /* OperadoresRelacionais  */
+  YYSYMBOL_OperadoresLogicos = 67,         /* OperadoresLogicos  */
+  YYSYMBOL_expressaoRelacional = 68,       /* expressaoRelacional  */
+  YYSYMBOL_ExpressaoLogica = 69,           /* ExpressaoLogica  */
+  YYSYMBOL_ExpressaoAritmetica = 70        /* ExpressaoAritmetica  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -633,16 +632,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  31
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   179
+#define YYLAST   190
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  36
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  40
+#define YYNNTS  35
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  81
+#define YYNRULES  76
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  141
+#define YYNSTATES  131
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   290
@@ -695,15 +694,14 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    31,    31,    32,    35,    43,    46,    46,    47,    47,
-      50,    51,    54,    62,    65,    68,    69,    72,    81,    84,
-      96,    99,   102,   103,   104,   107,   110,   113,   114,   115,
-     116,   117,   118,   119,   122,   123,   124,   125,   128,   129,
-     130,   133,   133,   136,   139,   139,   140,   140,   140,   143,
-     144,   147,   147,   148,   148,   151,   151,   154,   157,   158,
-     160,   161,   162,   163,   166,   167,   168,   169,   172,   173,
-     174,   175,   176,   177,   180,   181,   184,   187,   188,   191,
-     192,   193
+       0,    35,    35,    41,    44,    47,    50,    50,    51,    51,
+      54,    55,    58,    66,    69,    72,    73,    76,    85,    88,
+     100,   103,   106,   107,   108,   111,   114,   117,   118,   119,
+     120,   121,   122,   123,   126,   127,   128,   129,   132,   133,
+     134,   137,   137,   140,   143,   144,   147,   148,   151,   152,
+     155,   155,   158,   161,   162,   164,   165,   166,   167,   170,
+     171,   172,   173,   176,   177,   178,   179,   180,   181,   184,
+     185,   188,   191,   192,   195,   196,   197
 };
 #endif
 
@@ -727,11 +725,11 @@ static const char *const yytname[] =
   "Programa", "ListaFuncoes", "Funcao", "$@1", "$@2", "TipoRetorno",
   "DeclParametros", "Parametro", "BlocoPrincipal", "Declaracoes",
   "Declaracao", "ListaId", "Tipo", "ListaCmd", "Comando", "value",
-  "Retorno", "CmdEnquanto", "$@3", "Bloco", "CmdSe", "$@4", "$@5", "$@6",
-  "CmdAtrib", "CmdEscrita", "$@7", "$@8", "CmdLeitura", "$@9",
-  "ChamadaProc", "ChamadaFuncao", "ListaParametros",
-  "OperadoresAritmeticos", "OperadoresRelacionais", "OperadoresLogicos",
-  "expressaoRelacional", "ExpressaoLogica", "ExpressaoAritmetica", YY_NULLPTR
+  "Retorno", "CmdEnquanto", "$@3", "Bloco", "CmdSe", "CmdAtrib",
+  "CmdEscrita", "CmdLeitura", "$@4", "ChamadaProc", "ChamadaFuncao",
+  "ListaParametros", "OperadoresAritmeticos", "OperadoresRelacionais",
+  "OperadoresLogicos", "expressaoRelacional", "ExpressaoLogica",
+  "ExpressaoAritmetica", YY_NULLPTR
 };
 
 static const char *
@@ -741,7 +739,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-108)
+#define YYPACT_NINF (-98)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -755,21 +753,20 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      18,  -108,  -108,  -108,  -108,   101,     4,    18,  -108,     9,
-    -108,  -108,  -108,  -108,  -108,  -108,   -14,     5,   101,  -108,
-      23,    30,  -108,  -108,  -108,  -108,  -108,  -108,  -108,  -108,
-     -21,  -108,  -108,  -108,  -108,    24,    28,    58,    65,    72,
-      73,    63,   121,  -108,  -108,  -108,    83,     0,  -108,  -108,
-    -108,    71,  -108,    50,  -108,    19,  -108,  -108,  -108,    85,
-      87,    59,    97,    33,    59,    59,    59,  -108,  -108,    -8,
-     151,    93,   137,  -108,  -108,  -108,  -108,  -108,  -108,    59,
-    -108,  -108,   113,    38,   102,   115,   116,   125,  -108,    69,
-     133,   100,   144,  -108,   124,  -108,  -108,   151,  -108,    -6,
-    -108,   129,   123,   134,   135,   136,  -108,  -108,   140,    59,
-    -108,  -108,  -108,  -108,  -108,  -108,    59,   140,   140,  -108,
-     151,   123,    38,  -108,  -108,  -108,  -108,  -108,    75,  -108,
-      21,   151,  -108,   145,  -108,  -108,    60,  -108,  -108,   140,
-    -108
+      17,   -98,   -98,   -98,   -98,   116,    11,    17,   -98,     7,
+     -98,   -98,     3,   -98,   -98,    12,    18,     5,   116,   -98,
+      41,    44,   -98,   -98,   -98,   -98,   -98,   -98,   -98,   -98,
+      28,   -98,   -98,   -98,   -98,   115,    40,    48,    30,    88,
+     128,   -98,   -98,   -98,    50,    47,   -98,   -98,   -98,   146,
+     -98,    54,   -98,   -23,   -98,   -98,   -98,    55,    59,    51,
+     160,    69,    30,   -98,     9,   142,   -98,   -98,    21,   109,
+      63,   150,   -98,   -98,   -98,   -98,   -98,   -98,    30,   -98,
+     -98,    84,     0,    73,    71,    72,    79,    15,   -98,   -98,
+      81,    30,   -98,   -98,   -98,   -98,   -98,   -98,    30,   -98,
+     133,   -98,   -98,   109,   -98,    27,   -98,    96,    83,   -98,
+     -98,    82,    81,    85,   120,    52,   109,   -98,   109,    83,
+       0,   -98,   -98,   -98,   -98,    61,    81,   -98,   -98,   -98,
+     -98
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -778,38 +775,37 @@ static const yytype_int16 yypact[] =
 static const yytype_int8 yydefact[] =
 {
        0,    11,    22,    23,    24,     0,     0,     0,     5,     0,
-       3,    10,    51,    55,    41,    44,     0,     0,     0,    18,
+       3,    10,     0,    50,    41,     0,     0,     0,     0,    18,
        0,     0,    26,    33,    28,    27,    29,    30,    31,    32,
        0,     1,     4,     2,     6,     0,     0,     0,     0,     0,
-       0,     0,     0,    36,    34,    35,    37,     0,    40,    80,
-      81,     0,    17,     0,    21,     0,    16,    25,    57,     0,
-       0,     0,     0,     0,     0,     0,     0,    63,    59,     0,
-      62,     0,     0,    39,    64,    66,    67,    65,    38,     0,
-      15,    19,     0,     0,     0,     0,     0,     0,    78,     0,
-       0,     0,     0,    58,     0,    50,    49,    79,    20,     0,
-      13,     0,     0,     0,     0,     0,    74,    75,     0,     0,
-      70,    71,    72,    73,    69,    68,     0,     0,     0,    61,
-      60,     0,     0,    14,     9,    52,    54,    56,     0,    42,
-      77,    76,    45,     0,     7,    12,     0,    47,    43,     0,
-      48
+       0,    36,    34,    35,    37,     0,    40,    75,    76,     0,
+      17,     0,    21,     0,    16,    25,    52,     0,     0,     0,
+       0,     0,     0,    73,     0,     0,    58,    54,     0,    57,
+       0,     0,    39,    59,    61,    62,    60,    38,     0,    15,
+      19,     0,     0,     0,     0,     0,     0,     0,    69,    70,
+       0,     0,    65,    66,    67,    68,    64,    63,     0,    53,
+       0,    47,    46,    74,    20,     0,    13,     0,     0,    48,
+      49,     0,     0,     0,    44,    72,    71,    56,    55,     0,
+       0,    14,     9,    51,    42,     0,     0,     7,    12,    43,
+      45
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -108,  -108,  -108,   165,  -108,  -108,  -108,  -108,    51,    -2,
-    -108,   161,  -108,    -4,   -15,   -19,  -108,  -108,  -108,  -108,
-    -107,  -108,  -108,  -108,  -108,  -108,  -108,  -108,  -108,  -108,
-    -108,  -108,    -5,  -108,  -108,  -108,  -108,  -108,   -58,   -11
+     -98,   -98,   -98,   136,   -98,   -98,   -98,   -98,    29,    -2,
+     -98,   130,   -98,    -4,   -16,   -18,   -98,   -98,   -98,   -98,
+     -97,   -98,   -98,   -98,   -98,   -98,   -98,    -5,   -98,   -98,
+     -98,   -98,   -98,   -56,   -13
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
-static const yytype_uint8 yydefgoto[] =
+static const yytype_int8 yydefgoto[] =
 {
-       0,     6,     7,     8,    59,    60,     9,    99,   100,    10,
-      18,    19,    55,    11,    21,    22,    49,    23,    24,    38,
-     129,    25,    39,    40,   139,    26,    27,    35,    36,    28,
-      37,    29,    50,    69,    79,   116,   109,    88,    89,    90
+       0,     6,     7,     8,    57,    58,     9,   105,   106,    10,
+      18,    19,    53,    11,    21,    22,    47,    23,    24,    37,
+     114,    25,    26,    27,    28,    36,    29,    48,    68,    78,
+      98,    91,    63,    64,    65
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -817,46 +813,50 @@ static const yytype_uint8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      30,    20,    57,    53,    31,    33,    51,    91,    92,    43,
-     132,   133,    58,    30,    20,    41,    30,    44,    45,    46,
-      42,     1,    93,    34,   121,     2,     3,    94,    47,   122,
-      70,    72,   140,    73,    57,    12,    13,    54,    48,    14,
-      15,     4,   106,   107,    16,     2,     3,    87,    30,     5,
-      85,   130,    81,    61,    82,    12,    13,    62,    17,    14,
-      15,     4,    56,    43,    16,    12,    13,    43,    97,    14,
-      15,    44,    45,    46,    16,    44,    45,    46,    17,   101,
-      12,    13,    80,   120,    14,    15,    67,    63,    17,    16,
-     106,   107,   138,    68,    64,    74,    75,    76,    77,   108,
-     124,    65,    66,    17,    78,   131,    12,    13,     2,     3,
-      14,    15,    41,   136,    83,    16,    84,    57,   101,   134,
-      86,   106,   107,    30,     4,    43,    95,    98,    43,    17,
-     117,    30,   102,    44,    45,    46,    44,    45,    46,    74,
-      75,    76,    77,   123,    71,   103,   104,   119,   110,   111,
-     112,   113,   114,   115,     5,   105,   137,    74,    75,    76,
-      77,    74,    75,    76,    77,   106,   107,   125,   126,   127,
-      96,   128,    32,   135,   118,    74,    75,    76,    77,    52
+      30,    20,    51,    55,    49,    33,    87,     2,     3,    41,
+      80,    31,    81,    30,    20,   124,    30,    42,    43,    44,
+       1,    34,    60,     4,     2,     3,    69,    71,    45,   130,
+      88,    89,    35,    55,    41,   115,    88,    89,    46,    90,
+       4,    38,    42,    43,    44,   112,    30,    39,     5,    12,
+      13,    99,    40,    14,    15,    52,   100,   119,    16,    12,
+      13,    56,   120,    14,    15,   103,    12,    13,    16,    61,
+      14,    15,    17,    88,    89,    16,    54,    62,   107,    39,
+      72,    84,    17,    86,    82,   116,    79,   118,    83,    17,
+      12,    13,    41,   129,    14,    15,   101,   125,   104,    16,
+      42,    43,    44,   108,   109,   110,   122,    55,    30,   111,
+     121,    66,   113,    17,     5,   123,   107,   127,    67,    41,
+      30,    12,    13,     2,     3,    14,    15,    42,    43,    44,
+      16,   126,    41,    73,    74,    75,    76,    41,    59,     4,
+      42,    43,    44,    32,    17,    42,    43,    44,    50,   128,
+       0,    70,     0,     0,     0,     0,   117,    92,    93,    94,
+      95,    96,    97,     0,     0,     0,    73,    74,    75,    76,
+      73,    74,    75,    76,    73,    74,    75,    76,     0,    77,
+       0,     0,     0,   102,    73,    74,    75,    76,     0,     0,
+      85
 };
 
-static const yytype_uint8 yycheck[] =
+static const yytype_int8 yycheck[] =
 {
-       5,     5,    21,    18,     0,     7,    17,    65,    66,     4,
-     117,   118,    33,    18,    18,    29,    21,    12,    13,    14,
-      34,     3,    30,    14,    30,     7,     8,    35,    23,    35,
-      41,    42,   139,    33,    53,     5,     6,    14,    33,     9,
-      10,    23,    21,    22,    14,     7,     8,    14,    53,    31,
-      61,   109,    33,    29,    35,     5,     6,    29,    28,     9,
-      10,    23,    32,     4,    14,     5,     6,     4,    79,     9,
-      10,    12,    13,    14,    14,    12,    13,    14,    28,    83,
-       5,     6,    32,    94,     9,    10,    23,    29,    28,    14,
-      21,    22,    32,    30,    29,    24,    25,    26,    27,    30,
-     102,    29,    29,    28,    33,   116,     5,     6,     7,     8,
-       9,    10,    29,   128,    29,    14,    29,   136,   122,   121,
-      23,    21,    22,   128,    23,     4,    33,    14,     4,    28,
-      30,   136,    30,    12,    13,    14,    12,    13,    14,    24,
-      25,    26,    27,    14,    23,    30,    30,    23,    15,    16,
-      17,    18,    19,    20,    31,    30,    11,    24,    25,    26,
-      27,    24,    25,    26,    27,    21,    22,    33,    33,    33,
-      33,    31,     7,   122,    30,    24,    25,    26,    27,    18
+       5,     5,    18,    21,    17,     7,    62,     7,     8,     4,
+      33,     0,    35,    18,    18,   112,    21,    12,    13,    14,
+       3,    14,    35,    23,     7,     8,    39,    40,    23,   126,
+      21,    22,    29,    51,     4,    91,    21,    22,    33,    30,
+      23,    29,    12,    13,    14,    30,    51,    29,    31,     5,
+       6,    30,    34,     9,    10,    14,    35,    30,    14,     5,
+       6,    33,    35,     9,    10,    78,     5,     6,    14,    29,
+       9,    10,    28,    21,    22,    14,    32,    29,    82,    29,
+      33,    30,    28,    14,    29,    98,    32,   100,    29,    28,
+       5,     6,     4,    32,     9,    10,    33,   113,    14,    14,
+      12,    13,    14,    30,    33,    33,   108,   125,   113,    30,
+      14,    23,    31,    28,    31,    33,   120,   119,    30,     4,
+     125,     5,     6,     7,     8,     9,    10,    12,    13,    14,
+      14,    11,     4,    24,    25,    26,    27,     4,    23,    23,
+      12,    13,    14,     7,    28,    12,    13,    14,    18,   120,
+      -1,    23,    -1,    -1,    -1,    -1,    23,    15,    16,    17,
+      18,    19,    20,    -1,    -1,    -1,    24,    25,    26,    27,
+      24,    25,    26,    27,    24,    25,    26,    27,    -1,    33,
+      -1,    -1,    -1,    33,    24,    25,    26,    27,    -1,    -1,
+      30
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
@@ -865,18 +865,17 @@ static const yytype_int8 yystos[] =
 {
        0,     3,     7,     8,    23,    31,    37,    38,    39,    42,
       45,    49,     5,     6,     9,    10,    14,    28,    46,    47,
-      49,    50,    51,    53,    54,    57,    61,    62,    65,    67,
-      68,     0,    39,    45,    14,    63,    64,    66,    55,    58,
-      59,    29,    34,     4,    12,    13,    14,    23,    33,    52,
-      68,    75,    47,    50,    14,    48,    32,    51,    33,    40,
-      41,    29,    29,    29,    29,    29,    29,    23,    30,    69,
-      75,    23,    75,    33,    24,    25,    26,    27,    33,    70,
-      32,    33,    35,    29,    29,    75,    23,    14,    73,    74,
-      75,    74,    74,    30,    35,    33,    33,    75,    14,    43,
-      44,    49,    30,    30,    30,    30,    21,    22,    30,    72,
-      15,    16,    17,    18,    19,    20,    71,    30,    30,    23,
-      75,    30,    35,    14,    45,    33,    33,    33,    31,    56,
-      74,    75,    56,    56,    45,    44,    50,    11,    32,    60,
+      49,    50,    51,    53,    54,    57,    58,    59,    60,    62,
+      63,     0,    39,    45,    14,    29,    61,    55,    29,    29,
+      34,     4,    12,    13,    14,    23,    33,    52,    63,    70,
+      47,    50,    14,    48,    32,    51,    33,    40,    41,    23,
+      70,    29,    29,    68,    69,    70,    23,    30,    64,    70,
+      23,    70,    33,    24,    25,    26,    27,    33,    65,    32,
+      33,    35,    29,    29,    30,    30,    14,    69,    21,    22,
+      30,    67,    15,    16,    17,    18,    19,    20,    66,    30,
+      35,    33,    33,    70,    14,    43,    44,    49,    30,    33,
+      33,    30,    30,    31,    56,    69,    70,    23,    70,    30,
+      35,    14,    45,    33,    56,    50,    11,    45,    44,    32,
       56
 };
 
@@ -887,11 +886,10 @@ static const yytype_int8 yyr1[] =
       42,    42,    43,    43,    44,    45,    45,    46,    46,    47,
       48,    48,    49,    49,    49,    50,    50,    51,    51,    51,
       51,    51,    51,    51,    52,    52,    52,    52,    53,    53,
-      53,    55,    54,    56,    58,    57,    59,    60,    57,    61,
-      61,    63,    62,    64,    62,    66,    65,    67,    68,    68,
-      69,    69,    69,    69,    70,    70,    70,    70,    71,    71,
-      71,    71,    71,    71,    72,    72,    73,    74,    74,    75,
-      75,    75
+      53,    55,    54,    56,    57,    57,    58,    58,    59,    59,
+      61,    60,    62,    63,    63,    64,    64,    64,    64,    65,
+      65,    65,    65,    66,    66,    66,    66,    66,    66,    67,
+      67,    68,    69,    69,    70,    70,    70
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -901,11 +899,10 @@ static const yytype_int8 yyr2[] =
        1,     1,     3,     1,     2,     4,     3,     2,     1,     3,
        3,     1,     1,     1,     1,     2,     1,     1,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     3,     3,
-       2,     0,     6,     3,     0,     6,     0,     0,     9,     4,
-       4,     0,     6,     0,     6,     0,     6,     2,     4,     3,
-       3,     3,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     1,     3,     3,     1,     3,
-       1,     1
+       2,     0,     6,     3,     5,     7,     4,     4,     5,     5,
+       0,     6,     2,     4,     3,     3,     3,     1,     1,     1,
+       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+       1,     3,     3,     1,     3,     1,     1
 };
 
 
@@ -1369,68 +1366,68 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Programa: ListaFuncoes BlocoPrincipal  */
-#line 31 "parser1.y"
-                                      {(yyval.nd_obj).head = criarRaiz((yyvsp[-1].nd_obj).funcao); head = (yyval.nd_obj).head;}
-#line 1375 "y.tab.c"
+#line 35 "parser1.y"
+                                      { 
+	struct funcao* main = criarFuncao("", "", NULL, (yyvsp[0].nd_obj).blocoPrincipal);
+	(yyvsp[-1].nd_obj).funcao = adicionarFuncao((yyvsp[-1].nd_obj).funcao, main);
+	(yyval.nd_obj).head = criarRaiz((yyvsp[-1].nd_obj).funcao); 
+	head = (yyval.nd_obj).head;
+	}
+#line 1377 "y.tab.c"
     break;
 
   case 3: /* Programa: BlocoPrincipal  */
-#line 32 "parser1.y"
+#line 41 "parser1.y"
                  {(yyval.nd_obj).head = criarRaiz((yyvsp[0].nd_obj).funcao); head = (yyval.nd_obj).head;}
-#line 1381 "y.tab.c"
+#line 1383 "y.tab.c"
     break;
 
   case 4: /* ListaFuncoes: ListaFuncoes Funcao  */
-#line 35 "parser1.y"
+#line 44 "parser1.y"
                                   {
-	struct funcao* atual = (yyvsp[-1].nd_obj).funcao;
-    while (atual->next != NULL) {
-        atual = atual->next;
-    }
-    atual->next = (yyvsp[0].nd_obj).funcao;
-    (yyval.nd_obj).funcao = (yyvsp[-1].nd_obj).funcao;
+    (yyval.nd_obj).funcao = adicionarFuncao((yyvsp[-1].nd_obj).funcao, (yyvsp[0].nd_obj).funcao);
 }
-#line 1394 "y.tab.c"
+#line 1391 "y.tab.c"
     break;
 
   case 5: /* ListaFuncoes: Funcao  */
-#line 43 "parser1.y"
+#line 47 "parser1.y"
          {(yyval.nd_obj).funcao = (yyvsp[0].nd_obj).funcao;}
-#line 1400 "y.tab.c"
+#line 1397 "y.tab.c"
     break;
 
   case 6: /* $@1: %empty  */
-#line 46 "parser1.y"
+#line 50 "parser1.y"
                        { add('F');}
-#line 1406 "y.tab.c"
+#line 1403 "y.tab.c"
     break;
 
   case 7: /* Funcao: TipoRetorno ID $@1 TAPAR DeclParametros TFPAR BlocoPrincipal  */
-#line 46 "parser1.y"
+#line 50 "parser1.y"
                                                                               {(yyval.nd_obj).funcao = criarFuncao((yyvsp[-6].nd_obj).nome, (yyvsp[-5].nd_obj).nome, (yyvsp[-2].nd_obj).parametro, (yyvsp[0].nd_obj).blocoPrincipal);}
-#line 1412 "y.tab.c"
+#line 1409 "y.tab.c"
     break;
 
   case 8: /* $@2: %empty  */
-#line 47 "parser1.y"
+#line 51 "parser1.y"
                  { add('F');}
-#line 1418 "y.tab.c"
+#line 1415 "y.tab.c"
     break;
 
   case 9: /* Funcao: TipoRetorno ID $@2 TAPAR TFPAR BlocoPrincipal  */
-#line 47 "parser1.y"
+#line 51 "parser1.y"
                                                          {(yyval.nd_obj).funcao = criarFuncao((yyvsp[-5].nd_obj).nome, (yyvsp[-4].nd_obj).nome, NULL, (yyvsp[0].nd_obj).blocoPrincipal);}
-#line 1424 "y.tab.c"
+#line 1421 "y.tab.c"
     break;
 
   case 11: /* TipoRetorno: VOID  */
-#line 51 "parser1.y"
+#line 55 "parser1.y"
        { insert_type(); }
-#line 1430 "y.tab.c"
+#line 1427 "y.tab.c"
     break;
 
   case 12: /* DeclParametros: DeclParametros TVIRG Parametro  */
-#line 54 "parser1.y"
+#line 58 "parser1.y"
                                                {
 	struct parametro* atual = (yyvsp[-2].nd_obj).parametro;
     while (atual->next != NULL) {
@@ -1439,35 +1436,35 @@ yyreduce:
     atual->next = (yyvsp[0].nd_obj).parametro;
     (yyval.nd_obj).parametro = (yyvsp[-2].nd_obj).parametro;
 }
-#line 1443 "y.tab.c"
+#line 1440 "y.tab.c"
     break;
 
   case 13: /* DeclParametros: Parametro  */
-#line 62 "parser1.y"
+#line 66 "parser1.y"
             {(yyval.nd_obj).parametro = (yyvsp[0].nd_obj).parametro;}
-#line 1449 "y.tab.c"
+#line 1446 "y.tab.c"
     break;
 
   case 14: /* Parametro: Tipo ID  */
-#line 65 "parser1.y"
+#line 69 "parser1.y"
                    { add('V'); (yyval.nd_obj).parametro = criarParametro((yyvsp[-1].nd_obj).nome, (yyvsp[0].nd_obj).nome);}
-#line 1455 "y.tab.c"
+#line 1452 "y.tab.c"
     break;
 
   case 15: /* BlocoPrincipal: TACHA Declaracoes ListaCmd TFCHA  */
-#line 68 "parser1.y"
+#line 72 "parser1.y"
                                                  { (yyval.nd_obj).blocoPrincipal = criarBlocoPrincipal((yyvsp[-2].nd_obj).tabelaSimbolos, (yyvsp[-1].nd_obj).listaCmd);}
-#line 1461 "y.tab.c"
+#line 1458 "y.tab.c"
     break;
 
   case 16: /* BlocoPrincipal: TACHA ListaCmd TFCHA  */
-#line 69 "parser1.y"
+#line 73 "parser1.y"
                        { (yyval.nd_obj).blocoPrincipal = criarBlocoPrincipal(NULL, (yyvsp[-1].nd_obj).listaCmd);}
-#line 1467 "y.tab.c"
+#line 1464 "y.tab.c"
     break;
 
   case 17: /* Declaracoes: Declaracoes Declaracao  */
-#line 72 "parser1.y"
+#line 76 "parser1.y"
                                    {
 	(yyval.nd_obj).tabelaSimbolos = (yyvsp[-1].nd_obj).tabelaSimbolos;
 	// Atualiza a tabela de símbolos com as declarações da derivação atual
@@ -1477,17 +1474,17 @@ yyreduce:
 	temp = temp->next;
 	}
 }
-#line 1481 "y.tab.c"
+#line 1478 "y.tab.c"
     break;
 
   case 18: /* Declaracoes: Declaracao  */
-#line 81 "parser1.y"
+#line 85 "parser1.y"
              {(yyval.nd_obj).tabelaSimbolos = (yyvsp[0].nd_obj).tabelaSimbolos;}
-#line 1487 "y.tab.c"
+#line 1484 "y.tab.c"
     break;
 
   case 19: /* Declaracao: Tipo ListaId TPEVI  */
-#line 84 "parser1.y"
+#line 88 "parser1.y"
                                {
 	struct listaIdentificadores *id = (yyvsp[-1].nd_obj).listaIdentificadores;
 	struct tabelaSimbolos *tabelaSimbolos = NULL;
@@ -1498,225 +1495,255 @@ yyreduce:
 	(yyval.nd_obj).tabelaSimbolos = tabelaSimbolos;
 	printf("\n\n\n\n\n");
 }
-#line 1502 "y.tab.c"
+#line 1499 "y.tab.c"
     break;
 
   case 20: /* ListaId: ListaId TVIRG ID  */
-#line 96 "parser1.y"
+#line 100 "parser1.y"
                           { 
 	(yyval.nd_obj).listaIdentificadores = adicionarListaIdentificadores((yyvsp[-2].nd_obj).listaIdentificadores, (yyvsp[0].nd_obj).nome);
 }
-#line 1510 "y.tab.c"
+#line 1507 "y.tab.c"
     break;
 
   case 21: /* ListaId: ID  */
-#line 99 "parser1.y"
+#line 103 "parser1.y"
      { (yyval.nd_obj).listaIdentificadores = criarListaIdentificadores((yyvsp[0].nd_obj).nome);}
-#line 1516 "y.tab.c"
+#line 1513 "y.tab.c"
     break;
 
   case 22: /* Tipo: INT  */
-#line 102 "parser1.y"
+#line 106 "parser1.y"
           { insert_type(); }
-#line 1522 "y.tab.c"
+#line 1519 "y.tab.c"
     break;
 
   case 23: /* Tipo: FLOAT  */
-#line 103 "parser1.y"
+#line 107 "parser1.y"
         { insert_type(); }
-#line 1528 "y.tab.c"
+#line 1525 "y.tab.c"
     break;
 
   case 24: /* Tipo: STRING  */
-#line 104 "parser1.y"
+#line 108 "parser1.y"
         { insert_type(); }
-#line 1534 "y.tab.c"
+#line 1531 "y.tab.c"
     break;
 
   case 25: /* ListaCmd: ListaCmd Comando  */
-#line 107 "parser1.y"
+#line 111 "parser1.y"
                            {
-	(yyval.nd_obj).listaCmd = adicionarComando((yyvsp[-1].nd_obj).listaCmd, (yyvsp[0].nd_obj).node);
+	(yyval.nd_obj).listaCmd = adicionarComando((yyvsp[-1].nd_obj).listaCmd, (yyvsp[0].nd_obj).comando);
 }
-#line 1542 "y.tab.c"
+#line 1539 "y.tab.c"
     break;
 
   case 26: /* ListaCmd: Comando  */
-#line 110 "parser1.y"
-          { (yyval.nd_obj).listaCmd = criarListaCmd((yyvsp[0].nd_obj).node); }
-#line 1548 "y.tab.c"
+#line 114 "parser1.y"
+          { (yyval.nd_obj).listaCmd = criarListaCmd((yyvsp[0].nd_obj).comando);}
+#line 1545 "y.tab.c"
+    break;
+
+  case 27: /* Comando: CmdSe  */
+#line 117 "parser1.y"
+               { (yyval.nd_obj).comando = criarComando(CMD_IF); (yyval.nd_obj).comando->tipoComando.ifCmd = (yyvsp[0].nd_obj).ifCmd;}
+#line 1551 "y.tab.c"
     break;
 
   case 28: /* Comando: CmdEnquanto  */
-#line 114 "parser1.y"
-             { (yyval.nd_obj).node = (yyvsp[0].nd_obj).node; }
-#line 1554 "y.tab.c"
+#line 118 "parser1.y"
+              { (yyval.nd_obj).comando = criarComando(CMD_WHILE); (yyval.nd_obj).comando->tipoComando.whileCmd = (yyvsp[0].nd_obj).whileCmd;}
+#line 1557 "y.tab.c"
     break;
 
   case 29: /* Comando: CmdAtrib  */
-#line 115 "parser1.y"
-           { (yyval.nd_obj).node = (yyvsp[0].nd_obj).node; }
-#line 1560 "y.tab.c"
+#line 119 "parser1.y"
+           { (yyval.nd_obj).comando = criarComando(CMD_ATRIB); (yyval.nd_obj).comando->tipoComando.node = (yyvsp[0].nd_obj).node;}
+#line 1563 "y.tab.c"
+    break;
+
+  case 30: /* Comando: CmdEscrita  */
+#line 120 "parser1.y"
+             { (yyval.nd_obj).comando = criarComando(CMD_NODE); (yyval.nd_obj).comando->tipoComando.node = (yyvsp[0].nd_obj).node;}
+#line 1569 "y.tab.c"
+    break;
+
+  case 33: /* Comando: Retorno  */
+#line 123 "parser1.y"
+          { (yyval.nd_obj).comando = criarComando(CMD_NODE); (yyval.nd_obj).comando->tipoComando.node = (yyvsp[0].nd_obj).node;}
+#line 1575 "y.tab.c"
     break;
 
   case 34: /* value: NUMBER  */
-#line 122 "parser1.y"
+#line 126 "parser1.y"
               { add('C'); }
-#line 1566 "y.tab.c"
+#line 1581 "y.tab.c"
     break;
 
   case 35: /* value: FLOAT_NUM  */
-#line 123 "parser1.y"
+#line 127 "parser1.y"
             { add('C'); }
-#line 1572 "y.tab.c"
+#line 1587 "y.tab.c"
     break;
 
   case 36: /* value: CHARACTER  */
-#line 124 "parser1.y"
+#line 128 "parser1.y"
             { add('C'); }
-#line 1578 "y.tab.c"
+#line 1593 "y.tab.c"
+    break;
+
+  case 38: /* Retorno: RETURN ExpressaoAritmetica TPEVI  */
+#line 132 "parser1.y"
+                                          {(yyval.nd_obj).node = criarNode(NULL, (yyvsp[-1].nd_obj).node, "return ");}
+#line 1599 "y.tab.c"
+    break;
+
+  case 39: /* Retorno: RETURN STRING TPEVI  */
+#line 133 "parser1.y"
+                     {(yyval.nd_obj).node = criarNode(NULL, criarNode(NULL, NULL, (yyvsp[-1].nd_obj).nome), "return ");}
+#line 1605 "y.tab.c"
+    break;
+
+  case 40: /* Retorno: RETURN TPEVI  */
+#line 134 "parser1.y"
+              {(yyval.nd_obj).node = criarNode(NULL, NULL, "return");}
+#line 1611 "y.tab.c"
     break;
 
   case 41: /* $@3: %empty  */
-#line 133 "parser1.y"
+#line 137 "parser1.y"
                    { add('K'); }
-#line 1584 "y.tab.c"
+#line 1617 "y.tab.c"
     break;
 
   case 42: /* CmdEnquanto: WHILE $@3 TAPAR ExpressaoLogica TFPAR Bloco  */
-#line 133 "parser1.y"
-                                                                    {(yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).bloco->listaCmd->node, "WHILE"); imprimirListaCmd((yyvsp[0].nd_obj).bloco->listaCmd);}
-#line 1590 "y.tab.c"
+#line 137 "parser1.y"
+                                                                    {(yyval.nd_obj).whileCmd = criarWhileCmd((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).bloco);}
+#line 1623 "y.tab.c"
     break;
 
   case 43: /* Bloco: TACHA ListaCmd TFCHA  */
-#line 136 "parser1.y"
-                            { (yyval.nd_obj).bloco = criarBloco((yyvsp[-1].nd_obj).listaCmd); }
-#line 1596 "y.tab.c"
-    break;
-
-  case 44: /* $@4: %empty  */
-#line 139 "parser1.y"
-          { add('K'); }
-#line 1602 "y.tab.c"
-    break;
-
-  case 46: /* $@5: %empty  */
 #line 140 "parser1.y"
-     { add('K'); }
-#line 1608 "y.tab.c"
+                            { (yyval.nd_obj).bloco = criarBloco((yyvsp[-1].nd_obj).listaCmd);}
+#line 1629 "y.tab.c"
     break;
 
-  case 47: /* $@6: %empty  */
-#line 140 "parser1.y"
-                                                          { add('K'); }
-#line 1614 "y.tab.c"
-    break;
-
-  case 49: /* CmdAtrib: ID TATRI ExpressaoAritmetica TPEVI  */
+  case 44: /* CmdSe: IF TAPAR ExpressaoLogica TFPAR Bloco  */
 #line 143 "parser1.y"
-                                             {(yyval.nd_obj).node = criarNode(criarNode(NULL, NULL, (yyvsp[-3].nd_obj).nome), (yyvsp[-1].nd_obj).node, "=");}
-#line 1620 "y.tab.c"
+                                            {(yyval.nd_obj).ifCmd = criarIfCmd((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).bloco, NULL);}
+#line 1635 "y.tab.c"
     break;
 
-  case 50: /* CmdAtrib: ID TATRI STRING TPEVI  */
+  case 45: /* CmdSe: IF TAPAR ExpressaoLogica TFPAR Bloco ELSE Bloco  */
 #line 144 "parser1.y"
-                        {(yyval.nd_obj).node = criarNode(criarNode(NULL, NULL, (yyvsp[-3].nd_obj).nome), criarNode(NULL, NULL, (yyvsp[-1].nd_obj).nome), "=");}
-#line 1626 "y.tab.c"
+                                                  {(yyval.nd_obj).ifCmd = criarIfCmd((yyvsp[-4].nd_obj).node, (yyvsp[-2].nd_obj).bloco, (yyvsp[0].nd_obj).bloco);}
+#line 1641 "y.tab.c"
     break;
 
-  case 51: /* $@7: %empty  */
+  case 46: /* CmdAtrib: ID TATRI ExpressaoAritmetica TPEVI  */
 #line 147 "parser1.y"
-                  { add('F'); }
-#line 1632 "y.tab.c"
+                                             {(yyval.nd_obj).node = criarNode(criarNode(NULL, NULL, (yyvsp[-3].nd_obj).nome), (yyvsp[-1].nd_obj).node, "=");}
+#line 1647 "y.tab.c"
     break;
 
-  case 53: /* $@8: %empty  */
+  case 47: /* CmdAtrib: ID TATRI STRING TPEVI  */
 #line 148 "parser1.y"
-        { add('F'); }
-#line 1638 "y.tab.c"
+                        {(yyval.nd_obj).node = criarNode(criarNode(NULL, NULL, (yyvsp[-3].nd_obj).nome), criarNode(NULL, NULL, (yyvsp[-1].nd_obj).nome), "=");}
+#line 1653 "y.tab.c"
     break;
 
-  case 55: /* $@9: %empty  */
+  case 48: /* CmdEscrita: PRINT TAPAR STRING TFPAR TPEVI  */
 #line 151 "parser1.y"
+                                           {(yyval.nd_obj).node = criarNode(NULL, criarNode(NULL, NULL, (yyvsp[-2].nd_obj).nome), "print");}
+#line 1659 "y.tab.c"
+    break;
+
+  case 49: /* CmdEscrita: PRINT TAPAR ExpressaoAritmetica TFPAR TPEVI  */
+#line 152 "parser1.y"
+                                              {(yyval.nd_obj).node = criarNode(NULL, (yyvsp[-2].nd_obj).node, "print");}
+#line 1665 "y.tab.c"
+    break;
+
+  case 50: /* $@4: %empty  */
+#line 155 "parser1.y"
                  { add('F'); }
-#line 1644 "y.tab.c"
+#line 1671 "y.tab.c"
     break;
 
-  case 57: /* ChamadaProc: ChamadaFuncao TPEVI  */
-#line 154 "parser1.y"
-                                 { (yyval.nd_obj).node = (yyvsp[-1].nd_obj).node; }
-#line 1650 "y.tab.c"
-    break;
-
-  case 58: /* ChamadaFuncao: ID TAPAR ListaParametros TFPAR  */
-#line 157 "parser1.y"
-                                              { (yyval.nd_obj).node = criarNode((yyvsp[-1].nd_obj).node, NULL, (yyvsp[-3].nd_obj).nome); }
-#line 1656 "y.tab.c"
-    break;
-
-  case 59: /* ChamadaFuncao: ID TAPAR TFPAR  */
+  case 52: /* ChamadaProc: ChamadaFuncao TPEVI  */
 #line 158 "parser1.y"
-                 { (yyval.nd_obj).node = criarNode(NULL, NULL, (yyvsp[-2].nd_obj).nome); }
-#line 1662 "y.tab.c"
+                                 { (yyval.nd_obj).node = (yyvsp[-1].nd_obj).node; }
+#line 1677 "y.tab.c"
     break;
 
-  case 60: /* ListaParametros: ListaParametros TVIRG ExpressaoAritmetica  */
-#line 160 "parser1.y"
-                                                           { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).node, ","); }
-#line 1668 "y.tab.c"
-    break;
-
-  case 61: /* ListaParametros: ListaParametros TVIRG STRING  */
+  case 53: /* ChamadaFuncao: ID TAPAR ListaParametros TFPAR  */
 #line 161 "parser1.y"
-                               { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, criarNode(NULL, NULL, (yyvsp[0].nd_obj).nome), ","); }
-#line 1674 "y.tab.c"
+                                              { (yyval.nd_obj).node = criarNode((yyvsp[-1].nd_obj).node, NULL, (yyvsp[-3].nd_obj).nome); }
+#line 1683 "y.tab.c"
     break;
 
-  case 62: /* ListaParametros: ExpressaoAritmetica  */
+  case 54: /* ChamadaFuncao: ID TAPAR TFPAR  */
 #line 162 "parser1.y"
-                      { (yyval.nd_obj).node = (yyvsp[0].nd_obj).node; }
-#line 1680 "y.tab.c"
+                 { (yyval.nd_obj).node = criarNode(NULL, NULL, (yyvsp[-2].nd_obj).nome); }
+#line 1689 "y.tab.c"
     break;
 
-  case 63: /* ListaParametros: STRING  */
-#line 163 "parser1.y"
+  case 55: /* ListaParametros: ListaParametros TVIRG ExpressaoAritmetica  */
+#line 164 "parser1.y"
+                                                           { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).node, ""); }
+#line 1695 "y.tab.c"
+    break;
+
+  case 56: /* ListaParametros: ListaParametros TVIRG STRING  */
+#line 165 "parser1.y"
+                               { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, criarNode(NULL, NULL, (yyvsp[0].nd_obj).nome), ""); }
+#line 1701 "y.tab.c"
+    break;
+
+  case 57: /* ListaParametros: ExpressaoAritmetica  */
+#line 166 "parser1.y"
+                      { (yyval.nd_obj).node = (yyvsp[0].nd_obj).node; }
+#line 1707 "y.tab.c"
+    break;
+
+  case 58: /* ListaParametros: STRING  */
+#line 167 "parser1.y"
          { (yyval.nd_obj).node = criarNode(NULL, NULL, (yyvsp[0].nd_obj).nome); }
-#line 1686 "y.tab.c"
+#line 1713 "y.tab.c"
     break;
 
-  case 76: /* expressaoRelacional: ExpressaoAritmetica OperadoresRelacionais ExpressaoAritmetica  */
-#line 184 "parser1.y"
-                                                                                   { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).node, (yyvsp[-1].nd_obj).nome); }
-#line 1692 "y.tab.c"
-    break;
-
-  case 77: /* ExpressaoLogica: ExpressaoLogica OperadoresLogicos ExpressaoLogica  */
-#line 187 "parser1.y"
-                                                                   { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).node, (yyvsp[-1].nd_obj).nome); }
-#line 1698 "y.tab.c"
-    break;
-
-  case 78: /* ExpressaoLogica: expressaoRelacional  */
+  case 71: /* expressaoRelacional: ExpressaoAritmetica OperadoresRelacionais ExpressaoAritmetica  */
 #line 188 "parser1.y"
-                      { (yyval.nd_obj).node = (yyvsp[0].nd_obj).node; }
-#line 1704 "y.tab.c"
-    break;
-
-  case 79: /* ExpressaoAritmetica: ExpressaoAritmetica OperadoresAritmeticos ExpressaoAritmetica  */
-#line 191 "parser1.y"
                                                                                    { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).node, (yyvsp[-1].nd_obj).nome); }
-#line 1710 "y.tab.c"
+#line 1719 "y.tab.c"
     break;
 
-  case 80: /* ExpressaoAritmetica: value  */
+  case 72: /* ExpressaoLogica: ExpressaoLogica OperadoresLogicos ExpressaoLogica  */
+#line 191 "parser1.y"
+                                                                   { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).node, (yyvsp[-1].nd_obj).nome); }
+#line 1725 "y.tab.c"
+    break;
+
+  case 73: /* ExpressaoLogica: expressaoRelacional  */
 #line 192 "parser1.y"
+                      { (yyval.nd_obj).node = (yyvsp[0].nd_obj).node; }
+#line 1731 "y.tab.c"
+    break;
+
+  case 74: /* ExpressaoAritmetica: ExpressaoAritmetica OperadoresAritmeticos ExpressaoAritmetica  */
+#line 195 "parser1.y"
+                                                                                   { (yyval.nd_obj).node = criarNode((yyvsp[-2].nd_obj).node, (yyvsp[0].nd_obj).node, (yyvsp[-1].nd_obj).nome); }
+#line 1737 "y.tab.c"
+    break;
+
+  case 75: /* ExpressaoAritmetica: value  */
+#line 196 "parser1.y"
         { (yyval.nd_obj).node = criarNode(NULL, NULL, (yyvsp[0].nd_obj).nome);}
-#line 1716 "y.tab.c"
+#line 1743 "y.tab.c"
     break;
 
 
-#line 1720 "y.tab.c"
+#line 1747 "y.tab.c"
 
       default: break;
     }
@@ -1909,7 +1936,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 196 "parser1.y"
+#line 200 "parser1.y"
 
 
 int main() {
@@ -2064,21 +2091,20 @@ struct bloco* criarBloco(struct listaCmd* listaCmd){
 	return novoBloco;
 }
 
-struct ifStatement *criarIfStatement(struct node *condition, struct bloco *trueBlock, struct bloco *falseBlock){
-	struct ifStatement *newIfStatement = (struct ifStatement*) malloc(sizeof(struct ifStatement));
-	if (newIfStatement == NULL) {
-		fprintf(stderr, "Falha na alocação de memória para o ifStatement.\n");
+struct ifCmd *criarIfCmd(struct node *condition, struct bloco *trueBlock, struct bloco *falseBlock){
+	struct ifCmd *newIfCmd = (struct ifCmd*) malloc(sizeof(struct ifCmd));
+	if (newIfCmd == NULL) {
+		fprintf(stderr, "Falha na alocação de memória para o ifCmd.\n");
 		return NULL;
 	}
-	newIfStatement->condition = condition;
-	newIfStatement->trueBlock = trueBlock;
-	newIfStatement->falseBlock = falseBlock;
-	return newIfStatement;
+	newIfCmd->condition = condition;
+	newIfCmd->trueBlock = trueBlock;
+	newIfCmd->falseBlock = falseBlock;
+	return newIfCmd;
 
 }
-// Função para imprimir os nomes das funções na lista
 
-struct listaCmd* adicionarComando(struct listaCmd *lista, struct node *cmd) {
+struct listaCmd* adicionarComando(struct listaCmd *lista, struct comando *cmd) {
     struct listaCmd *novo = criarListaCmd(cmd);
     if (novo == NULL) {
         // Handle memory allocation failure if needed
@@ -2092,13 +2118,13 @@ struct listaCmd* adicionarComando(struct listaCmd *lista, struct node *cmd) {
     return lista;
 }
 
-struct listaCmd* criarListaCmd(struct node *node) {
+struct listaCmd* criarListaCmd(struct comando *cmd) {
 	struct listaCmd *lista = (struct listaCmd*) malloc(sizeof(struct listaCmd));
 	if (lista == NULL) {
 		// Handle memory allocation failure if needed
 		return NULL; // Or NULL, depending on how you want to handle failure
 	}
-	lista->node = node;
+	lista->comando = cmd;
 	lista->next = NULL; // Ensure the new node is properly terminated
 	return lista;
 }
@@ -2134,14 +2160,6 @@ struct tabelaSimbolos* adicionarTabelaSimbolos(struct tabelaSimbolos *tabela, ch
 	return tabela;
 }
 
-void imprimirListaidentificadores(struct listaIdentificadores *lista) {
-	struct listaIdentificadores *atual = lista;
-	while (atual != NULL) {
-		printf("Nome: %s\n", atual->nome);
-		atual = atual->next;
-	}
-}
-
 struct listaIdentificadores* criarListaIdentificadores(char* nome){
 	struct listaIdentificadores* novaLista = malloc(sizeof(struct listaIdentificadores));
 	novaLista->nome = strdup(nome);
@@ -2174,14 +2192,13 @@ struct listaIdentificadores* adicionarListaIdentificadores(struct listaIdentific
     return lista;
 }
 
-void imprimirTabelaSimbolos(struct tabelaSimbolos *tabela) {
-	struct tabelaSimbolos *atual = tabela;
-	while (atual != NULL) {
-		printf("Nome: %s\n", atual->nome);
-		printf("Tipo de Dado: %s\n", atual->tipoDado);
-		printf("Tipo: %s\n", atual->tipo);
-		atual = atual->next;
+struct funcao* adicionarFuncao(struct funcao *listaFuncao, struct funcao *novaFuncao) {
+	struct funcao *temp = listaFuncao;
+	while (temp->next != NULL) {
+		temp = temp->next;
 	}
+	temp->next = novaFuncao;
+	return listaFuncao;
 }
 
 struct blocoPrincipal* criarBlocoPrincipal(struct tabelaSimbolos* tabelaSimbolos, struct listaCmd* listaCmd) {
@@ -2195,6 +2212,53 @@ struct blocoPrincipal* criarBlocoPrincipal(struct tabelaSimbolos* tabelaSimbolos
 	return novoBlocoPrincipal;
 }
 
+struct comando * criarComando(CommandType identificador) {
+	struct comando *novoComando = (struct comando*) malloc(sizeof(struct comando));
+
+	novoComando->identificador = identificador;
+	novoComando->tipoComando.node = NULL;
+	novoComando->tipoComando.whileCmd = NULL;
+
+	if (novoComando == NULL) {
+		fprintf(stderr, "Falha na alocação de memória para o comando.\n");
+		return NULL;
+	}
+	return novoComando;
+}
+
+struct whileCmd *criarWhileCmd(struct node *condition, struct bloco *bloco) {
+	struct whileCmd *newWhileCmd = (struct whileCmd*) malloc(sizeof(struct whileCmd));
+	if (newWhileCmd == NULL) {
+		fprintf(stderr, "Falha na alocação de memória para o whileCmd.\n");
+		return NULL;
+	}
+	newWhileCmd->condition = condition;
+	newWhileCmd->bloco = bloco;
+	return newWhileCmd;
+}
+
+struct chamadaFuncao* criarChamadaFuncao(char* nome, struct node* parametros) {
+	struct chamadaFuncao* novaChamadaFuncao = (struct chamadaFuncao*) malloc(sizeof(struct chamadaFuncao));
+	if (novaChamadaFuncao == NULL) {
+		// Handle memory allocation failure if needed
+		return NULL; // Or NULL, depending on how you want to handle failure
+	}
+	novaChamadaFuncao->nome = strdup(nome);
+	novaChamadaFuncao->parametros = parametros;
+	return novaChamadaFuncao;
+}
+
+void printChamadaFuncao(struct chamadaFuncao* chamadaFuncao) {
+	if (chamadaFuncao != NULL) {
+		printf("%s(", chamadaFuncao->nome);
+		if (chamadaFuncao->parametros != NULL) {
+			printNode(chamadaFuncao->parametros);
+		}
+		printf(")");
+	}
+}
+
+//Implementação de métodos de impressão
 void imprimir(struct raiz* raiz) {
 
 	if (raiz == NULL) {
@@ -2205,97 +2269,122 @@ void imprimir(struct raiz* raiz) {
 	struct funcao *atual = raiz->funcao;
 
 	while(atual != NULL) {
-		printf("%s %s", raiz->funcao->tipoRetorno, raiz->funcao->nome);
 
+		if(atual->parametros != NULL)
+			printf("%s %s", atual->tipoRetorno, atual->nome);
+		else
+			printf("{\n");
 		struct parametro *parametroAtual = atual->parametros;
 		while(parametroAtual != NULL) {
-			printf("(%s %s){", parametroAtual->tipo, parametroAtual->nome);
+			printf("(%s %s){\n", parametroAtual->tipo, parametroAtual->nome);
 			parametroAtual = parametroAtual->next;
 		}
 
-		struct tabelaSimbolos *tabelaAtual = raiz->funcao->blocoPrincipal->tabelaSimbolos;
+		struct tabelaSimbolos *tabelaAtual = atual->blocoPrincipal->tabelaSimbolos;
 		while(tabelaAtual != NULL) {
-			printf("\n%s %s;", tabelaAtual->tipoDado, tabelaAtual->nome);
+			printf("%s %s;\n", tabelaAtual->tipoDado, tabelaAtual->nome);
 			tabelaAtual = tabelaAtual->next;
 		}
 
-		struct listaCmd *listaCmdAtual = raiz->funcao->blocoPrincipal->listaCmd;
-		imprimirListaCmd(listaCmdAtual);
-		/* while(listaCmdAtual != NULL) {
-			imprimirListaCmd(listaCmdAtual);
-			listaCmdAtual = listaCmdAtual->next;
-		} */
+		struct listaCmd *listaCmdAtual = atual->blocoPrincipal->listaCmd;
+		printListaCmd(listaCmdAtual);
+
 
 		atual = atual->next;
+		printf("}\n\n");
 		
 	}
-
-	/* if(node == NULL) {
-		printf("NULL");
-		return;
-	} */
-
-	//printf("%s", node->token);
-	/* printf("E %s", node->left->token);
-	printf("D %s", node->right->token); */
-	//printf("%s", head->funcao->next->parametros->nome); 
-
-	//if(head->funcao == NULL)
-		//printf("NAO FUNCAO");
-    /* if (raizArvore == NULL || raizArvore->funcao == NULL) {
-        printf("A lista de funções está vazia ou a raiz é nula.\n");
-        return;
-    }
-
-    struct funcao *atual = raizArvore->funcao;
-    while (atual != NULL) {
-        printf("Nome da Função: %s\n", atual->nome);
-        atual = atual->next; // Move para a próxima função na lista
-    } */
-	/* if (teste == NULL || teste->funcao == NULL) {
-		printf("A lista de funções está vazia ou a raiz é nula.\n");
-		return;
-    }
-
-    struct funcao *atual = teste->funcao;
-    while (atual != NULL) {
-        printf("Nome da Função: %s\n", atual->nome);
-        atual = atual->next; // Move para a próxima função na lista
-    } */
 }
 
-void imprimirAST(struct node *tree) {
-    if(tree == NULL) {
-        return;
-    }
-    
-    // Check if the node is a "WHILE" command
-    if (strcmp(tree->token, "WHILE") == 0) {
-        printf("\nwhile(");
-        imprimirAST(tree->left); // Print condition
-        printf(")\n {");
-        imprimirAST(tree->right); // Print body
-        printf("}");
-    } else {
-        // For non-"WHILE" nodes, print left child, token, then right child
-        if (tree->left) {
-            imprimirAST(tree->left);
+void imprimirTabelaSimbolos(struct tabelaSimbolos *tabela) {
+	struct tabelaSimbolos *atual = tabela;
+	while (atual != NULL) {
+		printf("Nome: %s\n", atual->nome);
+		printf("Tipo de Dado: %s\n", atual->tipoDado);
+		printf("Tipo: %s\n", atual->tipo);
+		atual = atual->next;
+	}
+}
+
+void printNode(struct node *tree) {
+     if (tree->left) {
+            printNode(tree->left);
         }
         
         printf("%s", tree->token);
         
         if (tree->right) {
-            imprimirAST(tree->right);
+            printNode(tree->right);
         }
+}
+
+void printWhileCmd(struct whileCmd *whileC) {
+
+	if (whileC == NULL) {
+		printf("Comando de while nulo.\n");
+		return;
+	}
+
+	if (whileC->condition == NULL) {
+		printf("Condição do while nula.\n");
+		return;
+	}
+
+	if(whileC->bloco == NULL) {
+		printf("Bloco do while nulo.\n");
+		return;
+	}
+
+	if(whileC->bloco->listaCmd == NULL) {
+		printf("listaCmd nulo.\n");
+		return;
+	}
+
+    if (whileC != NULL) {
+        printf("while(");
+        printNode(whileC->condition);
+        printf("){\n");
+        printListaCmd(whileC->bloco->listaCmd);
+		printf("}\n");
     }
 }
 
-void imprimirListaCmd(struct listaCmd *lista) {
-	struct listaCmd *atual = lista;
+void printListaCmd(struct listaCmd *lista) {
+    while (lista != NULL) {
+        if (lista->comando != NULL) {
+            switch (lista->comando->identificador) {
+                case CMD_ATRIB:
+                case CMD_NODE:
+                    printNode(lista->comando->tipoComando.node);
+					printf(";\n");
+                    break;
+                case CMD_WHILE:
+                    printWhileCmd(lista->comando->tipoComando.whileCmd);
+                    break;
+				case CMD_IF:
+                    printIfCmd(lista->comando->tipoComando.ifCmd);
+                    break;
+                default:
+                    printf("Unknown command type.\n");
+                    break;
+            }
+        }
+        lista = lista->next;
+    }
+}
 
-	while (atual != NULL) {
-		if(atual->node != NULL)
-			imprimirAST(atual->node);
-		atual = atual->next;
+void printIfCmd(struct ifCmd *ifCmd) {
+	if (ifCmd != NULL) {
+		printf("if(");
+		printNode(ifCmd->condition);
+		printf("){\n");
+		printListaCmd(ifCmd->trueBlock->listaCmd);
+		printf("}\n");
+
+		if (ifCmd->falseBlock != NULL) {
+			printf("else {\n");
+			printListaCmd(ifCmd->falseBlock->listaCmd);
+			printf("}\n");
+		}
 	}
 }

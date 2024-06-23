@@ -2,16 +2,10 @@ Rules useless in parser due to conflicts
 
     7 $@2: ε
 
-   45 $@5: ε
 
-   52 $@8: ε
-
-
-State 12 conflicts: 1 reduce/reduce
-State 15 conflicts: 1 reduce/reduce
 State 34 conflicts: 1 reduce/reduce
-State 97 conflicts: 4 shift/reduce
-State 130 conflicts: 2 shift/reduce
+State 103 conflicts: 4 shift/reduce
+State 115 conflicts: 2 shift/reduce
 
 
 Grammar
@@ -81,64 +75,52 @@ Grammar
 
    42 Bloco: TACHA ListaCmd TFCHA
 
-   43 $@4: ε
+   43 CmdSe: IF TAPAR ExpressaoLogica TFPAR Bloco
+   44      | IF TAPAR ExpressaoLogica TFPAR Bloco ELSE Bloco
 
-   44 CmdSe: IF $@4 TAPAR ExpressaoLogica TFPAR Bloco
+   45 CmdAtrib: ID TATRI ExpressaoAritmetica TPEVI
+   46         | ID TATRI STRING TPEVI
 
-   45 $@5: ε
+   47 CmdEscrita: PRINT TAPAR STRING TFPAR TPEVI
+   48           | PRINT TAPAR ExpressaoAritmetica TFPAR TPEVI
 
-   46 $@6: ε
+   49 $@4: ε
 
-   47 CmdSe: IF $@5 TAPAR ExpressaoLogica TFPAR Bloco ELSE $@6 Bloco
+   50 CmdLeitura: READ $@4 TAPAR ID TFPAR TPEVI
 
-   48 CmdAtrib: ID TATRI ExpressaoAritmetica TPEVI
-   49         | ID TATRI STRING TPEVI
+   51 ChamadaProc: ChamadaFuncao TPEVI
 
-   50 $@7: ε
+   52 ChamadaFuncao: ID TAPAR ListaParametros TFPAR
+   53              | ID TAPAR TFPAR
 
-   51 CmdEscrita: PRINT $@7 TAPAR ExpressaoAritmetica TFPAR TPEVI
+   54 ListaParametros: ListaParametros TVIRG ExpressaoAritmetica
+   55                | ListaParametros TVIRG STRING
+   56                | ExpressaoAritmetica
+   57                | STRING
 
-   52 $@8: ε
+   58 OperadoresAritmeticos: ADD
+   59                      | SUBTRACT
+   60                      | MULTIPLY
+   61                      | DIVIDE
 
-   53 CmdEscrita: PRINT $@8 TAPAR STRING TFPAR TPEVI
+   62 OperadoresRelacionais: TMENO
+   63                      | TMAIO
+   64                      | TMEIG
+   65                      | TMAIG
+   66                      | TIGUA
+   67                      | TDIFE
 
-   54 $@9: ε
+   68 OperadoresLogicos: AND
+   69                  | OR
 
-   55 CmdLeitura: READ $@9 TAPAR ID TFPAR TPEVI
+   70 expressaoRelacional: ExpressaoAritmetica OperadoresRelacionais ExpressaoAritmetica
 
-   56 ChamadaProc: ChamadaFuncao TPEVI
+   71 ExpressaoLogica: ExpressaoLogica OperadoresLogicos ExpressaoLogica
+   72                | expressaoRelacional
 
-   57 ChamadaFuncao: ID TAPAR ListaParametros TFPAR
-   58              | ID TAPAR TFPAR
-
-   59 ListaParametros: ListaParametros TVIRG ExpressaoAritmetica
-   60                | ListaParametros TVIRG STRING
-   61                | ExpressaoAritmetica
-   62                | STRING
-
-   63 OperadoresAritmeticos: ADD
-   64                      | SUBTRACT
-   65                      | MULTIPLY
-   66                      | DIVIDE
-
-   67 OperadoresRelacionais: TMENO
-   68                      | TMAIO
-   69                      | TMEIG
-   70                      | TMAIG
-   71                      | TIGUA
-   72                      | TDIFE
-
-   73 OperadoresLogicos: AND
-   74                  | OR
-
-   75 expressaoRelacional: ExpressaoAritmetica OperadoresRelacionais ExpressaoAritmetica
-
-   76 ExpressaoLogica: ExpressaoLogica OperadoresLogicos ExpressaoLogica
-   77                | expressaoRelacional
-
-   78 ExpressaoAritmetica: ExpressaoAritmetica OperadoresAritmeticos ExpressaoAritmetica
-   79                    | value
-   80                    | ChamadaFuncao
+   73 ExpressaoAritmetica: ExpressaoAritmetica OperadoresAritmeticos ExpressaoAritmetica
+   74                    | value
+   75                    | ChamadaFuncao
 
 
 Terminals, with rules where they appear
@@ -147,37 +129,37 @@ Terminals, with rules where they appear
     error (256)
     VOID <nd_obj> (258) 10
     CHARACTER <nd_obj> (259) 35
-    PRINT <nd_obj> (260) 51 53
-    READ <nd_obj> (261) 55
+    PRINT <nd_obj> (260) 47 48
+    READ <nd_obj> (261) 50
     INT <nd_obj> (262) 21
     FLOAT <nd_obj> (263) 22
     WHILE <nd_obj> (264) 41
-    IF <nd_obj> (265) 44 47
-    ELSE <nd_obj> (266) 47
+    IF <nd_obj> (265) 43 44
+    ELSE <nd_obj> (266) 44
     NUMBER <nd_obj> (267) 33
     FLOAT_NUM <nd_obj> (268) 34
-    ID <nd_obj> (269) 6 8 13 19 20 36 48 49 55 57 58
-    TMEIG <nd_obj> (270) 69
-    TMAIG <nd_obj> (271) 70
-    TIGUA <nd_obj> (272) 71
-    TDIFE <nd_obj> (273) 72
-    TMAIO <nd_obj> (274) 68
-    TMENO <nd_obj> (275) 67
-    AND <nd_obj> (276) 73
-    OR <nd_obj> (277) 74
-    STRING <nd_obj> (278) 23 38 49 53 60 62
-    ADD <nd_obj> (279) 63
-    MULTIPLY <nd_obj> (280) 65
-    DIVIDE <nd_obj> (281) 66
-    SUBTRACT <nd_obj> (282) 64
+    ID <nd_obj> (269) 6 8 13 19 20 36 45 46 50 52 53
+    TMEIG <nd_obj> (270) 64
+    TMAIG <nd_obj> (271) 65
+    TIGUA <nd_obj> (272) 66
+    TDIFE <nd_obj> (273) 67
+    TMAIO <nd_obj> (274) 63
+    TMENO <nd_obj> (275) 62
+    AND <nd_obj> (276) 68
+    OR <nd_obj> (277) 69
+    STRING <nd_obj> (278) 23 38 46 47 55 57
+    ADD <nd_obj> (279) 58
+    MULTIPLY <nd_obj> (280) 60
+    DIVIDE <nd_obj> (281) 61
+    SUBTRACT <nd_obj> (282) 59
     RETURN <nd_obj> (283) 37 38 39
-    TAPAR <nd_obj> (284) 6 8 41 44 47 51 53 55 57 58
-    TFPAR <nd_obj> (285) 6 8 41 44 47 51 53 55 57 58
+    TAPAR <nd_obj> (284) 6 8 41 43 44 47 48 50 52 53
+    TFPAR <nd_obj> (285) 6 8 41 43 44 47 48 50 52 53
     TACHA <nd_obj> (286) 14 15 42
     TFCHA <nd_obj> (287) 14 15 42
-    TPEVI <nd_obj> (288) 18 37 38 39 48 49 51 53 55 56
-    TATRI <nd_obj> (289) 48 49
-    TVIRG <nd_obj> (290) 11 19 59 60
+    TPEVI <nd_obj> (288) 18 37 38 39 45 46 47 48 50 51
+    TATRI <nd_obj> (289) 45 46
+    TVIRG <nd_obj> (290) 11 19 54 55
 
 
 Nonterminals, with rules where they appear
@@ -231,7 +213,7 @@ Nonterminals, with rules where they appear
         on right: 24 25
     value <nd_obj> (52)
         on left: 33 34 35 36
-        on right: 79
+        on right: 74
     Retorno <nd_obj> (53)
         on left: 37 38 39
         on right: 32
@@ -243,64 +225,49 @@ Nonterminals, with rules where they appear
         on right: 41
     Bloco <nd_obj> (56)
         on left: 42
-        on right: 41 44 47
+        on right: 41 43 44
     CmdSe <nd_obj> (57)
-        on left: 44 47
+        on left: 43 44
         on right: 26
-    $@4 (58)
-        on left: 43
-        on right: 44
-    $@5 (59)
-        on left: 45
-        on right: 47
-    $@6 (60)
-        on left: 46
-        on right: 47
-    CmdAtrib <nd_obj> (61)
-        on left: 48 49
+    CmdAtrib <nd_obj> (58)
+        on left: 45 46
         on right: 28
-    CmdEscrita <nd_obj> (62)
-        on left: 51 53
+    CmdEscrita <nd_obj> (59)
+        on left: 47 48
         on right: 29
-    $@7 (63)
+    CmdLeitura <nd_obj> (60)
         on left: 50
-        on right: 51
-    $@8 (64)
-        on left: 52
-        on right: 53
-    CmdLeitura <nd_obj> (65)
-        on left: 55
         on right: 30
-    $@9 (66)
-        on left: 54
-        on right: 55
-    ChamadaProc <nd_obj> (67)
-        on left: 56
+    $@4 (61)
+        on left: 49
+        on right: 50
+    ChamadaProc <nd_obj> (62)
+        on left: 51
         on right: 31
-    ChamadaFuncao <nd_obj> (68)
-        on left: 57 58
-        on right: 56 80
-    ListaParametros <nd_obj> (69)
-        on left: 59 60 61 62
-        on right: 57 59 60
-    OperadoresAritmeticos <nd_obj> (70)
-        on left: 63 64 65 66
-        on right: 78
-    OperadoresRelacionais <nd_obj> (71)
-        on left: 67 68 69 70 71 72
-        on right: 75
-    OperadoresLogicos <nd_obj> (72)
-        on left: 73 74
-        on right: 76
-    expressaoRelacional <nd_obj> (73)
-        on left: 75
-        on right: 77
-    ExpressaoLogica <nd_obj> (74)
-        on left: 76 77
-        on right: 41 44 47 76
-    ExpressaoAritmetica <nd_obj> (75)
-        on left: 78 79 80
-        on right: 37 48 51 59 61 75 78
+    ChamadaFuncao <nd_obj> (63)
+        on left: 52 53
+        on right: 51 75
+    ListaParametros <nd_obj> (64)
+        on left: 54 55 56 57
+        on right: 52 54 55
+    OperadoresAritmeticos <nd_obj> (65)
+        on left: 58 59 60 61
+        on right: 73
+    OperadoresRelacionais <nd_obj> (66)
+        on left: 62 63 64 65 66 67
+        on right: 70
+    OperadoresLogicos <nd_obj> (67)
+        on left: 68 69
+        on right: 71
+    expressaoRelacional <nd_obj> (68)
+        on left: 70
+        on right: 72
+    ExpressaoLogica <nd_obj> (69)
+        on left: 71 72
+        on right: 41 43 44 71
+    ExpressaoAritmetica <nd_obj> (70)
+        on left: 73 74 75
+        on right: 37 45 48 54 56 70 73
 
 
 State 0
@@ -434,24 +401,19 @@ State 11
 
 State 12
 
-   51 CmdEscrita: PRINT • $@7 TAPAR ExpressaoAritmetica TFPAR TPEVI
-   53           | PRINT • $@8 TAPAR STRING TFPAR TPEVI
+   47 CmdEscrita: PRINT • TAPAR STRING TFPAR TPEVI
+   48           | PRINT • TAPAR ExpressaoAritmetica TFPAR TPEVI
 
-    TAPAR     reduce using rule 50 ($@7)
-    TAPAR     [reduce using rule 52 ($@8)]
-    $default  reduce using rule 50 ($@7)
-
-    $@7  go to state 35
-    $@8  go to state 36
+    TAPAR  shift, and go to state 35
 
 
 State 13
 
-   55 CmdLeitura: READ • $@9 TAPAR ID TFPAR TPEVI
+   50 CmdLeitura: READ • $@4 TAPAR ID TFPAR TPEVI
 
-    $default  reduce using rule 54 ($@9)
+    $default  reduce using rule 49 ($@4)
 
-    $@9  go to state 37
+    $@4  go to state 36
 
 
 State 14
@@ -460,31 +422,26 @@ State 14
 
     $default  reduce using rule 40 ($@3)
 
-    $@3  go to state 38
+    $@3  go to state 37
 
 
 State 15
 
-   44 CmdSe: IF • $@4 TAPAR ExpressaoLogica TFPAR Bloco
-   47      | IF • $@5 TAPAR ExpressaoLogica TFPAR Bloco ELSE $@6 Bloco
+   43 CmdSe: IF • TAPAR ExpressaoLogica TFPAR Bloco
+   44      | IF • TAPAR ExpressaoLogica TFPAR Bloco ELSE Bloco
 
-    TAPAR     reduce using rule 43 ($@4)
-    TAPAR     [reduce using rule 45 ($@5)]
-    $default  reduce using rule 43 ($@4)
-
-    $@4  go to state 39
-    $@5  go to state 40
+    TAPAR  shift, and go to state 38
 
 
 State 16
 
-   48 CmdAtrib: ID • TATRI ExpressaoAritmetica TPEVI
-   49         | ID • TATRI STRING TPEVI
-   57 ChamadaFuncao: ID • TAPAR ListaParametros TFPAR
-   58              | ID • TAPAR TFPAR
+   45 CmdAtrib: ID • TATRI ExpressaoAritmetica TPEVI
+   46         | ID • TATRI STRING TPEVI
+   52 ChamadaFuncao: ID • TAPAR ListaParametros TFPAR
+   53              | ID • TAPAR TFPAR
 
-    TAPAR  shift, and go to state 41
-    TATRI  shift, and go to state 42
+    TAPAR  shift, and go to state 39
+    TATRI  shift, and go to state 40
 
 
 State 17
@@ -493,16 +450,16 @@ State 17
    38        | RETURN • STRING TPEVI
    39        | RETURN • TPEVI
 
-    CHARACTER  shift, and go to state 43
-    NUMBER     shift, and go to state 44
-    FLOAT_NUM  shift, and go to state 45
-    ID         shift, and go to state 46
-    STRING     shift, and go to state 47
-    TPEVI      shift, and go to state 48
+    CHARACTER  shift, and go to state 41
+    NUMBER     shift, and go to state 42
+    FLOAT_NUM  shift, and go to state 43
+    ID         shift, and go to state 44
+    STRING     shift, and go to state 45
+    TPEVI      shift, and go to state 46
 
-    value                go to state 49
-    ChamadaFuncao        go to state 50
-    ExpressaoAritmetica  go to state 51
+    value                go to state 47
+    ChamadaFuncao        go to state 48
+    ExpressaoAritmetica  go to state 49
 
 
 State 18
@@ -520,9 +477,9 @@ State 18
     STRING  shift, and go to state 4
     RETURN  shift, and go to state 17
 
-    Declaracao     go to state 52
+    Declaracao     go to state 50
     Tipo           go to state 20
-    ListaCmd       go to state 53
+    ListaCmd       go to state 51
     Comando        go to state 22
     Retorno        go to state 23
     CmdEnquanto    go to state 24
@@ -545,9 +502,9 @@ State 20
 
    18 Declaracao: Tipo • ListaId TPEVI
 
-    ID  shift, and go to state 54
+    ID  shift, and go to state 52
 
-    ListaId  go to state 55
+    ListaId  go to state 53
 
 
 State 21
@@ -561,9 +518,9 @@ State 21
     IF      shift, and go to state 15
     ID      shift, and go to state 16
     RETURN  shift, and go to state 17
-    TFCHA   shift, and go to state 56
+    TFCHA   shift, and go to state 54
 
-    Comando        go to state 57
+    Comando        go to state 55
     Retorno        go to state 23
     CmdEnquanto    go to state 24
     CmdSe          go to state 25
@@ -632,9 +589,9 @@ State 29
 
 State 30
 
-   56 ChamadaProc: ChamadaFuncao • TPEVI
+   51 ChamadaProc: ChamadaFuncao • TPEVI
 
-    TPEVI  shift, and go to state 58
+    TPEVI  shift, and go to state 56
 
 
 State 31
@@ -667,168 +624,173 @@ State 34
     TAPAR     [reduce using rule 7 ($@2)]
     $default  reduce using rule 5 ($@1)
 
-    $@1  go to state 59
-    $@2  go to state 60
+    $@1  go to state 57
+    $@2  go to state 58
 
 
 State 35
 
-   51 CmdEscrita: PRINT $@7 • TAPAR ExpressaoAritmetica TFPAR TPEVI
+   47 CmdEscrita: PRINT TAPAR • STRING TFPAR TPEVI
+   48           | PRINT TAPAR • ExpressaoAritmetica TFPAR TPEVI
 
-    TAPAR  shift, and go to state 61
+    CHARACTER  shift, and go to state 41
+    NUMBER     shift, and go to state 42
+    FLOAT_NUM  shift, and go to state 43
+    ID         shift, and go to state 44
+    STRING     shift, and go to state 59
+
+    value                go to state 47
+    ChamadaFuncao        go to state 48
+    ExpressaoAritmetica  go to state 60
 
 
 State 36
 
-   53 CmdEscrita: PRINT $@8 • TAPAR STRING TFPAR TPEVI
+   50 CmdLeitura: READ $@4 • TAPAR ID TFPAR TPEVI
 
-    TAPAR  shift, and go to state 62
+    TAPAR  shift, and go to state 61
 
 
 State 37
 
-   55 CmdLeitura: READ $@9 • TAPAR ID TFPAR TPEVI
+   41 CmdEnquanto: WHILE $@3 • TAPAR ExpressaoLogica TFPAR Bloco
 
-    TAPAR  shift, and go to state 63
+    TAPAR  shift, and go to state 62
 
 
 State 38
 
-   41 CmdEnquanto: WHILE $@3 • TAPAR ExpressaoLogica TFPAR Bloco
+   43 CmdSe: IF TAPAR • ExpressaoLogica TFPAR Bloco
+   44      | IF TAPAR • ExpressaoLogica TFPAR Bloco ELSE Bloco
 
-    TAPAR  shift, and go to state 64
+    CHARACTER  shift, and go to state 41
+    NUMBER     shift, and go to state 42
+    FLOAT_NUM  shift, and go to state 43
+    ID         shift, and go to state 44
+
+    value                go to state 47
+    ChamadaFuncao        go to state 48
+    expressaoRelacional  go to state 63
+    ExpressaoLogica      go to state 64
+    ExpressaoAritmetica  go to state 65
 
 
 State 39
 
-   44 CmdSe: IF $@4 • TAPAR ExpressaoLogica TFPAR Bloco
+   52 ChamadaFuncao: ID TAPAR • ListaParametros TFPAR
+   53              | ID TAPAR • TFPAR
 
-    TAPAR  shift, and go to state 65
+    CHARACTER  shift, and go to state 41
+    NUMBER     shift, and go to state 42
+    FLOAT_NUM  shift, and go to state 43
+    ID         shift, and go to state 44
+    STRING     shift, and go to state 66
+    TFPAR      shift, and go to state 67
+
+    value                go to state 47
+    ChamadaFuncao        go to state 48
+    ListaParametros      go to state 68
+    ExpressaoAritmetica  go to state 69
 
 
 State 40
 
-   47 CmdSe: IF $@5 • TAPAR ExpressaoLogica TFPAR Bloco ELSE $@6 Bloco
+   45 CmdAtrib: ID TATRI • ExpressaoAritmetica TPEVI
+   46         | ID TATRI • STRING TPEVI
 
-    TAPAR  shift, and go to state 66
+    CHARACTER  shift, and go to state 41
+    NUMBER     shift, and go to state 42
+    FLOAT_NUM  shift, and go to state 43
+    ID         shift, and go to state 44
+    STRING     shift, and go to state 70
+
+    value                go to state 47
+    ChamadaFuncao        go to state 48
+    ExpressaoAritmetica  go to state 71
 
 
 State 41
-
-   57 ChamadaFuncao: ID TAPAR • ListaParametros TFPAR
-   58              | ID TAPAR • TFPAR
-
-    CHARACTER  shift, and go to state 43
-    NUMBER     shift, and go to state 44
-    FLOAT_NUM  shift, and go to state 45
-    ID         shift, and go to state 46
-    STRING     shift, and go to state 67
-    TFPAR      shift, and go to state 68
-
-    value                go to state 49
-    ChamadaFuncao        go to state 50
-    ListaParametros      go to state 69
-    ExpressaoAritmetica  go to state 70
-
-
-State 42
-
-   48 CmdAtrib: ID TATRI • ExpressaoAritmetica TPEVI
-   49         | ID TATRI • STRING TPEVI
-
-    CHARACTER  shift, and go to state 43
-    NUMBER     shift, and go to state 44
-    FLOAT_NUM  shift, and go to state 45
-    ID         shift, and go to state 46
-    STRING     shift, and go to state 71
-
-    value                go to state 49
-    ChamadaFuncao        go to state 50
-    ExpressaoAritmetica  go to state 72
-
-
-State 43
 
    35 value: CHARACTER •
 
     $default  reduce using rule 35 (value)
 
 
-State 44
+State 42
 
    33 value: NUMBER •
 
     $default  reduce using rule 33 (value)
 
 
-State 45
+State 43
 
    34 value: FLOAT_NUM •
 
     $default  reduce using rule 34 (value)
 
 
-State 46
+State 44
 
    36 value: ID •
-   57 ChamadaFuncao: ID • TAPAR ListaParametros TFPAR
-   58              | ID • TAPAR TFPAR
+   52 ChamadaFuncao: ID • TAPAR ListaParametros TFPAR
+   53              | ID • TAPAR TFPAR
 
-    TAPAR  shift, and go to state 41
+    TAPAR  shift, and go to state 39
 
     $default  reduce using rule 36 (value)
 
 
-State 47
+State 45
 
    38 Retorno: RETURN STRING • TPEVI
 
-    TPEVI  shift, and go to state 73
+    TPEVI  shift, and go to state 72
 
 
-State 48
+State 46
 
    39 Retorno: RETURN TPEVI •
 
     $default  reduce using rule 39 (Retorno)
 
 
+State 47
+
+   74 ExpressaoAritmetica: value •
+
+    $default  reduce using rule 74 (ExpressaoAritmetica)
+
+
+State 48
+
+   75 ExpressaoAritmetica: ChamadaFuncao •
+
+    $default  reduce using rule 75 (ExpressaoAritmetica)
+
+
 State 49
 
-   79 ExpressaoAritmetica: value •
+   37 Retorno: RETURN ExpressaoAritmetica • TPEVI
+   73 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
 
-    $default  reduce using rule 79 (ExpressaoAritmetica)
+    ADD       shift, and go to state 73
+    MULTIPLY  shift, and go to state 74
+    DIVIDE    shift, and go to state 75
+    SUBTRACT  shift, and go to state 76
+    TPEVI     shift, and go to state 77
+
+    OperadoresAritmeticos  go to state 78
 
 
 State 50
-
-   80 ExpressaoAritmetica: ChamadaFuncao •
-
-    $default  reduce using rule 80 (ExpressaoAritmetica)
-
-
-State 51
-
-   37 Retorno: RETURN ExpressaoAritmetica • TPEVI
-   78 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
-
-    ADD       shift, and go to state 74
-    MULTIPLY  shift, and go to state 75
-    DIVIDE    shift, and go to state 76
-    SUBTRACT  shift, and go to state 77
-    TPEVI     shift, and go to state 78
-
-    OperadoresAritmeticos  go to state 79
-
-
-State 52
 
    16 Declaracoes: Declaracoes Declaracao •
 
     $default  reduce using rule 16 (Declaracoes)
 
 
-State 53
+State 51
 
    14 BlocoPrincipal: TACHA Declaracoes ListaCmd • TFCHA
    24 ListaCmd: ListaCmd • Comando
@@ -839,9 +801,9 @@ State 53
     IF      shift, and go to state 15
     ID      shift, and go to state 16
     RETURN  shift, and go to state 17
-    TFCHA   shift, and go to state 80
+    TFCHA   shift, and go to state 79
 
-    Comando        go to state 57
+    Comando        go to state 55
     Retorno        go to state 23
     CmdEnquanto    go to state 24
     CmdSe          go to state 25
@@ -852,271 +814,279 @@ State 53
     ChamadaFuncao  go to state 30
 
 
-State 54
+State 52
 
    20 ListaId: ID •
 
     $default  reduce using rule 20 (ListaId)
 
 
-State 55
+State 53
 
    18 Declaracao: Tipo ListaId • TPEVI
    19 ListaId: ListaId • TVIRG ID
 
-    TPEVI  shift, and go to state 81
-    TVIRG  shift, and go to state 82
+    TPEVI  shift, and go to state 80
+    TVIRG  shift, and go to state 81
 
 
-State 56
+State 54
 
    15 BlocoPrincipal: TACHA ListaCmd TFCHA •
 
     $default  reduce using rule 15 (BlocoPrincipal)
 
 
-State 57
+State 55
 
    24 ListaCmd: ListaCmd Comando •
 
     $default  reduce using rule 24 (ListaCmd)
 
 
-State 58
+State 56
 
-   56 ChamadaProc: ChamadaFuncao TPEVI •
+   51 ChamadaProc: ChamadaFuncao TPEVI •
 
-    $default  reduce using rule 56 (ChamadaProc)
+    $default  reduce using rule 51 (ChamadaProc)
 
 
-State 59
+State 57
 
     6 Funcao: TipoRetorno ID $@1 • TAPAR DeclParametros TFPAR BlocoPrincipal
+
+    TAPAR  shift, and go to state 82
+
+
+State 58
+
+    8 Funcao: TipoRetorno ID $@2 • TAPAR TFPAR BlocoPrincipal
 
     TAPAR  shift, and go to state 83
 
 
+State 59
+
+   47 CmdEscrita: PRINT TAPAR STRING • TFPAR TPEVI
+
+    TFPAR  shift, and go to state 84
+
+
 State 60
 
-    8 Funcao: TipoRetorno ID $@2 • TAPAR TFPAR BlocoPrincipal
+   48 CmdEscrita: PRINT TAPAR ExpressaoAritmetica • TFPAR TPEVI
+   73 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
 
-    TAPAR  shift, and go to state 84
+    ADD       shift, and go to state 73
+    MULTIPLY  shift, and go to state 74
+    DIVIDE    shift, and go to state 75
+    SUBTRACT  shift, and go to state 76
+    TFPAR     shift, and go to state 85
+
+    OperadoresAritmeticos  go to state 78
 
 
 State 61
 
-   51 CmdEscrita: PRINT $@7 TAPAR • ExpressaoAritmetica TFPAR TPEVI
+   50 CmdLeitura: READ $@4 TAPAR • ID TFPAR TPEVI
 
-    CHARACTER  shift, and go to state 43
-    NUMBER     shift, and go to state 44
-    FLOAT_NUM  shift, and go to state 45
-    ID         shift, and go to state 46
-
-    value                go to state 49
-    ChamadaFuncao        go to state 50
-    ExpressaoAritmetica  go to state 85
+    ID  shift, and go to state 86
 
 
 State 62
 
-   53 CmdEscrita: PRINT $@8 TAPAR • STRING TFPAR TPEVI
+   41 CmdEnquanto: WHILE $@3 TAPAR • ExpressaoLogica TFPAR Bloco
 
-    STRING  shift, and go to state 86
+    CHARACTER  shift, and go to state 41
+    NUMBER     shift, and go to state 42
+    FLOAT_NUM  shift, and go to state 43
+    ID         shift, and go to state 44
+
+    value                go to state 47
+    ChamadaFuncao        go to state 48
+    expressaoRelacional  go to state 63
+    ExpressaoLogica      go to state 87
+    ExpressaoAritmetica  go to state 65
 
 
 State 63
 
-   55 CmdLeitura: READ $@9 TAPAR • ID TFPAR TPEVI
+   72 ExpressaoLogica: expressaoRelacional •
 
-    ID  shift, and go to state 87
+    $default  reduce using rule 72 (ExpressaoLogica)
 
 
 State 64
 
-   41 CmdEnquanto: WHILE $@3 TAPAR • ExpressaoLogica TFPAR Bloco
+   43 CmdSe: IF TAPAR ExpressaoLogica • TFPAR Bloco
+   44      | IF TAPAR ExpressaoLogica • TFPAR Bloco ELSE Bloco
+   71 ExpressaoLogica: ExpressaoLogica • OperadoresLogicos ExpressaoLogica
 
-    CHARACTER  shift, and go to state 43
-    NUMBER     shift, and go to state 44
-    FLOAT_NUM  shift, and go to state 45
-    ID         shift, and go to state 46
+    AND    shift, and go to state 88
+    OR     shift, and go to state 89
+    TFPAR  shift, and go to state 90
 
-    value                go to state 49
-    ChamadaFuncao        go to state 50
-    expressaoRelacional  go to state 88
-    ExpressaoLogica      go to state 89
-    ExpressaoAritmetica  go to state 90
+    OperadoresLogicos  go to state 91
 
 
 State 65
 
-   44 CmdSe: IF $@4 TAPAR • ExpressaoLogica TFPAR Bloco
+   70 expressaoRelacional: ExpressaoAritmetica • OperadoresRelacionais ExpressaoAritmetica
+   73 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
 
-    CHARACTER  shift, and go to state 43
-    NUMBER     shift, and go to state 44
-    FLOAT_NUM  shift, and go to state 45
-    ID         shift, and go to state 46
+    TMEIG     shift, and go to state 92
+    TMAIG     shift, and go to state 93
+    TIGUA     shift, and go to state 94
+    TDIFE     shift, and go to state 95
+    TMAIO     shift, and go to state 96
+    TMENO     shift, and go to state 97
+    ADD       shift, and go to state 73
+    MULTIPLY  shift, and go to state 74
+    DIVIDE    shift, and go to state 75
+    SUBTRACT  shift, and go to state 76
 
-    value                go to state 49
-    ChamadaFuncao        go to state 50
-    expressaoRelacional  go to state 88
-    ExpressaoLogica      go to state 91
-    ExpressaoAritmetica  go to state 90
+    OperadoresAritmeticos  go to state 78
+    OperadoresRelacionais  go to state 98
 
 
 State 66
 
-   47 CmdSe: IF $@5 TAPAR • ExpressaoLogica TFPAR Bloco ELSE $@6 Bloco
+   57 ListaParametros: STRING •
 
-    CHARACTER  shift, and go to state 43
-    NUMBER     shift, and go to state 44
-    FLOAT_NUM  shift, and go to state 45
-    ID         shift, and go to state 46
-
-    value                go to state 49
-    ChamadaFuncao        go to state 50
-    expressaoRelacional  go to state 88
-    ExpressaoLogica      go to state 92
-    ExpressaoAritmetica  go to state 90
+    $default  reduce using rule 57 (ListaParametros)
 
 
 State 67
 
-   62 ListaParametros: STRING •
+   53 ChamadaFuncao: ID TAPAR TFPAR •
 
-    $default  reduce using rule 62 (ListaParametros)
+    $default  reduce using rule 53 (ChamadaFuncao)
 
 
 State 68
 
-   58 ChamadaFuncao: ID TAPAR TFPAR •
+   52 ChamadaFuncao: ID TAPAR ListaParametros • TFPAR
+   54 ListaParametros: ListaParametros • TVIRG ExpressaoAritmetica
+   55                | ListaParametros • TVIRG STRING
 
-    $default  reduce using rule 58 (ChamadaFuncao)
+    TFPAR  shift, and go to state 99
+    TVIRG  shift, and go to state 100
 
 
 State 69
 
-   57 ChamadaFuncao: ID TAPAR ListaParametros • TFPAR
-   59 ListaParametros: ListaParametros • TVIRG ExpressaoAritmetica
-   60                | ListaParametros • TVIRG STRING
+   56 ListaParametros: ExpressaoAritmetica •
+   73 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
 
-    TFPAR  shift, and go to state 93
-    TVIRG  shift, and go to state 94
+    ADD       shift, and go to state 73
+    MULTIPLY  shift, and go to state 74
+    DIVIDE    shift, and go to state 75
+    SUBTRACT  shift, and go to state 76
+
+    $default  reduce using rule 56 (ListaParametros)
+
+    OperadoresAritmeticos  go to state 78
 
 
 State 70
 
-   61 ListaParametros: ExpressaoAritmetica •
-   78 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
+   46 CmdAtrib: ID TATRI STRING • TPEVI
 
-    ADD       shift, and go to state 74
-    MULTIPLY  shift, and go to state 75
-    DIVIDE    shift, and go to state 76
-    SUBTRACT  shift, and go to state 77
-
-    $default  reduce using rule 61 (ListaParametros)
-
-    OperadoresAritmeticos  go to state 79
+    TPEVI  shift, and go to state 101
 
 
 State 71
 
-   49 CmdAtrib: ID TATRI STRING • TPEVI
+   45 CmdAtrib: ID TATRI ExpressaoAritmetica • TPEVI
+   73 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
 
-    TPEVI  shift, and go to state 95
+    ADD       shift, and go to state 73
+    MULTIPLY  shift, and go to state 74
+    DIVIDE    shift, and go to state 75
+    SUBTRACT  shift, and go to state 76
+    TPEVI     shift, and go to state 102
+
+    OperadoresAritmeticos  go to state 78
 
 
 State 72
-
-   48 CmdAtrib: ID TATRI ExpressaoAritmetica • TPEVI
-   78 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
-
-    ADD       shift, and go to state 74
-    MULTIPLY  shift, and go to state 75
-    DIVIDE    shift, and go to state 76
-    SUBTRACT  shift, and go to state 77
-    TPEVI     shift, and go to state 96
-
-    OperadoresAritmeticos  go to state 79
-
-
-State 73
 
    38 Retorno: RETURN STRING TPEVI •
 
     $default  reduce using rule 38 (Retorno)
 
 
+State 73
+
+   58 OperadoresAritmeticos: ADD •
+
+    $default  reduce using rule 58 (OperadoresAritmeticos)
+
+
 State 74
 
-   63 OperadoresAritmeticos: ADD •
+   60 OperadoresAritmeticos: MULTIPLY •
 
-    $default  reduce using rule 63 (OperadoresAritmeticos)
+    $default  reduce using rule 60 (OperadoresAritmeticos)
 
 
 State 75
 
-   65 OperadoresAritmeticos: MULTIPLY •
+   61 OperadoresAritmeticos: DIVIDE •
 
-    $default  reduce using rule 65 (OperadoresAritmeticos)
+    $default  reduce using rule 61 (OperadoresAritmeticos)
 
 
 State 76
 
-   66 OperadoresAritmeticos: DIVIDE •
+   59 OperadoresAritmeticos: SUBTRACT •
 
-    $default  reduce using rule 66 (OperadoresAritmeticos)
+    $default  reduce using rule 59 (OperadoresAritmeticos)
 
 
 State 77
-
-   64 OperadoresAritmeticos: SUBTRACT •
-
-    $default  reduce using rule 64 (OperadoresAritmeticos)
-
-
-State 78
 
    37 Retorno: RETURN ExpressaoAritmetica TPEVI •
 
     $default  reduce using rule 37 (Retorno)
 
 
+State 78
+
+   73 ExpressaoAritmetica: ExpressaoAritmetica OperadoresAritmeticos • ExpressaoAritmetica
+
+    CHARACTER  shift, and go to state 41
+    NUMBER     shift, and go to state 42
+    FLOAT_NUM  shift, and go to state 43
+    ID         shift, and go to state 44
+
+    value                go to state 47
+    ChamadaFuncao        go to state 48
+    ExpressaoAritmetica  go to state 103
+
+
 State 79
-
-   78 ExpressaoAritmetica: ExpressaoAritmetica OperadoresAritmeticos • ExpressaoAritmetica
-
-    CHARACTER  shift, and go to state 43
-    NUMBER     shift, and go to state 44
-    FLOAT_NUM  shift, and go to state 45
-    ID         shift, and go to state 46
-
-    value                go to state 49
-    ChamadaFuncao        go to state 50
-    ExpressaoAritmetica  go to state 97
-
-
-State 80
 
    14 BlocoPrincipal: TACHA Declaracoes ListaCmd TFCHA •
 
     $default  reduce using rule 14 (BlocoPrincipal)
 
 
-State 81
+State 80
 
    18 Declaracao: Tipo ListaId TPEVI •
 
     $default  reduce using rule 18 (Declaracao)
 
 
-State 82
+State 81
 
    19 ListaId: ListaId TVIRG • ID
 
-    ID  shift, and go to state 98
+    ID  shift, and go to state 104
 
 
-State 83
+State 82
 
     6 Funcao: TipoRetorno ID $@1 TAPAR • DeclParametros TFPAR BlocoPrincipal
 
@@ -1124,417 +1094,273 @@ State 83
     FLOAT   shift, and go to state 3
     STRING  shift, and go to state 4
 
-    DeclParametros  go to state 99
-    Parametro       go to state 100
-    Tipo            go to state 101
+    DeclParametros  go to state 105
+    Parametro       go to state 106
+    Tipo            go to state 107
+
+
+State 83
+
+    8 Funcao: TipoRetorno ID $@2 TAPAR • TFPAR BlocoPrincipal
+
+    TFPAR  shift, and go to state 108
 
 
 State 84
 
-    8 Funcao: TipoRetorno ID $@2 TAPAR • TFPAR BlocoPrincipal
+   47 CmdEscrita: PRINT TAPAR STRING TFPAR • TPEVI
 
-    TFPAR  shift, and go to state 102
+    TPEVI  shift, and go to state 109
 
 
 State 85
 
-   51 CmdEscrita: PRINT $@7 TAPAR ExpressaoAritmetica • TFPAR TPEVI
-   78 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
+   48 CmdEscrita: PRINT TAPAR ExpressaoAritmetica TFPAR • TPEVI
 
-    ADD       shift, and go to state 74
-    MULTIPLY  shift, and go to state 75
-    DIVIDE    shift, and go to state 76
-    SUBTRACT  shift, and go to state 77
-    TFPAR     shift, and go to state 103
-
-    OperadoresAritmeticos  go to state 79
+    TPEVI  shift, and go to state 110
 
 
 State 86
 
-   53 CmdEscrita: PRINT $@8 TAPAR STRING • TFPAR TPEVI
+   50 CmdLeitura: READ $@4 TAPAR ID • TFPAR TPEVI
 
-    TFPAR  shift, and go to state 104
+    TFPAR  shift, and go to state 111
 
 
 State 87
 
-   55 CmdLeitura: READ $@9 TAPAR ID • TFPAR TPEVI
+   41 CmdEnquanto: WHILE $@3 TAPAR ExpressaoLogica • TFPAR Bloco
+   71 ExpressaoLogica: ExpressaoLogica • OperadoresLogicos ExpressaoLogica
 
-    TFPAR  shift, and go to state 105
+    AND    shift, and go to state 88
+    OR     shift, and go to state 89
+    TFPAR  shift, and go to state 112
+
+    OperadoresLogicos  go to state 91
 
 
 State 88
 
-   77 ExpressaoLogica: expressaoRelacional •
+   68 OperadoresLogicos: AND •
 
-    $default  reduce using rule 77 (ExpressaoLogica)
+    $default  reduce using rule 68 (OperadoresLogicos)
 
 
 State 89
 
-   41 CmdEnquanto: WHILE $@3 TAPAR ExpressaoLogica • TFPAR Bloco
-   76 ExpressaoLogica: ExpressaoLogica • OperadoresLogicos ExpressaoLogica
+   69 OperadoresLogicos: OR •
 
-    AND    shift, and go to state 106
-    OR     shift, and go to state 107
-    TFPAR  shift, and go to state 108
-
-    OperadoresLogicos  go to state 109
+    $default  reduce using rule 69 (OperadoresLogicos)
 
 
 State 90
 
-   75 expressaoRelacional: ExpressaoAritmetica • OperadoresRelacionais ExpressaoAritmetica
-   78 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
+   43 CmdSe: IF TAPAR ExpressaoLogica TFPAR • Bloco
+   44      | IF TAPAR ExpressaoLogica TFPAR • Bloco ELSE Bloco
 
-    TMEIG     shift, and go to state 110
-    TMAIG     shift, and go to state 111
-    TIGUA     shift, and go to state 112
-    TDIFE     shift, and go to state 113
-    TMAIO     shift, and go to state 114
-    TMENO     shift, and go to state 115
-    ADD       shift, and go to state 74
-    MULTIPLY  shift, and go to state 75
-    DIVIDE    shift, and go to state 76
-    SUBTRACT  shift, and go to state 77
+    TACHA  shift, and go to state 113
 
-    OperadoresAritmeticos  go to state 79
-    OperadoresRelacionais  go to state 116
+    Bloco  go to state 114
 
 
 State 91
 
-   44 CmdSe: IF $@4 TAPAR ExpressaoLogica • TFPAR Bloco
-   76 ExpressaoLogica: ExpressaoLogica • OperadoresLogicos ExpressaoLogica
+   71 ExpressaoLogica: ExpressaoLogica OperadoresLogicos • ExpressaoLogica
 
-    AND    shift, and go to state 106
-    OR     shift, and go to state 107
-    TFPAR  shift, and go to state 117
+    CHARACTER  shift, and go to state 41
+    NUMBER     shift, and go to state 42
+    FLOAT_NUM  shift, and go to state 43
+    ID         shift, and go to state 44
 
-    OperadoresLogicos  go to state 109
+    value                go to state 47
+    ChamadaFuncao        go to state 48
+    expressaoRelacional  go to state 63
+    ExpressaoLogica      go to state 115
+    ExpressaoAritmetica  go to state 65
 
 
 State 92
 
-   47 CmdSe: IF $@5 TAPAR ExpressaoLogica • TFPAR Bloco ELSE $@6 Bloco
-   76 ExpressaoLogica: ExpressaoLogica • OperadoresLogicos ExpressaoLogica
+   64 OperadoresRelacionais: TMEIG •
 
-    AND    shift, and go to state 106
-    OR     shift, and go to state 107
-    TFPAR  shift, and go to state 118
-
-    OperadoresLogicos  go to state 109
+    $default  reduce using rule 64 (OperadoresRelacionais)
 
 
 State 93
 
-   57 ChamadaFuncao: ID TAPAR ListaParametros TFPAR •
+   65 OperadoresRelacionais: TMAIG •
 
-    $default  reduce using rule 57 (ChamadaFuncao)
+    $default  reduce using rule 65 (OperadoresRelacionais)
 
 
 State 94
 
-   59 ListaParametros: ListaParametros TVIRG • ExpressaoAritmetica
-   60                | ListaParametros TVIRG • STRING
+   66 OperadoresRelacionais: TIGUA •
 
-    CHARACTER  shift, and go to state 43
-    NUMBER     shift, and go to state 44
-    FLOAT_NUM  shift, and go to state 45
-    ID         shift, and go to state 46
-    STRING     shift, and go to state 119
-
-    value                go to state 49
-    ChamadaFuncao        go to state 50
-    ExpressaoAritmetica  go to state 120
+    $default  reduce using rule 66 (OperadoresRelacionais)
 
 
 State 95
 
-   49 CmdAtrib: ID TATRI STRING TPEVI •
+   67 OperadoresRelacionais: TDIFE •
 
-    $default  reduce using rule 49 (CmdAtrib)
+    $default  reduce using rule 67 (OperadoresRelacionais)
 
 
 State 96
 
-   48 CmdAtrib: ID TATRI ExpressaoAritmetica TPEVI •
+   63 OperadoresRelacionais: TMAIO •
 
-    $default  reduce using rule 48 (CmdAtrib)
+    $default  reduce using rule 63 (OperadoresRelacionais)
 
 
 State 97
 
-   78 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
-   78                    | ExpressaoAritmetica OperadoresAritmeticos ExpressaoAritmetica •
+   62 OperadoresRelacionais: TMENO •
 
-    ADD       shift, and go to state 74
-    MULTIPLY  shift, and go to state 75
-    DIVIDE    shift, and go to state 76
-    SUBTRACT  shift, and go to state 77
-
-    ADD       [reduce using rule 78 (ExpressaoAritmetica)]
-    MULTIPLY  [reduce using rule 78 (ExpressaoAritmetica)]
-    DIVIDE    [reduce using rule 78 (ExpressaoAritmetica)]
-    SUBTRACT  [reduce using rule 78 (ExpressaoAritmetica)]
-    $default  reduce using rule 78 (ExpressaoAritmetica)
-
-    OperadoresAritmeticos  go to state 79
+    $default  reduce using rule 62 (OperadoresRelacionais)
 
 
 State 98
+
+   70 expressaoRelacional: ExpressaoAritmetica OperadoresRelacionais • ExpressaoAritmetica
+
+    CHARACTER  shift, and go to state 41
+    NUMBER     shift, and go to state 42
+    FLOAT_NUM  shift, and go to state 43
+    ID         shift, and go to state 44
+
+    value                go to state 47
+    ChamadaFuncao        go to state 48
+    ExpressaoAritmetica  go to state 116
+
+
+State 99
+
+   52 ChamadaFuncao: ID TAPAR ListaParametros TFPAR •
+
+    $default  reduce using rule 52 (ChamadaFuncao)
+
+
+State 100
+
+   54 ListaParametros: ListaParametros TVIRG • ExpressaoAritmetica
+   55                | ListaParametros TVIRG • STRING
+
+    CHARACTER  shift, and go to state 41
+    NUMBER     shift, and go to state 42
+    FLOAT_NUM  shift, and go to state 43
+    ID         shift, and go to state 44
+    STRING     shift, and go to state 117
+
+    value                go to state 47
+    ChamadaFuncao        go to state 48
+    ExpressaoAritmetica  go to state 118
+
+
+State 101
+
+   46 CmdAtrib: ID TATRI STRING TPEVI •
+
+    $default  reduce using rule 46 (CmdAtrib)
+
+
+State 102
+
+   45 CmdAtrib: ID TATRI ExpressaoAritmetica TPEVI •
+
+    $default  reduce using rule 45 (CmdAtrib)
+
+
+State 103
+
+   73 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
+   73                    | ExpressaoAritmetica OperadoresAritmeticos ExpressaoAritmetica •
+
+    ADD       shift, and go to state 73
+    MULTIPLY  shift, and go to state 74
+    DIVIDE    shift, and go to state 75
+    SUBTRACT  shift, and go to state 76
+
+    ADD       [reduce using rule 73 (ExpressaoAritmetica)]
+    MULTIPLY  [reduce using rule 73 (ExpressaoAritmetica)]
+    DIVIDE    [reduce using rule 73 (ExpressaoAritmetica)]
+    SUBTRACT  [reduce using rule 73 (ExpressaoAritmetica)]
+    $default  reduce using rule 73 (ExpressaoAritmetica)
+
+    OperadoresAritmeticos  go to state 78
+
+
+State 104
 
    19 ListaId: ListaId TVIRG ID •
 
     $default  reduce using rule 19 (ListaId)
 
 
-State 99
+State 105
 
     6 Funcao: TipoRetorno ID $@1 TAPAR DeclParametros • TFPAR BlocoPrincipal
    11 DeclParametros: DeclParametros • TVIRG Parametro
 
-    TFPAR  shift, and go to state 121
-    TVIRG  shift, and go to state 122
+    TFPAR  shift, and go to state 119
+    TVIRG  shift, and go to state 120
 
 
-State 100
+State 106
 
    12 DeclParametros: Parametro •
 
     $default  reduce using rule 12 (DeclParametros)
 
 
-State 101
+State 107
 
    13 Parametro: Tipo • ID
 
-    ID  shift, and go to state 123
+    ID  shift, and go to state 121
 
 
-State 102
+State 108
 
     8 Funcao: TipoRetorno ID $@2 TAPAR TFPAR • BlocoPrincipal
 
     TACHA  shift, and go to state 5
 
-    BlocoPrincipal  go to state 124
-
-
-State 103
-
-   51 CmdEscrita: PRINT $@7 TAPAR ExpressaoAritmetica TFPAR • TPEVI
-
-    TPEVI  shift, and go to state 125
-
-
-State 104
-
-   53 CmdEscrita: PRINT $@8 TAPAR STRING TFPAR • TPEVI
-
-    TPEVI  shift, and go to state 126
-
-
-State 105
-
-   55 CmdLeitura: READ $@9 TAPAR ID TFPAR • TPEVI
-
-    TPEVI  shift, and go to state 127
-
-
-State 106
-
-   73 OperadoresLogicos: AND •
-
-    $default  reduce using rule 73 (OperadoresLogicos)
-
-
-State 107
-
-   74 OperadoresLogicos: OR •
-
-    $default  reduce using rule 74 (OperadoresLogicos)
-
-
-State 108
-
-   41 CmdEnquanto: WHILE $@3 TAPAR ExpressaoLogica TFPAR • Bloco
-
-    TACHA  shift, and go to state 128
-
-    Bloco  go to state 129
+    BlocoPrincipal  go to state 122
 
 
 State 109
 
-   76 ExpressaoLogica: ExpressaoLogica OperadoresLogicos • ExpressaoLogica
+   47 CmdEscrita: PRINT TAPAR STRING TFPAR TPEVI •
 
-    CHARACTER  shift, and go to state 43
-    NUMBER     shift, and go to state 44
-    FLOAT_NUM  shift, and go to state 45
-    ID         shift, and go to state 46
-
-    value                go to state 49
-    ChamadaFuncao        go to state 50
-    expressaoRelacional  go to state 88
-    ExpressaoLogica      go to state 130
-    ExpressaoAritmetica  go to state 90
+    $default  reduce using rule 47 (CmdEscrita)
 
 
 State 110
 
-   69 OperadoresRelacionais: TMEIG •
+   48 CmdEscrita: PRINT TAPAR ExpressaoAritmetica TFPAR TPEVI •
 
-    $default  reduce using rule 69 (OperadoresRelacionais)
+    $default  reduce using rule 48 (CmdEscrita)
 
 
 State 111
 
-   70 OperadoresRelacionais: TMAIG •
+   50 CmdLeitura: READ $@4 TAPAR ID TFPAR • TPEVI
 
-    $default  reduce using rule 70 (OperadoresRelacionais)
+    TPEVI  shift, and go to state 123
 
 
 State 112
 
-   71 OperadoresRelacionais: TIGUA •
+   41 CmdEnquanto: WHILE $@3 TAPAR ExpressaoLogica TFPAR • Bloco
 
-    $default  reduce using rule 71 (OperadoresRelacionais)
+    TACHA  shift, and go to state 113
+
+    Bloco  go to state 124
 
 
 State 113
-
-   72 OperadoresRelacionais: TDIFE •
-
-    $default  reduce using rule 72 (OperadoresRelacionais)
-
-
-State 114
-
-   68 OperadoresRelacionais: TMAIO •
-
-    $default  reduce using rule 68 (OperadoresRelacionais)
-
-
-State 115
-
-   67 OperadoresRelacionais: TMENO •
-
-    $default  reduce using rule 67 (OperadoresRelacionais)
-
-
-State 116
-
-   75 expressaoRelacional: ExpressaoAritmetica OperadoresRelacionais • ExpressaoAritmetica
-
-    CHARACTER  shift, and go to state 43
-    NUMBER     shift, and go to state 44
-    FLOAT_NUM  shift, and go to state 45
-    ID         shift, and go to state 46
-
-    value                go to state 49
-    ChamadaFuncao        go to state 50
-    ExpressaoAritmetica  go to state 131
-
-
-State 117
-
-   44 CmdSe: IF $@4 TAPAR ExpressaoLogica TFPAR • Bloco
-
-    TACHA  shift, and go to state 128
-
-    Bloco  go to state 132
-
-
-State 118
-
-   47 CmdSe: IF $@5 TAPAR ExpressaoLogica TFPAR • Bloco ELSE $@6 Bloco
-
-    TACHA  shift, and go to state 128
-
-    Bloco  go to state 133
-
-
-State 119
-
-   60 ListaParametros: ListaParametros TVIRG STRING •
-
-    $default  reduce using rule 60 (ListaParametros)
-
-
-State 120
-
-   59 ListaParametros: ListaParametros TVIRG ExpressaoAritmetica •
-   78 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
-
-    ADD       shift, and go to state 74
-    MULTIPLY  shift, and go to state 75
-    DIVIDE    shift, and go to state 76
-    SUBTRACT  shift, and go to state 77
-
-    $default  reduce using rule 59 (ListaParametros)
-
-    OperadoresAritmeticos  go to state 79
-
-
-State 121
-
-    6 Funcao: TipoRetorno ID $@1 TAPAR DeclParametros TFPAR • BlocoPrincipal
-
-    TACHA  shift, and go to state 5
-
-    BlocoPrincipal  go to state 134
-
-
-State 122
-
-   11 DeclParametros: DeclParametros TVIRG • Parametro
-
-    INT     shift, and go to state 2
-    FLOAT   shift, and go to state 3
-    STRING  shift, and go to state 4
-
-    Parametro  go to state 135
-    Tipo       go to state 101
-
-
-State 123
-
-   13 Parametro: Tipo ID •
-
-    $default  reduce using rule 13 (Parametro)
-
-
-State 124
-
-    8 Funcao: TipoRetorno ID $@2 TAPAR TFPAR BlocoPrincipal •
-
-    $default  reduce using rule 8 (Funcao)
-
-
-State 125
-
-   51 CmdEscrita: PRINT $@7 TAPAR ExpressaoAritmetica TFPAR TPEVI •
-
-    $default  reduce using rule 51 (CmdEscrita)
-
-
-State 126
-
-   53 CmdEscrita: PRINT $@8 TAPAR STRING TFPAR TPEVI •
-
-    $default  reduce using rule 53 (CmdEscrita)
-
-
-State 127
-
-   55 CmdLeitura: READ $@9 TAPAR ID TFPAR TPEVI •
-
-    $default  reduce using rule 55 (CmdLeitura)
-
-
-State 128
 
    42 Bloco: TACHA • ListaCmd TFCHA
 
@@ -1545,7 +1371,7 @@ State 128
     ID      shift, and go to state 16
     RETURN  shift, and go to state 17
 
-    ListaCmd       go to state 136
+    ListaCmd       go to state 125
     Comando        go to state 22
     Retorno        go to state 23
     CmdEnquanto    go to state 24
@@ -1557,72 +1383,118 @@ State 128
     ChamadaFuncao  go to state 30
 
 
-State 129
+State 114
+
+   43 CmdSe: IF TAPAR ExpressaoLogica TFPAR Bloco •
+   44      | IF TAPAR ExpressaoLogica TFPAR Bloco • ELSE Bloco
+
+    ELSE  shift, and go to state 126
+
+    $default  reduce using rule 43 (CmdSe)
+
+
+State 115
+
+   71 ExpressaoLogica: ExpressaoLogica • OperadoresLogicos ExpressaoLogica
+   71                | ExpressaoLogica OperadoresLogicos ExpressaoLogica •
+
+    AND  shift, and go to state 88
+    OR   shift, and go to state 89
+
+    AND       [reduce using rule 71 (ExpressaoLogica)]
+    OR        [reduce using rule 71 (ExpressaoLogica)]
+    $default  reduce using rule 71 (ExpressaoLogica)
+
+    OperadoresLogicos  go to state 91
+
+
+State 116
+
+   70 expressaoRelacional: ExpressaoAritmetica OperadoresRelacionais ExpressaoAritmetica •
+   73 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
+
+    ADD       shift, and go to state 73
+    MULTIPLY  shift, and go to state 74
+    DIVIDE    shift, and go to state 75
+    SUBTRACT  shift, and go to state 76
+
+    $default  reduce using rule 70 (expressaoRelacional)
+
+    OperadoresAritmeticos  go to state 78
+
+
+State 117
+
+   55 ListaParametros: ListaParametros TVIRG STRING •
+
+    $default  reduce using rule 55 (ListaParametros)
+
+
+State 118
+
+   54 ListaParametros: ListaParametros TVIRG ExpressaoAritmetica •
+   73 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
+
+    ADD       shift, and go to state 73
+    MULTIPLY  shift, and go to state 74
+    DIVIDE    shift, and go to state 75
+    SUBTRACT  shift, and go to state 76
+
+    $default  reduce using rule 54 (ListaParametros)
+
+    OperadoresAritmeticos  go to state 78
+
+
+State 119
+
+    6 Funcao: TipoRetorno ID $@1 TAPAR DeclParametros TFPAR • BlocoPrincipal
+
+    TACHA  shift, and go to state 5
+
+    BlocoPrincipal  go to state 127
+
+
+State 120
+
+   11 DeclParametros: DeclParametros TVIRG • Parametro
+
+    INT     shift, and go to state 2
+    FLOAT   shift, and go to state 3
+    STRING  shift, and go to state 4
+
+    Parametro  go to state 128
+    Tipo       go to state 107
+
+
+State 121
+
+   13 Parametro: Tipo ID •
+
+    $default  reduce using rule 13 (Parametro)
+
+
+State 122
+
+    8 Funcao: TipoRetorno ID $@2 TAPAR TFPAR BlocoPrincipal •
+
+    $default  reduce using rule 8 (Funcao)
+
+
+State 123
+
+   50 CmdLeitura: READ $@4 TAPAR ID TFPAR TPEVI •
+
+    $default  reduce using rule 50 (CmdLeitura)
+
+
+State 124
 
    41 CmdEnquanto: WHILE $@3 TAPAR ExpressaoLogica TFPAR Bloco •
 
     $default  reduce using rule 41 (CmdEnquanto)
 
 
-State 130
-
-   76 ExpressaoLogica: ExpressaoLogica • OperadoresLogicos ExpressaoLogica
-   76                | ExpressaoLogica OperadoresLogicos ExpressaoLogica •
-
-    AND  shift, and go to state 106
-    OR   shift, and go to state 107
-
-    AND       [reduce using rule 76 (ExpressaoLogica)]
-    OR        [reduce using rule 76 (ExpressaoLogica)]
-    $default  reduce using rule 76 (ExpressaoLogica)
-
-    OperadoresLogicos  go to state 109
-
-
-State 131
-
-   75 expressaoRelacional: ExpressaoAritmetica OperadoresRelacionais ExpressaoAritmetica •
-   78 ExpressaoAritmetica: ExpressaoAritmetica • OperadoresAritmeticos ExpressaoAritmetica
-
-    ADD       shift, and go to state 74
-    MULTIPLY  shift, and go to state 75
-    DIVIDE    shift, and go to state 76
-    SUBTRACT  shift, and go to state 77
-
-    $default  reduce using rule 75 (expressaoRelacional)
-
-    OperadoresAritmeticos  go to state 79
-
-
-State 132
-
-   44 CmdSe: IF $@4 TAPAR ExpressaoLogica TFPAR Bloco •
-
-    $default  reduce using rule 44 (CmdSe)
-
-
-State 133
-
-   47 CmdSe: IF $@5 TAPAR ExpressaoLogica TFPAR Bloco • ELSE $@6 Bloco
-
-    ELSE  shift, and go to state 137
-
-
-State 134
-
-    6 Funcao: TipoRetorno ID $@1 TAPAR DeclParametros TFPAR BlocoPrincipal •
-
-    $default  reduce using rule 6 (Funcao)
-
-
-State 135
-
-   11 DeclParametros: DeclParametros TVIRG Parametro •
-
-    $default  reduce using rule 11 (DeclParametros)
-
-
-State 136
+State 125
 
    24 ListaCmd: ListaCmd • Comando
    42 Bloco: TACHA ListaCmd • TFCHA
@@ -1633,9 +1505,9 @@ State 136
     IF      shift, and go to state 15
     ID      shift, and go to state 16
     RETURN  shift, and go to state 17
-    TFCHA   shift, and go to state 138
+    TFCHA   shift, and go to state 129
 
-    Comando        go to state 57
+    Comando        go to state 55
     Retorno        go to state 23
     CmdEnquanto    go to state 24
     CmdSe          go to state 25
@@ -1646,33 +1518,38 @@ State 136
     ChamadaFuncao  go to state 30
 
 
-State 137
+State 126
 
-   47 CmdSe: IF $@5 TAPAR ExpressaoLogica TFPAR Bloco ELSE • $@6 Bloco
+   44 CmdSe: IF TAPAR ExpressaoLogica TFPAR Bloco ELSE • Bloco
 
-    $default  reduce using rule 46 ($@6)
+    TACHA  shift, and go to state 113
 
-    $@6  go to state 139
+    Bloco  go to state 130
 
 
-State 138
+State 127
+
+    6 Funcao: TipoRetorno ID $@1 TAPAR DeclParametros TFPAR BlocoPrincipal •
+
+    $default  reduce using rule 6 (Funcao)
+
+
+State 128
+
+   11 DeclParametros: DeclParametros TVIRG Parametro •
+
+    $default  reduce using rule 11 (DeclParametros)
+
+
+State 129
 
    42 Bloco: TACHA ListaCmd TFCHA •
 
     $default  reduce using rule 42 (Bloco)
 
 
-State 139
+State 130
 
-   47 CmdSe: IF $@5 TAPAR ExpressaoLogica TFPAR Bloco ELSE $@6 • Bloco
+   44 CmdSe: IF TAPAR ExpressaoLogica TFPAR Bloco ELSE Bloco •
 
-    TACHA  shift, and go to state 128
-
-    Bloco  go to state 140
-
-
-State 140
-
-   47 CmdSe: IF $@5 TAPAR ExpressaoLogica TFPAR Bloco ELSE $@6 Bloco •
-
-    $default  reduce using rule 47 (CmdSe)
+    $default  reduce using rule 44 (CmdSe)

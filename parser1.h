@@ -8,6 +8,14 @@ void yyerror(const char *s);
 int yylex();
 int yywrap();
 
+typedef enum
+{
+    CMD_ATRIB,
+    CMD_WHILE,
+    CMD_IF,
+    CMD_NODE
+} CommandType;
+
 // TAbela de símbolos
 void add(char);
 void insert_type();
@@ -19,18 +27,27 @@ struct funcao *criarFuncao(char *tipoRetorno, char *nome, struct parametro *para
 struct raiz *criarRaiz(struct funcao *);
 struct parametro *criarParametro(char *tipo, char *nome);
 void imprimir(struct raiz *raiz);
-void imprimirAST(struct node *node);
 struct bloco *criarBloco(struct listaCmd *listaCmd);
-struct ifStatement *criarIfStatement(struct node *condition, struct bloco *trueBlock, struct bloco *falseBlock);
-struct listaCmd *adicionarComando(struct listaCmd *lista, struct node *cmd);
+struct ifCmd *criarifCmd(struct node *condition, struct bloco *trueBlock, struct bloco *falseBlock);
+struct listaCmd *adicionarComando(struct listaCmd *lista, struct comando *cmd);
 void imprimirListaCmd(struct listaCmd *lista);
-struct listaCmd *criarListaCmd(struct node *node);
+struct listaCmd *criarListaCmd(struct comando *cmd);
 struct listaIdentificadores *adicionarListaIdentificadores(struct listaIdentificadores *lista, char *novoIdentificador);
 struct listaIdentificadores *criarListaIdentificadores(char *nome);
-void imprimirListaidentificadores(struct listaIdentificadores *lista);
 struct tabelaSimbolos *adicionarTabelaSimbolos(struct tabelaSimbolos *tabela, char *nome, char *tipoDado, char *tipo);
 void imprimirTabelaSimbolos(struct tabelaSimbolos *tabela);
 struct blocoPrincipal *criarBlocoPrincipal(struct tabelaSimbolos *tabelaSimbolos, struct listaCmd *listaCmd);
+struct whileCmd *criarWhileCmd(struct node *condition, struct bloco *bloco);
+struct comando *criarComando(CommandType identificador);
+struct funcao *adicionarFuncao(struct funcao *listaFuncao, struct funcao *novaFuncao);
+struct ifCmd *criarIfCmd(struct node *condition, struct bloco *trueBlock, struct bloco *falseBlock);
+struct chamadaFuncao *criarChamadaFuncao(char *nome, struct node *parametros);
+
+void printNode(struct node *n);
+void printWhileCmd(struct whileCmd *whileCmd);
+void printListaCmd(struct listaCmd *lista);
+void printIfCmd(struct ifCmd *ifCmd);
+
 struct dataType
 {
     char *id_nome;
@@ -77,7 +94,7 @@ struct node
 
 struct listaCmd
 {
-    struct node *node;
+    struct comando *comando;
     struct listaCmd *next;
 };
 
@@ -106,29 +123,30 @@ struct listaIdentificadores
 };
 
 struct raiz *head;
-
-struct comando *comando
+struct comando
 {
+    CommandType identificador;
     union
     {
-        // struct atribuicaoCmd *atribuicao;
-        struct ifStatement *ifStatement;
-        struct whileCmd *ifStatement;
-    }
-}
+        struct node *node;
+        struct ifCmd *ifCmd;
+        struct whileCmd *whileCmd;
+        struct chamadaFuncao *chamadaFuncao;
+    } tipoComando;
+};
+
+struct chamadaFuncao
+{
+    char *nome;
+    struct node *parametros;
+};
 
 struct whileCmd
 {
     struct node *condition;
     struct bloco *bloco;
 };
-
-struct atribuicao
-{
-    char *identificador;
-    struct node *expressao;
-};
-struct ifStatement
+struct ifCmd
 {
     struct node *condition;   // Condição do if
     struct bloco *trueBlock;  // Bloco de instruções se a condição for verdadeira

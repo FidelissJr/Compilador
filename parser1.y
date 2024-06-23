@@ -10,13 +10,14 @@
 		struct raiz* head;
 		struct bloco* bloco;
 		struct node* node;
-		struct ifStatement* ifStatement;
+		struct ifCmd* ifCmd;
 		struct listaCmd *listaCmd;
 		struct tabelaSimbolos* tabelaSimbolos;
 		struct listaIdentificadores* listaIdentificadores;
 		struct blocoPrincipal* blocoPrincipal;
 		struct comando* comando;
 		struct whileCmd* whileCmd;
+		struct chamadaFuncao* chamadaFuncao;
 
 	} nd_obj; 
 } 
@@ -31,17 +32,17 @@ OperadoresAritmeticos OperadoresRelacionais OperadoresLogicos expressaoRelaciona
 
 %%
 
-Programa: ListaFuncoes BlocoPrincipal {$$.head = criarRaiz($1.funcao); head = $$.head;}
+Programa: ListaFuncoes BlocoPrincipal { 
+	struct funcao* main = criarFuncao("", "", NULL, $2.blocoPrincipal);
+	$1.funcao = adicionarFuncao($1.funcao, main);
+	$$.head = criarRaiz($1.funcao); 
+	head = $$.head;
+	}
 | BlocoPrincipal {$$.head = criarRaiz($1.funcao); head = $$.head;}
 ;
 
 ListaFuncoes: ListaFuncoes Funcao {
-	struct funcao* atual = $1.funcao;
-    while (atual->next != NULL) {
-        atual = atual->next;
-    }
-    atual->next = $2.funcao;
-    $$.funcao = $1.funcao;
+    $$.funcao = adicionarFuncao($1.funcao, $2.funcao);
 }
 | Funcao {$$.funcao = $1.funcao;}
 ;
@@ -108,18 +109,18 @@ Tipo: INT { insert_type(); }
 ;
 
 ListaCmd: ListaCmd Comando {
-	$$.listaCmd = adicionarComando($1.listaCmd, $2.node);
+	$$.listaCmd = adicionarComando($1.listaCmd, $2.comando);
 }
-| Comando { $$.listaCmd = criarListaCmd($1.node); }
+| Comando { $$.listaCmd = criarListaCmd($1.comando);}
 ;
 
-Comando: CmdSe
-|CmdEnquanto { $$.node = $1.node; }
-| CmdAtrib { $$.node = $1.node; }
-| CmdEscrita
-| CmdLeitura
+Comando: CmdSe { $$.comando = criarComando(CMD_IF); $$.comando->tipoComando.ifCmd = $1.ifCmd;}
+| CmdEnquanto { $$.comando = criarComando(CMD_WHILE); $$.comando->tipoComando.whileCmd = $1.whileCmd;}
+| CmdAtrib { $$.comando = criarComando(CMD_ATRIB); $$.comando->tipoComando.node = $1.node;}
+| CmdEscrita { $$.comando = criarComando(CMD_NODE); $$.comando->tipoComando.node = $1.node;}
+| CmdLeitura//Nao sera implmentado
 | ChamadaProc
-| Retorno
+| Retorno { $$.comando = criarComando(CMD_NODE); $$.comando->tipoComando.node = $1.node;}
 ;
 
 value: NUMBER { add('C'); }
@@ -128,27 +129,27 @@ value: NUMBER { add('C'); }
 | ID
 ;
 
-Retorno: RETURN ExpressaoAritmetica TPEVI
-|RETURN STRING TPEVI
-|RETURN TPEVI
+Retorno: RETURN ExpressaoAritmetica TPEVI {$$.node = criarNode(NULL, $2.node, "return ");}
+|RETURN STRING TPEVI {$$.node = criarNode(NULL, criarNode(NULL, NULL, $2.nome), "return ");}
+|RETURN TPEVI {$$.node = criarNode(NULL, NULL, "return");}
 ;
 
-CmdEnquanto: WHILE { add('K'); } TAPAR ExpressaoLogica TFPAR Bloco  {$$.node = criarNode($4.node, $6.bloco->listaCmd->node, "WHILE"); imprimirListaCmd($6.bloco->listaCmd);}
+CmdEnquanto: WHILE { add('K'); } TAPAR ExpressaoLogica TFPAR Bloco  {$$.whileCmd = criarWhileCmd($4.node, $6.bloco);} 
 ;
 
-Bloco: TACHA ListaCmd TFCHA { $$.bloco = criarBloco($2.listaCmd); }
+Bloco: TACHA ListaCmd TFCHA { $$.bloco = criarBloco($2.listaCmd);}
 ;
 
-CmdSe: IF { add('K'); } TAPAR ExpressaoLogica TFPAR Bloco //{$$.ifStatement = criarIfStatement($3.node, $5.bloco, NULL);}
-| IF { add('K'); } TAPAR ExpressaoLogica TFPAR Bloco ELSE { add('K'); } Bloco //{$$.ifStatement = criarIfStatement($4.node, $6.bloco, $9.bloco);}
+CmdSe: IF TAPAR ExpressaoLogica TFPAR Bloco {$$.ifCmd = criarIfCmd($3.node, $5.bloco, NULL);}
+| IF TAPAR ExpressaoLogica TFPAR Bloco ELSE Bloco {$$.ifCmd = criarIfCmd($3.node, $5.bloco, $7.bloco);}
 ;
 
 CmdAtrib: ID TATRI ExpressaoAritmetica TPEVI {$$.node = criarNode(criarNode(NULL, NULL, $1.nome), $3.node, "=");}
 | ID TATRI STRING TPEVI {$$.node = criarNode(criarNode(NULL, NULL, $1.nome), criarNode(NULL, NULL, $3.nome), "=");}
 ;
 
-CmdEscrita: PRINT { add('F'); } TAPAR ExpressaoAritmetica TFPAR TPEVI
-| PRINT { add('F'); } TAPAR STRING TFPAR TPEVI
+CmdEscrita: PRINT TAPAR STRING TFPAR TPEVI {$$.node = criarNode(NULL, criarNode(NULL, NULL, $3.nome), "print");}
+| PRINT TAPAR ExpressaoAritmetica TFPAR TPEVI {$$.node = criarNode(NULL, $3.node, "print");}
 ;
 
 CmdLeitura: READ { add('F'); } TAPAR ID TFPAR TPEVI
@@ -160,8 +161,8 @@ ChamadaProc: ChamadaFuncao TPEVI { $$.node = $1.node; }
 ChamadaFuncao: ID TAPAR ListaParametros TFPAR { $$.node = criarNode($3.node, NULL, $1.nome); }
 | ID TAPAR TFPAR { $$.node = criarNode(NULL, NULL, $1.nome); }
 
-ListaParametros: ListaParametros TVIRG ExpressaoAritmetica { $$.node = criarNode($1.node, $3.node, ","); }	
-| ListaParametros TVIRG STRING { $$.node = criarNode($1.node, criarNode(NULL, NULL, $3.nome), ","); }
+ListaParametros: ListaParametros TVIRG ExpressaoAritmetica { $$.node = criarNode($1.node, $3.node, ""); }	
+| ListaParametros TVIRG STRING { $$.node = criarNode($1.node, criarNode(NULL, NULL, $3.nome), ""); }
 | ExpressaoAritmetica { $$.node = $1.node; }
 | STRING { $$.node = criarNode(NULL, NULL, $1.nome); }
 ;
@@ -350,21 +351,20 @@ struct bloco* criarBloco(struct listaCmd* listaCmd){
 	return novoBloco;
 }
 
-struct ifStatement *criarIfStatement(struct node *condition, struct bloco *trueBlock, struct bloco *falseBlock){
-	struct ifStatement *newIfStatement = (struct ifStatement*) malloc(sizeof(struct ifStatement));
-	if (newIfStatement == NULL) {
-		fprintf(stderr, "Falha na alocação de memória para o ifStatement.\n");
+struct ifCmd *criarIfCmd(struct node *condition, struct bloco *trueBlock, struct bloco *falseBlock){
+	struct ifCmd *newIfCmd = (struct ifCmd*) malloc(sizeof(struct ifCmd));
+	if (newIfCmd == NULL) {
+		fprintf(stderr, "Falha na alocação de memória para o ifCmd.\n");
 		return NULL;
 	}
-	newIfStatement->condition = condition;
-	newIfStatement->trueBlock = trueBlock;
-	newIfStatement->falseBlock = falseBlock;
-	return newIfStatement;
+	newIfCmd->condition = condition;
+	newIfCmd->trueBlock = trueBlock;
+	newIfCmd->falseBlock = falseBlock;
+	return newIfCmd;
 
 }
-// Função para imprimir os nomes das funções na lista
 
-struct listaCmd* adicionarComando(struct listaCmd *lista, struct node *cmd) {
+struct listaCmd* adicionarComando(struct listaCmd *lista, struct comando *cmd) {
     struct listaCmd *novo = criarListaCmd(cmd);
     if (novo == NULL) {
         // Handle memory allocation failure if needed
@@ -378,13 +378,13 @@ struct listaCmd* adicionarComando(struct listaCmd *lista, struct node *cmd) {
     return lista;
 }
 
-struct listaCmd* criarListaCmd(struct node *node) {
+struct listaCmd* criarListaCmd(struct comando *cmd) {
 	struct listaCmd *lista = (struct listaCmd*) malloc(sizeof(struct listaCmd));
 	if (lista == NULL) {
 		// Handle memory allocation failure if needed
 		return NULL; // Or NULL, depending on how you want to handle failure
 	}
-	lista->node = node;
+	lista->comando = cmd;
 	lista->next = NULL; // Ensure the new node is properly terminated
 	return lista;
 }
@@ -420,14 +420,6 @@ struct tabelaSimbolos* adicionarTabelaSimbolos(struct tabelaSimbolos *tabela, ch
 	return tabela;
 }
 
-void imprimirListaidentificadores(struct listaIdentificadores *lista) {
-	struct listaIdentificadores *atual = lista;
-	while (atual != NULL) {
-		printf("Nome: %s\n", atual->nome);
-		atual = atual->next;
-	}
-}
-
 struct listaIdentificadores* criarListaIdentificadores(char* nome){
 	struct listaIdentificadores* novaLista = malloc(sizeof(struct listaIdentificadores));
 	novaLista->nome = strdup(nome);
@@ -460,14 +452,13 @@ struct listaIdentificadores* adicionarListaIdentificadores(struct listaIdentific
     return lista;
 }
 
-void imprimirTabelaSimbolos(struct tabelaSimbolos *tabela) {
-	struct tabelaSimbolos *atual = tabela;
-	while (atual != NULL) {
-		printf("Nome: %s\n", atual->nome);
-		printf("Tipo de Dado: %s\n", atual->tipoDado);
-		printf("Tipo: %s\n", atual->tipo);
-		atual = atual->next;
+struct funcao* adicionarFuncao(struct funcao *listaFuncao, struct funcao *novaFuncao) {
+	struct funcao *temp = listaFuncao;
+	while (temp->next != NULL) {
+		temp = temp->next;
 	}
+	temp->next = novaFuncao;
+	return listaFuncao;
 }
 
 struct blocoPrincipal* criarBlocoPrincipal(struct tabelaSimbolos* tabelaSimbolos, struct listaCmd* listaCmd) {
@@ -481,6 +472,53 @@ struct blocoPrincipal* criarBlocoPrincipal(struct tabelaSimbolos* tabelaSimbolos
 	return novoBlocoPrincipal;
 }
 
+struct comando * criarComando(CommandType identificador) {
+	struct comando *novoComando = (struct comando*) malloc(sizeof(struct comando));
+
+	novoComando->identificador = identificador;
+	novoComando->tipoComando.node = NULL;
+	novoComando->tipoComando.whileCmd = NULL;
+
+	if (novoComando == NULL) {
+		fprintf(stderr, "Falha na alocação de memória para o comando.\n");
+		return NULL;
+	}
+	return novoComando;
+}
+
+struct whileCmd *criarWhileCmd(struct node *condition, struct bloco *bloco) {
+	struct whileCmd *newWhileCmd = (struct whileCmd*) malloc(sizeof(struct whileCmd));
+	if (newWhileCmd == NULL) {
+		fprintf(stderr, "Falha na alocação de memória para o whileCmd.\n");
+		return NULL;
+	}
+	newWhileCmd->condition = condition;
+	newWhileCmd->bloco = bloco;
+	return newWhileCmd;
+}
+
+struct chamadaFuncao* criarChamadaFuncao(char* nome, struct node* parametros) {
+	struct chamadaFuncao* novaChamadaFuncao = (struct chamadaFuncao*) malloc(sizeof(struct chamadaFuncao));
+	if (novaChamadaFuncao == NULL) {
+		// Handle memory allocation failure if needed
+		return NULL; // Or NULL, depending on how you want to handle failure
+	}
+	novaChamadaFuncao->nome = strdup(nome);
+	novaChamadaFuncao->parametros = parametros;
+	return novaChamadaFuncao;
+}
+
+void printChamadaFuncao(struct chamadaFuncao* chamadaFuncao) {
+	if (chamadaFuncao != NULL) {
+		printf("%s(", chamadaFuncao->nome);
+		if (chamadaFuncao->parametros != NULL) {
+			printNode(chamadaFuncao->parametros);
+		}
+		printf(")");
+	}
+}
+
+//Implementação de métodos de impressão
 void imprimir(struct raiz* raiz) {
 
 	if (raiz == NULL) {
@@ -491,97 +529,122 @@ void imprimir(struct raiz* raiz) {
 	struct funcao *atual = raiz->funcao;
 
 	while(atual != NULL) {
-		printf("%s %s", raiz->funcao->tipoRetorno, raiz->funcao->nome);
 
+		if(atual->parametros != NULL)
+			printf("%s %s", atual->tipoRetorno, atual->nome);
+		else
+			printf("{\n");
 		struct parametro *parametroAtual = atual->parametros;
 		while(parametroAtual != NULL) {
-			printf("(%s %s){", parametroAtual->tipo, parametroAtual->nome);
+			printf("(%s %s){\n", parametroAtual->tipo, parametroAtual->nome);
 			parametroAtual = parametroAtual->next;
 		}
 
-		struct tabelaSimbolos *tabelaAtual = raiz->funcao->blocoPrincipal->tabelaSimbolos;
+		struct tabelaSimbolos *tabelaAtual = atual->blocoPrincipal->tabelaSimbolos;
 		while(tabelaAtual != NULL) {
-			printf("\n%s %s;", tabelaAtual->tipoDado, tabelaAtual->nome);
+			printf("%s %s;\n", tabelaAtual->tipoDado, tabelaAtual->nome);
 			tabelaAtual = tabelaAtual->next;
 		}
 
-		struct listaCmd *listaCmdAtual = raiz->funcao->blocoPrincipal->listaCmd;
-		imprimirListaCmd(listaCmdAtual);
-		/* while(listaCmdAtual != NULL) {
-			imprimirListaCmd(listaCmdAtual);
-			listaCmdAtual = listaCmdAtual->next;
-		} */
+		struct listaCmd *listaCmdAtual = atual->blocoPrincipal->listaCmd;
+		printListaCmd(listaCmdAtual);
+
 
 		atual = atual->next;
+		printf("}\n\n");
 		
 	}
-
-	/* if(node == NULL) {
-		printf("NULL");
-		return;
-	} */
-
-	//printf("%s", node->token);
-	/* printf("E %s", node->left->token);
-	printf("D %s", node->right->token); */
-	//printf("%s", head->funcao->next->parametros->nome); 
-
-	//if(head->funcao == NULL)
-		//printf("NAO FUNCAO");
-    /* if (raizArvore == NULL || raizArvore->funcao == NULL) {
-        printf("A lista de funções está vazia ou a raiz é nula.\n");
-        return;
-    }
-
-    struct funcao *atual = raizArvore->funcao;
-    while (atual != NULL) {
-        printf("Nome da Função: %s\n", atual->nome);
-        atual = atual->next; // Move para a próxima função na lista
-    } */
-	/* if (teste == NULL || teste->funcao == NULL) {
-		printf("A lista de funções está vazia ou a raiz é nula.\n");
-		return;
-    }
-
-    struct funcao *atual = teste->funcao;
-    while (atual != NULL) {
-        printf("Nome da Função: %s\n", atual->nome);
-        atual = atual->next; // Move para a próxima função na lista
-    } */
 }
 
-void imprimirAST(struct node *tree) {
-    if(tree == NULL) {
-        return;
-    }
-    
-    // Check if the node is a "WHILE" command
-    if (strcmp(tree->token, "WHILE") == 0) {
-        printf("\nwhile(");
-        imprimirAST(tree->left); // Print condition
-        printf(")\n {");
-        imprimirAST(tree->right); // Print body
-        printf("}");
-    } else {
-        // For non-"WHILE" nodes, print left child, token, then right child
-        if (tree->left) {
-            imprimirAST(tree->left);
+void imprimirTabelaSimbolos(struct tabelaSimbolos *tabela) {
+	struct tabelaSimbolos *atual = tabela;
+	while (atual != NULL) {
+		printf("Nome: %s\n", atual->nome);
+		printf("Tipo de Dado: %s\n", atual->tipoDado);
+		printf("Tipo: %s\n", atual->tipo);
+		atual = atual->next;
+	}
+}
+
+void printNode(struct node *tree) {
+     if (tree->left) {
+            printNode(tree->left);
         }
         
         printf("%s", tree->token);
         
         if (tree->right) {
-            imprimirAST(tree->right);
+            printNode(tree->right);
         }
+}
+
+void printWhileCmd(struct whileCmd *whileC) {
+
+	if (whileC == NULL) {
+		printf("Comando de while nulo.\n");
+		return;
+	}
+
+	if (whileC->condition == NULL) {
+		printf("Condição do while nula.\n");
+		return;
+	}
+
+	if(whileC->bloco == NULL) {
+		printf("Bloco do while nulo.\n");
+		return;
+	}
+
+	if(whileC->bloco->listaCmd == NULL) {
+		printf("listaCmd nulo.\n");
+		return;
+	}
+
+    if (whileC != NULL) {
+        printf("while(");
+        printNode(whileC->condition);
+        printf("){\n");
+        printListaCmd(whileC->bloco->listaCmd);
+		printf("}\n");
     }
 }
 
-void imprimirListaCmd(struct listaCmd *lista) {
-	struct listaCmd *atual = lista;
+void printListaCmd(struct listaCmd *lista) {
+    while (lista != NULL) {
+        if (lista->comando != NULL) {
+            switch (lista->comando->identificador) {
+                case CMD_ATRIB:
+                case CMD_NODE:
+                    printNode(lista->comando->tipoComando.node);
+					printf(";\n");
+                    break;
+                case CMD_WHILE:
+                    printWhileCmd(lista->comando->tipoComando.whileCmd);
+                    break;
+				case CMD_IF:
+                    printIfCmd(lista->comando->tipoComando.ifCmd);
+                    break;
+                default:
+                    printf("Unknown command type.\n");
+                    break;
+            }
+        }
+        lista = lista->next;
+    }
+}
 
-	while (atual != NULL) {
-		if(atual->node != NULL)
-			imprimirAST(atual->node);
-		atual = atual->next;
+void printIfCmd(struct ifCmd *ifCmd) {
+	if (ifCmd != NULL) {
+		printf("if(");
+		printNode(ifCmd->condition);
+		printf("){\n");
+		printListaCmd(ifCmd->trueBlock->listaCmd);
+		printf("}\n");
+
+		if (ifCmd->falseBlock != NULL) {
+			printf("else {\n");
+			printListaCmd(ifCmd->falseBlock->listaCmd);
+			printf("}\n");
+		}
 	}
 }
