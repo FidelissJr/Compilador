@@ -727,7 +727,6 @@ void verificarListaCmd(struct listaCmd *listaCmd, struct tabelaSimbolos *tabelaS
 			switch (listaCmd->comando->identificador) {
 				case CMD_ATRIB:
 					verificarAtribuicao(listaCmd->comando->tipoComando.atribuicao, tabelaSimbolos);
-					imprimirAtribuicao(listaCmd->comando->tipoComando.atribuicao);
 					break;
 				case CMD_NODE:
 					//printNode(listaCmd->comando->tipoComando.node);
@@ -761,8 +760,12 @@ void verificarAtribuicao(struct atribuicao *atribuicao, struct tabelaSimbolos *t
 			sprintf(msg, "Variável não declarada: %s.", atribuicao->nome);
 			throwSemanticError(msg);
 		}
-		else
+		else{
 			validaTipos(atribuicao->node, registro->tipoDado, tabelaSimbolos);	
+			intDoubleConverter(atribuicao->node, registro->tipoDado, tabelaSimbolos);
+		}
+
+		
 	}
 }
 
@@ -983,5 +986,32 @@ void validarExpressoes(struct node *tree, struct tabelaSimbolos *tabelaSimbolos)
 
 	validarExpressoes(tree->left, tabelaSimbolos);
 	validarExpressoes(tree->right, tabelaSimbolos);
+}
+
+void intDoubleConverter(struct node *tree, char *tipoDado, struct tabelaSimbolos *tabelaSimbolos) {
+		if (tree->left) {
+            intDoubleConverter(tree->left, tipoDado, tabelaSimbolos);
+        }
+
+		struct tabelaSimbolos* registro = buscarNaTabela(tabelaSimbolos, tree->token);
+
+		if(registro != NULL){
+			if(strcmp(registro->tipoDado, "int") == 0 && strcmp(tipoDado, "double") == 0) {
+				char msg[100];
+				sprintf(msg, "Conversão implícita de int para double. Linha: %d", registro->linha);
+				throwSemanticError(msg);
+			}
+			else if(strcmp(registro->tipoDado, "double") == 0 && strcmp(tipoDado, "int") == 0) {
+				char msg[100];
+				sprintf(msg, "Conversão implícita de double para int. Linha: %d", registro->linha);
+				throwSemanticError(msg);
+			}
+		}
+
+        //printf("%s", tree->token);
+        
+        if (tree->right) {
+            intDoubleConverter(tree->right, tipoDado, tabelaSimbolos);
+        }
 }
 

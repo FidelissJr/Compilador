@@ -10,7 +10,8 @@ double fat(int n1)
         return z;
     }
 
-    z = 0;
+    n = 9 + 3;
+    z = 9.7;
 
     while (n > 90.7)
     {
@@ -18,7 +19,7 @@ double fat(int n1)
         n = n - 1;
     }
 
-    if (n == "sasa")
+    if (n == 1)
     {
         return f;
     }

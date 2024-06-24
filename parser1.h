@@ -71,6 +71,8 @@ void validaTipos(struct node *tree, char *tipo, struct tabelaSimbolos *tabelaSim
 int contarNosParametros(struct node *root);
 int validaTipagemParametros(struct node *tree, char *tipoDado, struct tabelaSimbolos *tabelaSimbolos, int numeroParametro);
 void validarExpressoes(struct node *tree, struct tabelaSimbolos *tabelaSimbolos);
+void intDoubleConverter(struct node *tree, char *tipoDado, struct tabelaSimbolos *tabelaSimbolos);
+
 int count = 0;
 int q;
 char type[10];
