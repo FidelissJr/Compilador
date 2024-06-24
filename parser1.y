@@ -34,22 +34,31 @@ OperadoresAritmeticos OperadoresRelacionais OperadoresLogicos expressaoRelaciona
 %%
 
 Programa: ListaFuncoes BlocoPrincipal { 
+	$2.blocoPrincipal->tabelaSimbolos = tabelaSimbolosMain;
 	struct funcao* main = criarFuncao("", "", NULL, $2.blocoPrincipal);
 	$1.funcao = adicionarFuncao($1.funcao, main);
 	$$.head = criarRaiz($1.funcao); 
 	head = $$.head;
+	limparTabelaSimbolos();
 	}
-| BlocoPrincipal {$$.head = criarRaiz($1.funcao); head = $$.head;}
+| BlocoPrincipal {$$.head = criarRaiz($1.funcao); head = $$.head; }
 ;
 
 ListaFuncoes: ListaFuncoes Funcao {
-    $$.funcao = adicionarFuncao($1.funcao, $2.funcao);
+	$2.funcao->blocoPrincipal->tabelaSimbolos = tabelaSimbolosMain;
+	$$.funcao = adicionarFuncao($1.funcao, $2.funcao);
+	limparTabelaSimbolos();
 }
-| Funcao {$$.funcao = $1.funcao;}
+| Funcao {
+	$1.funcao->blocoPrincipal->tabelaSimbolos = tabelaSimbolosMain;
+	$$.funcao = $1.funcao; 
+	limparTabelaSimbolos();
+}
 ;
 
-Funcao: TipoRetorno ID { add('F');} TAPAR DeclParametros TFPAR BlocoPrincipal {$$.funcao = criarFuncao($1.nome, $2.nome, $5.parametro, $7.blocoPrincipal);} 
-| TipoRetorno ID { add('F');} TAPAR TFPAR BlocoPrincipal {$$.funcao = criarFuncao($1.nome, $2.nome, NULL, $6.blocoPrincipal);}
+Funcao: TipoRetorno ID {add('F', NULL);} TAPAR DeclParametros TFPAR BlocoPrincipal { 
+	$$.funcao = criarFuncao($1.nome, $2.nome, $5.parametro, $7.blocoPrincipal); } 
+| TipoRetorno ID {add('F', NULL);} TAPAR TFPAR BlocoPrincipal {$$.funcao = criarFuncao($1.nome, $2.nome, NULL, $6.blocoPrincipal);}
 ;
 
 TipoRetorno: Tipo 
@@ -67,41 +76,25 @@ DeclParametros: DeclParametros TVIRG Parametro {
 | Parametro {$$.parametro = $1.parametro;}
 ;
 
-Parametro: Tipo ID { add('V'); $$.parametro = criarParametro($1.nome, $2.nome);}
+Parametro: Tipo ID  { add('V', NULL); $$.parametro = criarParametro($1.nome, $2.nome);}
 ;
 
-BlocoPrincipal: TACHA Declaracoes ListaCmd TFCHA { $$.blocoPrincipal = criarBlocoPrincipal($2.tabelaSimbolos, $3.listaCmd);}
+BlocoPrincipal: TACHA Declaracoes ListaCmd TFCHA { $$.blocoPrincipal = criarBlocoPrincipal(NULL, $3.listaCmd);}
 | TACHA ListaCmd TFCHA { $$.blocoPrincipal = criarBlocoPrincipal(NULL, $2.listaCmd);}
 ;
 
-Declaracoes: Declaracoes Declaracao{
-	$$.tabelaSimbolos = $1.tabelaSimbolos;
-	// Atualiza a tabela de símbolos com as declarações da derivação atual
-	struct tabelaSimbolos *temp = $2.tabelaSimbolos;
-	while (temp != NULL) {
-		$$.tabelaSimbolos = adicionarTabelaSimbolos($$.tabelaSimbolos, temp->nome, temp->tipoDado, temp->tipo);
-	temp = temp->next;
-	}
-}
-| Declaracao {$$.tabelaSimbolos = $1.tabelaSimbolos;}
+Declaracoes: Declaracoes Declaracao 
+| Declaracao
 ;
 
-Declaracao: Tipo ListaId TPEVI {
-	struct listaIdentificadores *id = $2.listaIdentificadores;
-	struct tabelaSimbolos *tabelaSimbolos = NULL;
-	while (id != NULL) {
-		tabelaSimbolos = adicionarTabelaSimbolos(tabelaSimbolos, id->nome, $1.nome, "Variável");
-		id = id->next;
-	}
-	$$.tabelaSimbolos = tabelaSimbolos;
-	printf("\n\n\n\n\n");
-}
+Declaracao: Tipo ListaId TPEVI
 ;
 
 ListaId: ListaId TVIRG ID { 
+	{add('V', NULL);}
 	$$.listaIdentificadores = adicionarListaIdentificadores($1.listaIdentificadores, $3.nome);
 }
-| ID { $$.listaIdentificadores = criarListaIdentificadores($1.nome);}
+| ID { $$.listaIdentificadores = criarListaIdentificadores($1.nome); {add('V', NULL);}}
 ;
 
 Tipo: INT { insert_type(); }
@@ -124,9 +117,9 @@ Comando: CmdSe { $$.comando = criarComando(CMD_IF); $$.comando->tipoComando.ifCm
 | Retorno { $$.comando = criarComando(CMD_NODE); $$.comando->tipoComando.node = $1.node;}
 ;
 
-value: NUMBER { add('C'); }
-| FLOAT_NUM { add('C'); }
-| CHARACTER { add('C'); }
+value: NUMBER { add('C', "int"); }
+| FLOAT_NUM { add('C', "double"); }
+| STRING { add('C', "string"); }
 | ID
 ;
 
@@ -135,7 +128,7 @@ Retorno: RETURN ExpressaoAritmetica TPEVI {$$.node = criarNode(NULL, $2.node, "r
 |RETURN TPEVI {$$.node = criarNode(NULL, NULL, "return");}
 ;
 
-CmdEnquanto: WHILE { add('K'); } TAPAR ExpressaoLogica TFPAR Bloco  {$$.whileCmd = criarWhileCmd($4.node, $6.bloco);} 
+CmdEnquanto: WHILE TAPAR ExpressaoLogica TFPAR Bloco  {$$.whileCmd = criarWhileCmd($3.node, $5.bloco);} 
 ;
 
 Bloco: TACHA ListaCmd TFCHA { $$.bloco = criarBloco($2.listaCmd);}
@@ -153,14 +146,14 @@ CmdEscrita: PRINT TAPAR STRING TFPAR TPEVI {$$.node = criarNode(NULL, criarNode(
 | PRINT TAPAR ExpressaoAritmetica TFPAR TPEVI {$$.node = criarNode(NULL, $3.node, "print");}
 ;
 
-CmdLeitura: READ { add('F'); } TAPAR ID TFPAR TPEVI
+CmdLeitura: READ TAPAR ID TFPAR TPEVI
 ; //Nao sera utilizado
 
 ChamadaProc: ChamadaFuncao TPEVI {$$.chamadaFuncao = $1.chamadaFuncao;} 
 ;
 
-ChamadaFuncao: ID TAPAR ListaParametros TFPAR { $$.chamadaFuncao = criarChamadaFuncao($1.nome, $3.node);}
-| ID TAPAR TFPAR { $$.chamadaFuncao = criarChamadaFuncao($1.nome, NULL);}
+ChamadaFuncao: ID TAPAR ListaParametros TFPAR { $$.chamadaFuncao = criarChamadaFuncao($1.nome, $3.node, yylineno);}
+| ID TAPAR TFPAR { $$.chamadaFuncao = criarChamadaFuncao($1.nome, NULL, yylineno);}
 
 ListaParametros: ListaParametros TVIRG ExpressaoAritmetica { $$.node = criarNode($1.node, $3.node, ","); }	
 | ListaParametros TVIRG STRING { $$.node = criarNode($1.node, criarNode(NULL, NULL, $3.nome), ","); }
@@ -202,22 +195,15 @@ ExpressaoAritmetica: ExpressaoAritmetica OperadoresAritmeticos ExpressaoAritmeti
 
 int main() {
 	//raizArvore = criarRaiz();
-
-    yyparse();
-
-    //Tabela de Símbolos
-    printf("\n\n");
+	yyparse();
+	//Tabela de Símbolos
+	printf("\n\n");;
 	printf("\t\tPHASE 1: LEXICAL ANALYSIS \n\n");
 	printf("\nSYMBOL   DATATYPE   TYPE   LINE NUMBER \n");
 	printf("_______________________________________\n\n");
-	int i=0;
-	for(i=0; i<count; i++) {
-		printf("%s\t%s\t%s\t%d\t\n", symbol_table[i].id_nome, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no);
-	}
-	for(i=0;i<count;i++) {
-		free(symbol_table[i].id_nome);
-		free(symbol_table[i].type);
-	}
+
+	printf("__________________TABELA COMPLETA_____________________\n\n");
+
 	printf("\n\n");
 	if(head == NULL)
 		printf("NULLLL");
@@ -226,52 +212,47 @@ int main() {
 	
 	imprimir(head);
 
+	//Verificacao semantica
+	verificarSemantica(head);
+
+	free(tabelaSimbolosMain);
+
 	free(head);
 }
 
 int search(char *type) {
-	int i;
-	for(i=count-1; i>=0; i--) {
-		if(strcmp(symbol_table[i].id_nome, type)==0) {
-			return -1;
-			break;
+	struct tabelaSimbolos *atual = tabelaSimbolosMain;
+	while (atual != NULL) {
+		if (strcmp(atual->nome, type) == 0) {
+			return atual->linha;
 		}
+		atual = atual->next;
 	}
 	return 0;
 }
 
-void add(char c) {
+
+void add(char c, char*tipo) {
   q=search(yytext);
-  if(!q) {
-   		if(c == 'K') {
-			symbol_table[count].id_nome=strdup(yytext);
-			symbol_table[count].data_type=strdup("N/A");
-			symbol_table[count].line_no=yylineno;
-			symbol_table[count].type=strdup("Command\t");
-			count++;
-		}
-		else if(c == 'V') {
-			symbol_table[count].id_nome=strdup(yytext);
-			symbol_table[count].data_type=strdup(type);
-			symbol_table[count].line_no=yylineno;
-			symbol_table[count].type=strdup("Variable");
-			count++;
-		}
-		else if(c == 'C') {
-			symbol_table[count].id_nome=strdup(yytext);
-			symbol_table[count].data_type=strdup("CONST");
-			symbol_table[count].line_no=yylineno;
-			symbol_table[count].type=strdup("Constant");
-			count++;
-		}
-		else if(c == 'F') {
-			symbol_table[count].id_nome=strdup(yytext);
-			symbol_table[count].data_type=strdup(type);
-			symbol_table[count].line_no=yylineno;
-			symbol_table[count].type=strdup("Function");
-			count++;
-		}
+  if(q == 0) {
+	if(c == 'K') {
+		tabelaSimbolosMain = adicionarTabelaSimbolos(tabelaSimbolosMain, yytext, "N/A", "Command", yylineno);
 	}
+	else if(c == 'V') {
+		tabelaSimbolosMain = adicionarTabelaSimbolos(tabelaSimbolosMain, yytext, type, "Variable", yylineno);
+	}
+	else if(c == 'C') {
+		tabelaSimbolosMain = adicionarTabelaSimbolos(tabelaSimbolosMain, yytext, tipo, "Constant", yylineno);
+	}
+	else if(c == 'F') {
+		tabelaSimbolosMain = adicionarTabelaSimbolos(tabelaSimbolosMain, yytext, type, "Function", yylineno);
+	}
+	}
+	else{
+		if(c != 'C')
+			throwMultiDeclarationError(yytext, q, yylineno);
+	}
+	
 }
 
 void insert_type() {
@@ -390,7 +371,7 @@ struct listaCmd* criarListaCmd(struct comando *cmd) {
 	return lista;
 }
 
-struct tabelaSimbolos* criarTabelaSimbolos(char* nome, char* tipoDado, char* tipo) {
+struct tabelaSimbolos* criarTabelaSimbolos(char* nome, char* tipoDado, char* tipo, int linha) {
 	struct tabelaSimbolos* novaTabela = (struct tabelaSimbolos*) malloc(sizeof(struct tabelaSimbolos));
 	if (novaTabela == NULL) {
 		// Handle memory allocation failure if needed
@@ -399,11 +380,12 @@ struct tabelaSimbolos* criarTabelaSimbolos(char* nome, char* tipoDado, char* tip
 	novaTabela->nome = strdup(nome);
 	novaTabela->tipoDado = strdup(tipoDado);
 	novaTabela->tipo = strdup(tipo);
+	novaTabela->linha = linha;
 	return novaTabela;
 }
 
-struct tabelaSimbolos* adicionarTabelaSimbolos(struct tabelaSimbolos *tabela, char* nome, char* tipoDado, char* tipo) {
-	struct tabelaSimbolos *novo = criarTabelaSimbolos(nome, tipoDado, tipo);
+struct tabelaSimbolos* adicionarTabelaSimbolos(struct tabelaSimbolos *tabela, char* nome, char* tipoDado, char* tipo, int linha) {
+	struct tabelaSimbolos *novo = criarTabelaSimbolos(nome, tipoDado, tipo, linha);
 	if (tabela == NULL) {
         return novo;
     }
@@ -453,6 +435,17 @@ struct listaIdentificadores* adicionarListaIdentificadores(struct listaIdentific
     return lista;
 }
 
+int variavelJaDeclarada(struct tabelaSimbolos *tabela, const char *nome) {
+    struct tabelaSimbolos *atual = tabela;
+    while (atual != NULL) {
+        if (strcmp(atual->nome, nome) == 0) {
+            return atual->linha;
+        }
+        atual = atual->next;
+    }
+    return 0;
+}
+
 struct funcao* adicionarFuncao(struct funcao *listaFuncao, struct funcao *novaFuncao) {
 	struct funcao *temp = listaFuncao;
 	while (temp->next != NULL) {
@@ -496,7 +489,16 @@ struct whileCmd *criarWhileCmd(struct node *condition, struct bloco *bloco) {
 	return newWhileCmd;
 }
 
-struct chamadaFuncao* criarChamadaFuncao(char* nome, struct node* parametros) {
+struct chamadaFuncao* criarChamadaFuncao(char* nome, struct node* parametros, int linha) {
+
+	int q = search(nome);
+
+	if(q == 0) {
+		char msg[100];
+		sprintf(msg, "Chamada de função inexistente: %s. Linha %d", nome, linha);
+		throwSemanticError(msg);
+	}
+
 	struct chamadaFuncao* novaChamadaFuncao = (struct chamadaFuncao*) malloc(sizeof(struct chamadaFuncao));
 	if (novaChamadaFuncao == NULL) {
 		// Handle memory allocation failure if needed
@@ -676,4 +678,172 @@ void imprimirAtribuicao(struct atribuicao *atribuicao) {
 			printChamadaFuncao(atribuicao->chamadaFuncao);
 		}
 	}
+}
+
+void imprimirTabelaCompleta(struct tabelaSimbolos *tabela) {
+	struct tabelaSimbolos *atual = tabela;
+	while (atual != NULL) {
+		printf("%s\t%s\t%s\t%d\t\n", atual->nome, atual->tipoDado, atual->tipo, atual->linha);
+		/* printf("Nome: %s\n", atual->nome);
+		printf("Tipo de Dado: %s\n", atual->tipoDado);
+		printf("Tipo: %s\n", atual->tipo);
+		printf("Linha: %d\n", atual->linha); */
+		atual = atual->next;
+	}
+}
+
+void verificarSemantica(struct raiz* raiz) {
+
+	if (raiz == NULL) {
+		printf("A raiz é nula.\n");
+		return;
+	}
+	
+	struct funcao *atual = raiz->funcao;
+
+	verificarMultiplasFuncoes(atual);
+
+	while(atual != NULL) {
+		imprimirTabelaCompleta(atual->blocoPrincipal->tabelaSimbolos);
+		/* if(atual->parametros != NULL)
+			printf("%s %s", atual->tipoRetorno, atual->nome);
+		else
+			printf("{\n");
+		struct parametro *parametroAtual = atual->parametros;
+		while(parametroAtual != NULL) {
+			printf("(%s %s){\n", parametroAtual->tipo, parametroAtual->nome);
+			parametroAtual = parametroAtual->next;
+		} */
+
+		struct tabelaSimbolos *tabelaAtual = atual->blocoPrincipal->tabelaSimbolos;
+
+		struct listaCmd *listaCmdAtual = atual->blocoPrincipal->listaCmd;
+		verificarListaCmd(listaCmdAtual, tabelaAtual);
+	
+		printf("\n\n\n\n\n");
+		atual = atual->next;
+	}
+}
+
+void verificarListaCmd(struct listaCmd *listaCmd, struct tabelaSimbolos *tabelaSimbolos) {
+	while (listaCmd != NULL) {
+		if (listaCmd->comando != NULL) {
+			switch (listaCmd->comando->identificador) {
+				case CMD_ATRIB:
+					verificarAtribuicao(listaCmd->comando->tipoComando.atribuicao, tabelaSimbolos);
+					break;
+				/* case CMD_NODE:
+					verificarNode(listaCmd->comando->tipoComando.node);
+					break;
+				case CMD_WHILE:
+					verificarWhileCmd(listaCmd->comando->tipoComando.whileCmd);
+					break;
+				case CMD_IF:
+					verificarIfCmd(listaCmd->comando->tipoComando.ifCmd);
+					break;
+					*/
+				case CMD_CHAMADAFUNCAO:
+					verificarChamadaFuncao(listaCmd->comando->tipoComando.chamadaFuncao);
+					break;
+				default:
+					//printf("Unknown command type.\n");
+					break;
+			}
+		}
+		listaCmd = listaCmd->next;
+	}
+}
+
+void verificarAtribuicao(struct atribuicao *atribuicao, struct tabelaSimbolos *tabelaSimbolos) {
+	if (atribuicao != NULL) {
+		int q = variavelJaDeclarada(tabelaSimbolos, atribuicao->nome);
+		if(q == 0) {
+			char msg[100];
+			sprintf(msg, "Variável não declarada: %s.", atribuicao->nome);
+			throwSemanticError(msg);
+		}
+	}
+}
+
+void throwSemanticError(char *msg) {
+	fprintf(stderr, "Erro semântico: %s\n", msg);
+}
+
+void throwMultiDeclarationError(char* nome, int linha1, int linha2) {
+	printf("Erro semântico: %s foi declarado na linha %d e novamente na linha %d.\n", nome, linha1, linha2);
+}
+
+void limparTabelaSimbolos() {
+	tabelaSimbolosMain = NULL;
+}
+
+void verificarMultiplasFuncoes(struct funcao* funcao){
+	struct funcao* atual = funcao;
+	while(atual != NULL) {
+		struct funcao* temp = atual->next;
+		while(temp != NULL) {
+			if(strcmp(atual->nome, temp->nome) == 0) {
+				char msg[100];
+				sprintf(msg, "Função %s declarada mais de uma vez. Linha %d e Linha %d", atual->nome, buscarLinhaSimbolo(atual->blocoPrincipal->tabelaSimbolos, atual->nome), buscarLinhaSimbolo(temp->blocoPrincipal->tabelaSimbolos, temp->nome));
+				throwSemanticError(msg);
+			}
+			temp = temp->next;
+		}
+		atual = atual->next;
+	}
+}
+
+int buscarLinhaSimbolo(struct tabelaSimbolos *tabela, const char *nome) {
+	struct tabelaSimbolos *atual = tabela;
+	while (atual != NULL) {
+		if (strcmp(atual->nome, nome) == 0) {
+			return  atual->linha;
+		}
+		atual = atual->next;
+	}
+	return 0;
+}
+
+void verificarChamadaFuncao(struct chamadaFuncao* chamadaFuncao) {
+	int countParameters = 0;
+	if (chamadaFuncao != NULL) {
+		struct funcao* funcao = buscarFuncao(chamadaFuncao->nome);
+		if(funcao == NULL) {
+			char msg[100];
+			sprintf(msg, "Função %s não declarada.", chamadaFuncao->nome);
+			throwSemanticError(msg);
+		}
+		if(chamadaFuncao->parametros != NULL) {
+			struct node* parametros = chamadaFuncao->parametros;
+			while(parametros != NULL) {
+				countParameters++;
+				parametros = parametros->right;
+			}
+			if(countParameters != contarParametros(funcao->parametros)) {
+				char msg[100];
+				sprintf(msg, "Número incorreto de parâmetros na chamada da função %s. Esperado: %d, Recebido: %d", chamadaFuncao->nome, contarParametros(funcao->parametros), countParameters);
+				throwSemanticError(msg);
+			}
+		}
+	}
+}
+
+struct funcao* buscarFuncao(char* nome){
+	struct funcao* atual = head->funcao;
+	while(atual != NULL) {
+		if(strcmp(atual->nome, nome) == 0) {
+			return atual;
+		}
+		atual = atual->next;
+	}
+}
+
+int contarParametros(struct parametro* parametros) {
+	int count = 0;
+	struct parametro* atual = parametros;
+	while(atual != NULL) {
+		count++;
+		atual = atual->next;
+	}
+	return count;
 }

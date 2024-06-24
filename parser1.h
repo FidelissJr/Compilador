@@ -18,7 +18,7 @@ typedef enum
 } CommandType;
 
 // TAbela de símbolos
-void add(char);
+void add(char c, char *tipo);
 void insert_type();
 int search(char *);
 void insert_type();
@@ -35,14 +35,14 @@ void imprimirListaCmd(struct listaCmd *lista);
 struct listaCmd *criarListaCmd(struct comando *cmd);
 struct listaIdentificadores *adicionarListaIdentificadores(struct listaIdentificadores *lista, char *novoIdentificador);
 struct listaIdentificadores *criarListaIdentificadores(char *nome);
-struct tabelaSimbolos *adicionarTabelaSimbolos(struct tabelaSimbolos *tabela, char *nome, char *tipoDado, char *tipo);
+struct tabelaSimbolos *adicionarTabelaSimbolos(struct tabelaSimbolos *tabela, char *nome, char *tipoDado, char *tipo, int linha);
 void imprimirTabelaSimbolos(struct tabelaSimbolos *tabela);
 struct blocoPrincipal *criarBlocoPrincipal(struct tabelaSimbolos *tabelaSimbolos, struct listaCmd *listaCmd);
 struct whileCmd *criarWhileCmd(struct node *condition, struct bloco *bloco);
 struct comando *criarComando(CommandType identificador);
 struct funcao *adicionarFuncao(struct funcao *listaFuncao, struct funcao *novaFuncao);
 struct ifCmd *criarIfCmd(struct node *condition, struct bloco *trueBlock, struct bloco *falseBlock);
-struct chamadaFuncao *criarChamadaFuncao(char *nome, struct node *parametros);
+struct chamadaFuncao *criarChamadaFuncao(char *nome, struct node *parametros, int linha);
 struct atribuicao *criarAtribuicao(char *nome, struct node *node, struct chamadaFuncao *chamadaFuncao);
 void imprimirAtribuicao(struct atribuicao *atribuicao);
 
@@ -51,14 +51,21 @@ void printWhileCmd(struct whileCmd *whileCmd);
 void printListaCmd(struct listaCmd *lista);
 void printIfCmd(struct ifCmd *ifCmd);
 void printChamadaFuncao(struct chamadaFuncao *chamadaFuncao);
+void imprimirTabelaCompleta(struct tabelaSimbolos *tabela);
 
-struct dataType
-{
-    char *id_nome;
-    char *data_type;
-    char *type;
-    int line_no;
-} symbol_table[40];
+// Analise Semantica
+void verificarSemantica(struct raiz *raiz);
+int variavelJaDeclarada(struct tabelaSimbolos *tabela, const char *nome);
+void throwMultiDeclarationError(char *nome, int linha1, int linha2);
+void throwSemanticError(char *msg);
+void verificarAtribuicao(struct atribuicao *atribuicao, struct tabelaSimbolos *tabelaSimbolos);
+void verificarListaCmd(struct listaCmd *listaCmd, struct tabelaSimbolos *tabelaSimbolos);
+void limparTabelaSimbolos();
+void verificarMultiplasFuncoes(struct funcao *funcao);
+int buscarLinhaSimbolo(struct tabelaSimbolos *tabela, const char *nome);
+void verificarChamadaFuncao(struct chamadaFuncao *chamadaFuncao);
+int contarParametros(struct parametro *parametros);
+struct funcao *buscarFuncao(char *nome);
 
 int count = 0;
 int q;
@@ -66,7 +73,7 @@ char type[10];
 extern int yylineno;
 
 // Tabela Sintatica Abstrata
-
+struct tabelaSimbolos *tabelaSimbolosMain = NULL;
 struct raiz
 {
     struct funcao *funcao;
@@ -117,6 +124,7 @@ struct tabelaSimbolos
     char *nome;
     char *tipo;
     char *tipoDado;
+    int linha;
     struct tabelaSimbolos *next;
 };
 
