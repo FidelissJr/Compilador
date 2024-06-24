@@ -59,12 +59,12 @@ extern int yydebug;
     PRINT = 260,                   /* PRINT  */
     READ = 261,                    /* READ  */
     INT = 262,                     /* INT  */
-    FLOAT = 263,                   /* FLOAT  */
+    DOUBLE = 263,                  /* DOUBLE  */
     WHILE = 264,                   /* WHILE  */
     IF = 265,                      /* IF  */
     ELSE = 266,                    /* ELSE  */
     NUMBER = 267,                  /* NUMBER  */
-    FLOAT_NUM = 268,               /* FLOAT_NUM  */
+    DOUBLE_NUM = 268,              /* DOUBLE_NUM  */
     ID = 269,                      /* ID  */
     TMEIG = 270,                   /* TMEIG  */
     TMAIG = 271,                   /* TMAIG  */
@@ -100,12 +100,12 @@ extern int yydebug;
 #define PRINT 260
 #define READ 261
 #define INT 262
-#define FLOAT 263
+#define DOUBLE 263
 #define WHILE 264
 #define IF 265
 #define ELSE 266
 #define NUMBER 267
-#define FLOAT_NUM 268
+#define DOUBLE_NUM 268
 #define ID 269
 #define TMEIG 270
 #define TMAIG 271

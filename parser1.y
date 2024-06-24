@@ -23,8 +23,8 @@
 	} nd_obj; 
 } 
 
-%token <nd_obj> VOID CHARACTER PRINT READ INT FLOAT WHILE IF ELSE
-NUMBER FLOAT_NUM ID TMEIG TMAIG TIGUA TDIFE TMAIO TMENO AND OR STRING ADD MULTIPLY DIVIDE SUBTRACT RETURN 
+%token <nd_obj> VOID CHARACTER PRINT READ INT DOUBLE WHILE IF ELSE
+NUMBER DOUBLE_NUM ID TMEIG TMAIG TIGUA TDIFE TMAIO TMENO AND OR STRING ADD MULTIPLY DIVIDE SUBTRACT RETURN 
 TAPAR TFPAR TACHA TFCHA TPEVI TATRI TVIRG
 
 %type <nd_obj> Programa ListaFuncoes DeclParametros BlocoPrincipal Declaracoes Tipo ListaId Bloco ListaCmd Comando Retorno Funcao
@@ -98,7 +98,7 @@ ListaId: ListaId TVIRG ID {
 ;
 
 Tipo: INT { insert_type(); }
-| FLOAT { insert_type(); }
+| DOUBLE { insert_type(); }
 | STRING{ insert_type(); }
 ;
 
@@ -118,7 +118,7 @@ Comando: CmdSe { $$.comando = criarComando(CMD_IF); $$.comando->tipoComando.ifCm
 ;
 
 value: NUMBER { add('C', "int"); }
-| FLOAT_NUM { add('C', "double"); }
+| DOUBLE_NUM { add('C', "double"); }
 | STRING { add('C', "string"); }
 | ID
 ;
@@ -194,29 +194,26 @@ ExpressaoAritmetica: ExpressaoAritmetica OperadoresAritmeticos ExpressaoAritmeti
 %%
 
 int main() {
-	//raizArvore = criarRaiz();
 	yyparse();
-	//Tabela de Símbolos
-	printf("\n\n");;
-	printf("\t\tPHASE 1: LEXICAL ANALYSIS \n\n");
-	printf("\nSYMBOL   DATATYPE   TYPE   LINE NUMBER \n");
-	printf("_______________________________________\n\n");
+	
+	struct funcao *atual = head->funcao;
 
-	printf("__________________TABELA COMPLETA_____________________\n\n");
+	while(atual != NULL) {
+		imprimirTabelaCompleta(atual->blocoPrincipal->tabelaSimbolos);
+		printf("\n\n\n");
+		atual = atual->next;
+	}
 
-	printf("\n\n");
 	if(head == NULL)
 		printf("NULLLL");
-	printf("\t\t\t\t\t\t PHASE 2: SYNTAX ANALYSIS \n\n");
-	printf("\n\n");
 	
-	imprimir(head);
+	//imprimir(head); //Imprime o código
 
 	//Verificacao semantica
 	verificarSemantica(head);
 
+	//Liberar memoria
 	free(tabelaSimbolosMain);
-
 	free(head);
 }
 
@@ -704,7 +701,6 @@ void verificarSemantica(struct raiz* raiz) {
 	verificarMultiplasFuncoes(atual);
 
 	while(atual != NULL) {
-		imprimirTabelaCompleta(atual->blocoPrincipal->tabelaSimbolos);
 		/* if(atual->parametros != NULL)
 			printf("%s %s", atual->tipoRetorno, atual->nome);
 		else
@@ -731,17 +727,18 @@ void verificarListaCmd(struct listaCmd *listaCmd, struct tabelaSimbolos *tabelaS
 			switch (listaCmd->comando->identificador) {
 				case CMD_ATRIB:
 					verificarAtribuicao(listaCmd->comando->tipoComando.atribuicao, tabelaSimbolos);
+					imprimirAtribuicao(listaCmd->comando->tipoComando.atribuicao);
 					break;
-				/* case CMD_NODE:
-					verificarNode(listaCmd->comando->tipoComando.node);
+				case CMD_NODE:
+					//printNode(listaCmd->comando->tipoComando.node);
 					break;
 				case CMD_WHILE:
-					verificarWhileCmd(listaCmd->comando->tipoComando.whileCmd);
+					validarExpressoes(listaCmd->comando->tipoComando.whileCmd->condition, tabelaSimbolos);
 					break;
+				
 				case CMD_IF:
-					verificarIfCmd(listaCmd->comando->tipoComando.ifCmd);
+					validarExpressoes(listaCmd->comando->tipoComando.ifCmd->condition, tabelaSimbolos);
 					break;
-					*/
 				case CMD_CHAMADAFUNCAO:
 					verificarChamadaFuncao(listaCmd->comando->tipoComando.chamadaFuncao);
 					break;
@@ -756,12 +753,16 @@ void verificarListaCmd(struct listaCmd *listaCmd, struct tabelaSimbolos *tabelaS
 
 void verificarAtribuicao(struct atribuicao *atribuicao, struct tabelaSimbolos *tabelaSimbolos) {
 	if (atribuicao != NULL) {
-		int q = variavelJaDeclarada(tabelaSimbolos, atribuicao->nome);
-		if(q == 0) {
+
+		struct tabelaSimbolos* registro = buscarNaTabela(tabelaSimbolos, atribuicao->nome);
+
+		if(registro == NULL) {
 			char msg[100];
 			sprintf(msg, "Variável não declarada: %s.", atribuicao->nome);
 			throwSemanticError(msg);
 		}
+		else
+			validaTipos(atribuicao->node, registro->tipoDado, tabelaSimbolos);	
 	}
 }
 
@@ -810,20 +811,37 @@ void verificarChamadaFuncao(struct chamadaFuncao* chamadaFuncao) {
 		struct funcao* funcao = buscarFuncao(chamadaFuncao->nome);
 		if(funcao == NULL) {
 			char msg[100];
-			sprintf(msg, "Função %s não declarada.", chamadaFuncao->nome);
+			sprintf(msg, "Função *%s* não declarada.", chamadaFuncao->nome);
 			throwSemanticError(msg);
+			return;
 		}
 		if(chamadaFuncao->parametros != NULL) {
 			struct node* parametros = chamadaFuncao->parametros;
-			while(parametros != NULL) {
-				countParameters++;
-				parametros = parametros->right;
+			int qtdParemtrosChamadaFuncao = contarNosParametros(parametros);
+			int qtdParametrosFuncao = 0;
+
+			struct parametro* atual = funcao->parametros;
+
+			while(atual != NULL) {
+				qtdParametrosFuncao++;
+				atual = atual->next;
 			}
-			if(countParameters != contarParametros(funcao->parametros)) {
+
+			if(countParameters != qtdParametrosFuncao) {
 				char msg[100];
-				sprintf(msg, "Número incorreto de parâmetros na chamada da função %s. Esperado: %d, Recebido: %d", chamadaFuncao->nome, contarParametros(funcao->parametros), countParameters);
+				sprintf(msg, "Número incorreto de parâmetros na chamada da função %s. Esperado: %d, Recebido: %d", chamadaFuncao->nome, qtdParametrosFuncao, qtdParemtrosChamadaFuncao);
 				throwSemanticError(msg);
 			}
+
+			atual = funcao->parametros;
+			int numeroParametro = 0; 
+			while(atual != NULL) {
+				numeroParametro ++; 
+				struct tabelaSimbolos* registro = buscarNaTabela(funcao->blocoPrincipal->tabelaSimbolos, atual->nome);
+				validaTipagemParametros(parametros, registro->tipoDado, funcao->blocoPrincipal->tabelaSimbolos, numeroParametro);
+				atual = atual->next;
+			}
+			
 		}
 	}
 }
@@ -847,3 +865,123 @@ int contarParametros(struct parametro* parametros) {
 	}
 	return count;
 }
+
+struct tabelaSimbolos* buscarNaTabela(struct tabelaSimbolos *tabela, const char *nome) {
+    struct tabelaSimbolos *atual = tabela;
+    while (atual != NULL) {
+        if (strcmp(atual->nome, nome) == 0) {
+            return atual;
+        }
+        atual = atual->next;
+    }
+    return NULL;
+}
+
+void validaTipos(struct node *tree, char *tipoDado, struct tabelaSimbolos *tabelaSimbolos) {
+	if (tree == NULL) {
+		return;
+	}
+	
+	validaTipos(tree->left, tipoDado, tabelaSimbolos);
+	
+	if (tree->token != NULL) {
+		struct tabelaSimbolos* registro = buscarNaTabela(tabelaSimbolos, tree->token);
+		if (registro != NULL && strcmp(registro->tipoDado, tipoDado) != 0) {
+			char msg[100];
+			sprintf(msg, "Tipo incorreto. Esperado: %s, Recebido: %s. Linha: %d", tipoDado, registro->tipoDado, registro->linha);
+			throwSemanticError(msg);
+		}
+	}
+	
+	validaTipos(tree->right, tipoDado, tabelaSimbolos);
+}
+
+int contarNosParametros(struct node *tree) {
+	if (tree == NULL) {
+		return 0;
+    }
+
+    int count = 0;
+
+    // Count the current node only if its token is populated
+    if (tree->token != NULL && strcmp(tree->token, ",") != 0){
+        count = 1;
+    }
+
+    // Recursively count the nodes in the left and right subtrees
+    count += contarNosParametros(tree->left);
+    count += contarNosParametros(tree->right);
+
+    return count;
+}
+
+int validaTipagemParametros(struct node *tree, char *tipoDado, struct tabelaSimbolos *tabelaSimbolos, int numeroParametro) {
+	if (tree == NULL) {
+		return 0;
+    }
+
+    int count = 0;
+
+    // Count the current node only if its token is populated
+    if (tree->token != NULL && strcmp(tree->token, ",") != 0){
+		count = 1;
+		
+		if(count == numeroParametro) {
+				//verificar
+			struct tabelaSimbolos* registro = buscarNaTabela(tabelaSimbolos, tree->token);
+			if(registro != NULL && strcmp(registro->tipoDado, tipoDado) != 0){
+				char msg[100];
+				sprintf(msg, "Tipo parametro incorreto. Esperado: %s, Recebido: %s. Linha: %d", tipoDado, registro->tipoDado, registro->linha);
+				throwSemanticError(msg);
+			}
+		}
+    }
+
+    // Recursively count the nodes in the left and right subtrees
+    count += contarNosParametros(tree->left);
+    count += contarNosParametros(tree->right);
+
+    return count;
+}
+
+void validarExpressoes(struct node *tree, struct tabelaSimbolos *tabelaSimbolos) {
+
+	
+	if (tree == NULL) {
+		return;
+	}
+
+	if (strcmp(tree->token, ">") == 0 || strcmp(tree->token, "<") == 0 ||
+		strcmp(tree->token, ">=") == 0 || strcmp(tree->token, "<=") == 0 ||
+		strcmp(tree->token, "==") == 0 || strcmp(tree->token, "!=") == 0) {
+		struct node *left = tree->left;
+		struct node *right = tree->right;
+
+		if (left != NULL && right != NULL) {
+			struct tabelaSimbolos *leftSymbol = buscarNaTabela(tabelaSimbolos, left->token);
+			struct tabelaSimbolos *rightSymbol = buscarNaTabela(tabelaSimbolos, right->token);
+
+			if(leftSymbol == NULL) {
+				char msg[100];
+				sprintf(msg, "Variável não declarada: %s.", left->token);
+				throwSemanticError(msg);
+			}
+
+			if(rightSymbol == NULL) {
+				char msg[100];
+				sprintf(msg, "Variável não declarada: %s.", right->token);
+				throwSemanticError(msg);
+			}
+
+			if (leftSymbol != NULL && rightSymbol != NULL) {
+				if (strcmp(leftSymbol->tipoDado, rightSymbol->tipoDado) != 0) {
+					printf("Erro: Comparação entre tipos incompatíveis. %s %s %s\n", leftSymbol->tipoDado, tree->token, rightSymbol->tipoDado);
+				}
+			}
+		}
+	}
+
+	validarExpressoes(tree->left, tabelaSimbolos);
+	validarExpressoes(tree->right, tabelaSimbolos);
+}
+

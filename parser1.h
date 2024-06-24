@@ -66,7 +66,11 @@ int buscarLinhaSimbolo(struct tabelaSimbolos *tabela, const char *nome);
 void verificarChamadaFuncao(struct chamadaFuncao *chamadaFuncao);
 int contarParametros(struct parametro *parametros);
 struct funcao *buscarFuncao(char *nome);
-
+struct tabelaSimbolos *buscarNaTabela(struct tabelaSimbolos *tabela, const char *nome);
+void validaTipos(struct node *tree, char *tipo, struct tabelaSimbolos *tabelaSimbolos);
+int contarNosParametros(struct node *root);
+int validaTipagemParametros(struct node *tree, char *tipoDado, struct tabelaSimbolos *tabelaSimbolos, int numeroParametro);
+void validarExpressoes(struct node *tree, struct tabelaSimbolos *tabelaSimbolos);
 int count = 0;
 int q;
 char type[10];

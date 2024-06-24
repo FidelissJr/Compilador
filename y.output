@@ -59,7 +59,7 @@ Grammar
    20        | ID
 
    21 Tipo: INT
-   22     | FLOAT
+   22     | DOUBLE
    23     | STRING
 
    24 ListaCmd: ListaCmd Comando
@@ -74,7 +74,7 @@ Grammar
    32        | Retorno
 
    33 value: NUMBER
-   34      | FLOAT_NUM
+   34      | DOUBLE_NUM
    35      | STRING
    36      | ID
 
@@ -141,12 +141,12 @@ Terminals, with rules where they appear
     PRINT <nd_obj> (260) 46 47
     READ <nd_obj> (261) 48
     INT <nd_obj> (262) 21
-    FLOAT <nd_obj> (263) 22
+    DOUBLE <nd_obj> (263) 22
     WHILE <nd_obj> (264) 40
     IF <nd_obj> (265) 42 43
     ELSE <nd_obj> (266) 43
     NUMBER <nd_obj> (267) 33
-    FLOAT_NUM <nd_obj> (268) 34
+    DOUBLE_NUM <nd_obj> (268) 34
     ID <nd_obj> (269) 6 8 13 19 20 36 44 45 48 50 51
     TMEIG <nd_obj> (270) 62
     TMAIG <nd_obj> (271) 63
@@ -279,7 +279,7 @@ State 0
 
     VOID    shift, and go to state 1
     INT     shift, and go to state 2
-    FLOAT   shift, and go to state 3
+    DOUBLE  shift, and go to state 3
     STRING  shift, and go to state 4
     TACHA   shift, and go to state 5
 
@@ -307,7 +307,7 @@ State 2
 
 State 3
 
-   22 Tipo: FLOAT •
+   22 Tipo: DOUBLE •
 
     $default  reduce using rule 22 (Tipo)
 
@@ -327,7 +327,7 @@ State 5
     PRINT   shift, and go to state 12
     READ    shift, and go to state 13
     INT     shift, and go to state 2
-    FLOAT   shift, and go to state 3
+    DOUBLE  shift, and go to state 3
     WHILE   shift, and go to state 14
     IF      shift, and go to state 15
     ID      shift, and go to state 16
@@ -363,7 +363,7 @@ State 7
 
     VOID    shift, and go to state 1
     INT     shift, and go to state 2
-    FLOAT   shift, and go to state 3
+    DOUBLE  shift, and go to state 3
     STRING  shift, and go to state 4
     TACHA   shift, and go to state 5
 
@@ -449,11 +449,11 @@ State 17
    38        | RETURN • STRING TPEVI
    39        | RETURN • TPEVI
 
-    NUMBER     shift, and go to state 41
-    FLOAT_NUM  shift, and go to state 42
-    ID         shift, and go to state 43
-    STRING     shift, and go to state 44
-    TPEVI      shift, and go to state 45
+    NUMBER      shift, and go to state 41
+    DOUBLE_NUM  shift, and go to state 42
+    ID          shift, and go to state 43
+    STRING      shift, and go to state 44
+    TPEVI       shift, and go to state 45
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -468,7 +468,7 @@ State 18
     PRINT   shift, and go to state 12
     READ    shift, and go to state 13
     INT     shift, and go to state 2
-    FLOAT   shift, and go to state 3
+    DOUBLE  shift, and go to state 3
     WHILE   shift, and go to state 14
     IF      shift, and go to state 15
     ID      shift, and go to state 16
@@ -631,10 +631,10 @@ State 35
    46 CmdEscrita: PRINT TAPAR • STRING TFPAR TPEVI
    47           | PRINT TAPAR • ExpressaoAritmetica TFPAR TPEVI
 
-    NUMBER     shift, and go to state 41
-    FLOAT_NUM  shift, and go to state 42
-    ID         shift, and go to state 43
-    STRING     shift, and go to state 58
+    NUMBER      shift, and go to state 41
+    DOUBLE_NUM  shift, and go to state 42
+    ID          shift, and go to state 43
+    STRING      shift, and go to state 58
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -652,10 +652,10 @@ State 37
 
    40 CmdEnquanto: WHILE TAPAR • ExpressaoLogica TFPAR Bloco
 
-    NUMBER     shift, and go to state 41
-    FLOAT_NUM  shift, and go to state 42
-    ID         shift, and go to state 43
-    STRING     shift, and go to state 61
+    NUMBER      shift, and go to state 41
+    DOUBLE_NUM  shift, and go to state 42
+    ID          shift, and go to state 43
+    STRING      shift, and go to state 61
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -669,10 +669,10 @@ State 38
    42 CmdSe: IF TAPAR • ExpressaoLogica TFPAR Bloco
    43      | IF TAPAR • ExpressaoLogica TFPAR Bloco ELSE Bloco
 
-    NUMBER     shift, and go to state 41
-    FLOAT_NUM  shift, and go to state 42
-    ID         shift, and go to state 43
-    STRING     shift, and go to state 61
+    NUMBER      shift, and go to state 41
+    DOUBLE_NUM  shift, and go to state 42
+    ID          shift, and go to state 43
+    STRING      shift, and go to state 61
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -686,11 +686,11 @@ State 39
    50 ChamadaFuncao: ID TAPAR • ListaParametros TFPAR
    51              | ID TAPAR • TFPAR
 
-    NUMBER     shift, and go to state 41
-    FLOAT_NUM  shift, and go to state 42
-    ID         shift, and go to state 43
-    STRING     shift, and go to state 66
-    TFPAR      shift, and go to state 67
+    NUMBER      shift, and go to state 41
+    DOUBLE_NUM  shift, and go to state 42
+    ID          shift, and go to state 43
+    STRING      shift, and go to state 66
+    TFPAR       shift, and go to state 67
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -703,10 +703,10 @@ State 40
    44 CmdAtrib: ID TATRI • ExpressaoAritmetica TPEVI
    45         | ID TATRI • STRING TPEVI
 
-    NUMBER     shift, and go to state 41
-    FLOAT_NUM  shift, and go to state 42
-    ID         shift, and go to state 43
-    STRING     shift, and go to state 70
+    NUMBER      shift, and go to state 41
+    DOUBLE_NUM  shift, and go to state 42
+    ID          shift, and go to state 43
+    STRING      shift, and go to state 70
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -722,7 +722,7 @@ State 41
 
 State 42
 
-   34 value: FLOAT_NUM •
+   34 value: DOUBLE_NUM •
 
     $default  reduce using rule 34 (value)
 
@@ -1072,10 +1072,10 @@ State 78
 
    71 ExpressaoAritmetica: ExpressaoAritmetica OperadoresAritmeticos • ExpressaoAritmetica
 
-    NUMBER     shift, and go to state 41
-    FLOAT_NUM  shift, and go to state 42
-    ID         shift, and go to state 43
-    STRING     shift, and go to state 61
+    NUMBER      shift, and go to state 41
+    DOUBLE_NUM  shift, and go to state 42
+    ID          shift, and go to state 43
+    STRING      shift, and go to state 61
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -1108,7 +1108,7 @@ State 82
     6 Funcao: TipoRetorno ID $@1 TAPAR • DeclParametros TFPAR BlocoPrincipal
 
     INT     shift, and go to state 2
-    FLOAT   shift, and go to state 3
+    DOUBLE  shift, and go to state 3
     STRING  shift, and go to state 4
 
     DeclParametros  go to state 105
@@ -1171,10 +1171,10 @@ State 90
 
    69 ExpressaoLogica: ExpressaoLogica OperadoresLogicos • ExpressaoLogica
 
-    NUMBER     shift, and go to state 41
-    FLOAT_NUM  shift, and go to state 42
-    ID         shift, and go to state 43
-    STRING     shift, and go to state 61
+    NUMBER      shift, and go to state 41
+    DOUBLE_NUM  shift, and go to state 42
+    ID          shift, and go to state 43
+    STRING      shift, and go to state 61
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -1229,10 +1229,10 @@ State 97
 
    68 expressaoRelacional: ExpressaoAritmetica OperadoresRelacionais • ExpressaoAritmetica
 
-    NUMBER     shift, and go to state 41
-    FLOAT_NUM  shift, and go to state 42
-    ID         shift, and go to state 43
-    STRING     shift, and go to state 61
+    NUMBER      shift, and go to state 41
+    DOUBLE_NUM  shift, and go to state 42
+    ID          shift, and go to state 43
+    STRING      shift, and go to state 61
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -1261,10 +1261,10 @@ State 100
    52 ListaParametros: ListaParametros TVIRG • ExpressaoAritmetica
    53                | ListaParametros TVIRG • STRING
 
-    NUMBER     shift, and go to state 41
-    FLOAT_NUM  shift, and go to state 42
-    ID         shift, and go to state 43
-    STRING     shift, and go to state 117
+    NUMBER      shift, and go to state 41
+    DOUBLE_NUM  shift, and go to state 42
+    ID          shift, and go to state 43
+    STRING      shift, and go to state 117
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -1475,7 +1475,7 @@ State 120
    11 DeclParametros: DeclParametros TVIRG • Parametro
 
     INT     shift, and go to state 2
-    FLOAT   shift, and go to state 3
+    DOUBLE  shift, and go to state 3
     STRING  shift, and go to state 4
 
     Parametro  go to state 126

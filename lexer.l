@@ -12,14 +12,14 @@ digito [0-9]
 "read"                     {strcpy(yylval.nd_obj.nome,(yytext)); return READ; }
 "print"                    {strcpy(yylval.nd_obj.nome,(yytext)); return PRINT; }
 "int"                      {strcpy(yylval.nd_obj.nome,(yytext)); return INT; }
-"float"                    {strcpy(yylval.nd_obj.nome,(yytext)); return FLOAT; }
+"double"                    {strcpy(yylval.nd_obj.nome,(yytext)); return DOUBLE; }
 "void"                     {strcpy(yylval.nd_obj.nome,(yytext)); return VOID; }
 "return"                   {strcpy(yylval.nd_obj.nome,(yytext)); return RETURN; }
 "while"                    {strcpy(yylval.nd_obj.nome,(yytext)); return WHILE; }
 "if"                       {strcpy(yylval.nd_obj.nome,(yytext)); return IF; }
 "else"                     {strcpy(yylval.nd_obj.nome,(yytext)); return ELSE; }
 [-]?{digito}+              {strcpy(yylval.nd_obj.nome,(yytext)); return NUMBER; }
-[-]?{digito}+\.{digito}+   {strcpy(yylval.nd_obj.nome,(yytext)); return FLOAT_NUM; }
+[-]?{digito}+\.{digito}+   {strcpy(yylval.nd_obj.nome,(yytext)); return DOUBLE_NUM; }
 {letras}({letras}|{digito})* {strcpy(yylval.nd_obj.nome,(yytext)); return ID; }
 "<="                       {strcpy(yylval.nd_obj.nome,(yytext)); return TMEIG; }
 ">="                       {strcpy(yylval.nd_obj.nome,(yytext)); return TMAIG; }
