@@ -1919,7 +1919,7 @@ int main() {
 	if(head == NULL)
 		printf("NULLLL");
 	
-	//imprimir(head); //Imprime o código
+	imprimir(head); //Imprime o código
 
 	//Verificacao semantica
 	verificarSemantica(head);
@@ -2264,7 +2264,8 @@ void imprimir(struct raiz* raiz) {
 
 		struct tabelaSimbolos *tabelaAtual = atual->blocoPrincipal->tabelaSimbolos;
 		while(tabelaAtual != NULL) {
-			printf("%s %s;\n", tabelaAtual->tipoDado, tabelaAtual->nome);
+			if(strcmp(tabelaAtual->tipo, "Variable") == 0 && tabelaAtual->linha != 1)
+				printf("%s %s;\n", tabelaAtual->tipoDado, tabelaAtual->nome);
 			tabelaAtual = tabelaAtual->next;
 		}
 
@@ -2413,22 +2414,10 @@ void verificarSemantica(struct raiz* raiz) {
 	verificarMultiplasFuncoes(atual);
 
 	while(atual != NULL) {
-		/* if(atual->parametros != NULL)
-			printf("%s %s", atual->tipoRetorno, atual->nome);
-		else
-			printf("{\n");
-		struct parametro *parametroAtual = atual->parametros;
-		while(parametroAtual != NULL) {
-			printf("(%s %s){\n", parametroAtual->tipo, parametroAtual->nome);
-			parametroAtual = parametroAtual->next;
-		} */
-
 		struct tabelaSimbolos *tabelaAtual = atual->blocoPrincipal->tabelaSimbolos;
 
 		struct listaCmd *listaCmdAtual = atual->blocoPrincipal->listaCmd;
 		verificarListaCmd(listaCmdAtual, tabelaAtual);
-	
-		printf("\n\n\n\n\n");
 		atual = atual->next;
 	}
 }
