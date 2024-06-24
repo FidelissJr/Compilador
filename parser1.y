@@ -198,22 +198,23 @@ int main() {
 	
 	struct funcao *atual = head->funcao;
 
-	while(atual != NULL) {
+	/* while(atual != NULL) {
 		imprimirTabelaCompleta(atual->blocoPrincipal->tabelaSimbolos);
 		printf("\n\n\n");
 		atual = atual->next;
-	}
+	} */
 
 	if(head == NULL)
 		printf("NULLLL");
 	
-	imprimir(head); //Imprime o código
+	//imprimir(head); //Imprime o código
 
 	//Verificacao semantica
 	verificarSemantica(head);
 
 	//Liberar memoria
 	free(tabelaSimbolosMain);
+	free(tabelaSimbolosFuncoesMain);
 	free(head);
 }
 
@@ -489,11 +490,11 @@ struct whileCmd *criarWhileCmd(struct node *condition, struct bloco *bloco) {
 struct chamadaFuncao* criarChamadaFuncao(char* nome, struct node* parametros, int linha) {
 
 	struct tabelaSimbolos* registro = buscarNaTabela(tabelaSimbolosFuncoesMain, nome);
-	if(registro == NULL) {
+	/* if(registro == NULL) {
 		char msg[100];
 		sprintf(msg, "Chamada de função inexistente: %s. Linha %d", nome, linha);
 		throwSemanticError(msg);
-	}
+	} */
 
 	struct chamadaFuncao* novaChamadaFuncao = (struct chamadaFuncao*) malloc(sizeof(struct chamadaFuncao));
 	if (novaChamadaFuncao == NULL) {
@@ -691,10 +692,6 @@ void imprimirTabelaCompleta(struct tabelaSimbolos *tabela) {
 	struct tabelaSimbolos *atual = tabela;
 	while (atual != NULL) {
 		printf("%s\t%s\t%s\t%d\t\n", atual->nome, atual->tipoDado, atual->tipo, atual->linha);
-		/* printf("Nome: %s\n", atual->nome);
-		printf("Tipo de Dado: %s\n", atual->tipoDado);
-		printf("Tipo: %s\n", atual->tipo);
-		printf("Linha: %d\n", atual->linha); */
 		atual = atual->next;
 	}
 }

@@ -15,5 +15,6 @@ int fat(int n1)
 }
 {
     int a, b;
+    a = 9.7;
     fat(5, 9, 8);
 }
