@@ -242,7 +242,7 @@ void add(char c, char*tipo) {
 		tabelaSimbolosMain = adicionarTabelaSimbolos(tabelaSimbolosMain, yytext, tipo, "Constant", yylineno);
 	}
 	else if(c == 'F') {
-		tabelaSimbolosMain = adicionarTabelaSimbolos(tabelaSimbolosMain, yytext, type, "Function", yylineno);
+		tabelaSimbolosFuncoesMain = adicionarTabelaSimbolos(tabelaSimbolosMain, yytext, type, "Function", yylineno);
 	}
 	}
 	else{
@@ -488,9 +488,8 @@ struct whileCmd *criarWhileCmd(struct node *condition, struct bloco *bloco) {
 
 struct chamadaFuncao* criarChamadaFuncao(char* nome, struct node* parametros, int linha) {
 
-	int q = search(nome);
-
-	if(q == 0) {
+	struct tabelaSimbolos* registro = buscarNaTabela(tabelaSimbolosFuncoesMain, nome);
+	if(registro == NULL) {
 		char msg[100];
 		sprintf(msg, "Chamada de função inexistente: %s. Linha %d", nome, linha);
 		throwSemanticError(msg);
@@ -525,6 +524,8 @@ void printChamadaFuncao(struct chamadaFuncao* chamadaFuncao) {
 			printNode(chamadaFuncao->parametros);
 		}
 		printf(");\n");
+	} else {
+		printf("Error: Invalid function call.\n");
 	}
 }
 
@@ -540,15 +541,19 @@ void imprimir(struct raiz* raiz) {
 
 	while(atual != NULL) {
 
-		if(atual->parametros != NULL)
-			printf("%s %s", atual->tipoRetorno, atual->nome);
-		else
+		if(atual->parametros != NULL) {
+			printf("%s %s(", atual->tipoRetorno, atual->nome);
+			struct parametro *parametroAtual = atual->parametros;
+			while(parametroAtual != NULL) {
+				printf("%s %s", parametroAtual->tipo, parametroAtual->nome);
+				parametroAtual = parametroAtual->next;
+				if(parametroAtual != NULL) {
+					printf(", ");
+				}
+			}
+			printf(")");
 			printf("{\n");
-		struct parametro *parametroAtual = atual->parametros;
-		while(parametroAtual != NULL) {
-			printf("(%s %s){\n", parametroAtual->tipo, parametroAtual->nome);
-			parametroAtual = parametroAtual->next;
-		}
+		} 
 
 		struct tabelaSimbolos *tabelaAtual = atual->blocoPrincipal->tabelaSimbolos;
 		while(tabelaAtual != NULL) {
@@ -668,12 +673,16 @@ void printIfCmd(struct ifCmd *ifCmd) {
 void imprimirAtribuicao(struct atribuicao *atribuicao) {
 	if (atribuicao != NULL) {
 		if(atribuicao->node != NULL){
-		printf("%s = ", atribuicao->nome);
-		printNode(atribuicao->node);
-		printf(";\n");
-		}
-		else if(atribuicao->chamadaFuncao != NULL){
-			printChamadaFuncao(atribuicao->chamadaFuncao);
+			if(atribuicao->nome != NULL) {
+				printf("%s = ", atribuicao->nome);
+			}
+			if(atribuicao->chamadaFuncao != NULL){
+				printChamadaFuncao(atribuicao->chamadaFuncao);
+			}
+			else {
+				printNode(atribuicao->node);
+			}
+			printf(";\n");
 		}
 	}
 }
@@ -708,6 +717,8 @@ void verificarSemantica(struct raiz* raiz) {
 		verificarListaCmd(listaCmdAtual, tabelaAtual);
 		atual = atual->next;
 	}
+
+	imprimir(raiz);
 }
 
 void verificarListaCmd(struct listaCmd *listaCmd, struct tabelaSimbolos *tabelaSimbolos) {
@@ -819,7 +830,7 @@ void verificarChamadaFuncao(struct chamadaFuncao* chamadaFuncao) {
 				atual = atual->next;
 			}
 
-			if(countParameters != qtdParametrosFuncao) {
+			if(qtdParemtrosChamadaFuncao != qtdParametrosFuncao) {
 				char msg[100];
 				sprintf(msg, "Número incorreto de parâmetros na chamada da função %s. Esperado: %d, Recebido: %d", chamadaFuncao->nome, qtdParametrosFuncao, qtdParemtrosChamadaFuncao);
 				throwSemanticError(msg);
@@ -986,11 +997,17 @@ void intDoubleConverter(struct node *tree, char *tipoDado, struct tabelaSimbolos
 
 		if(registro != NULL){
 			if(strcmp(registro->tipoDado, "int") == 0 && strcmp(tipoDado, "double") == 0) {
+				struct node* newNode = criarNode(NULL, tree->left, "(double)");
+				tree->left = newNode;
+				
 				char msg[100];
 				sprintf(msg, "Conversão implícita de int para double. Linha: %d", registro->linha);
 				throwSemanticError(msg);
 			}
 			else if(strcmp(registro->tipoDado, "double") == 0 && strcmp(tipoDado, "int") == 0) {
+				struct node* newNode = criarNode(NULL, tree->left, "(int)");
+				tree->left = newNode;
+
 				char msg[100];
 				sprintf(msg, "Conversão implícita de double para int. Linha: %d", registro->linha);
 				throwSemanticError(msg);

@@ -80,6 +80,7 @@ extern int yylineno;
 
 // Tabela Sintatica Abstrata
 struct tabelaSimbolos *tabelaSimbolosMain = NULL;
+struct tabelaSimbolos *tabelaSimbolosFuncoesMain = NULL;
 struct raiz
 {
     struct funcao *funcao;
