@@ -55,16 +55,16 @@ extern int yydebug;
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
     VOID = 258,                    /* VOID  */
-    CHARACTER = 259,               /* CHARACTER  */
-    PRINT = 260,                   /* PRINT  */
-    READ = 261,                    /* READ  */
-    INT = 262,                     /* INT  */
-    DOUBLE = 263,                  /* DOUBLE  */
-    WHILE = 264,                   /* WHILE  */
-    IF = 265,                      /* IF  */
-    ELSE = 266,                    /* ELSE  */
+    PRINT = 259,                   /* PRINT  */
+    READ = 260,                    /* READ  */
+    INT = 261,                     /* INT  */
+    FLOAT = 262,                   /* FLOAT  */
+    WHILE = 263,                   /* WHILE  */
+    IF = 264,                      /* IF  */
+    ELSE = 265,                    /* ELSE  */
+    STRING_VAL = 266,              /* STRING_VAL  */
     NUMBER = 267,                  /* NUMBER  */
-    DOUBLE_NUM = 268,              /* DOUBLE_NUM  */
+    FLOAT_NUM = 268,               /* FLOAT_NUM  */
     ID = 269,                      /* ID  */
     TMEIG = 270,                   /* TMEIG  */
     TMAIG = 271,                   /* TMAIG  */
@@ -96,16 +96,16 @@ extern int yydebug;
 #define YYerror 256
 #define YYUNDEF 257
 #define VOID 258
-#define CHARACTER 259
-#define PRINT 260
-#define READ 261
-#define INT 262
-#define DOUBLE 263
-#define WHILE 264
-#define IF 265
-#define ELSE 266
+#define PRINT 259
+#define READ 260
+#define INT 261
+#define FLOAT 262
+#define WHILE 263
+#define IF 264
+#define ELSE 265
+#define STRING_VAL 266
 #define NUMBER 267
-#define DOUBLE_NUM 268
+#define FLOAT_NUM 268
 #define ID 269
 #define TMEIG 270
 #define TMAIG 271

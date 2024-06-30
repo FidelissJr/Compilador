@@ -1,4 +1,4 @@
-double maior(double a, double b)
+float maior(float a, float b)
 {
     int m;
 
@@ -28,14 +28,15 @@ int fat(int n)
 
 int somatorio(int n)
 {
+    string teste;
     int i;
-    double s;
+    float s;
 
     s = 10;
     return s;
     fat(2);
 }
-void imprimir(double s, double r)
+void imprimir(string s, string r)
 {
     int s;
 
@@ -45,7 +46,7 @@ void imprimir(double s, double r)
 }
 {
     int x, num;
-    double a;
+    float a;
     print("Numero:");
     maior(1, "teste:", 2);
     fat(1, 3, 4);

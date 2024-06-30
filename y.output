@@ -1,18 +1,13 @@
-Terminals unused in grammar
-
-    CHARACTER
-
-
 Rules useless in parser due to conflicts
 
     7 $@2: ε
 
-   53 ListaParametros: ListaParametros TVIRG STRING
-   55                | STRING
+   53 ListaParametros: ListaParametros TVIRG STRING_VAL
+   55                | STRING_VAL
 
 
 State 34 conflicts: 1 reduce/reduce
-State 44 conflicts: 1 shift/reduce
+State 41 conflicts: 1 shift/reduce
 State 58 conflicts: 1 shift/reduce
 State 66 conflicts: 2 reduce/reduce
 State 70 conflicts: 1 shift/reduce
@@ -59,7 +54,7 @@ Grammar
    20        | ID
 
    21 Tipo: INT
-   22     | DOUBLE
+   22     | FLOAT
    23     | STRING
 
    24 ListaCmd: ListaCmd Comando
@@ -74,12 +69,12 @@ Grammar
    32        | Retorno
 
    33 value: NUMBER
-   34      | DOUBLE_NUM
-   35      | STRING
+   34      | FLOAT_NUM
+   35      | STRING_VAL
    36      | ID
 
    37 Retorno: RETURN ExpressaoAritmetica TPEVI
-   38        | RETURN STRING TPEVI
+   38        | RETURN STRING_VAL TPEVI
    39        | RETURN TPEVI
 
    40 CmdEnquanto: WHILE TAPAR ExpressaoLogica TFPAR Bloco
@@ -90,9 +85,9 @@ Grammar
    43      | IF TAPAR ExpressaoLogica TFPAR Bloco ELSE Bloco
 
    44 CmdAtrib: ID TATRI ExpressaoAritmetica TPEVI
-   45         | ID TATRI STRING TPEVI
+   45         | ID TATRI STRING_VAL TPEVI
 
-   46 CmdEscrita: PRINT TAPAR STRING TFPAR TPEVI
+   46 CmdEscrita: PRINT TAPAR STRING_VAL TFPAR TPEVI
    47           | PRINT TAPAR ExpressaoAritmetica TFPAR TPEVI
 
    48 CmdLeitura: READ TAPAR ID TFPAR TPEVI
@@ -103,9 +98,9 @@ Grammar
    51              | ID TAPAR TFPAR
 
    52 ListaParametros: ListaParametros TVIRG ExpressaoAritmetica
-   53                | ListaParametros TVIRG STRING
+   53                | ListaParametros TVIRG STRING_VAL
    54                | ExpressaoAritmetica
-   55                | STRING
+   55                | STRING_VAL
 
    56 OperadoresAritmeticos: ADD
    57                      | SUBTRACT
@@ -137,16 +132,16 @@ Terminals, with rules where they appear
     $end (0) 0
     error (256)
     VOID <nd_obj> (258) 10
-    CHARACTER <nd_obj> (259)
-    PRINT <nd_obj> (260) 46 47
-    READ <nd_obj> (261) 48
-    INT <nd_obj> (262) 21
-    DOUBLE <nd_obj> (263) 22
-    WHILE <nd_obj> (264) 40
-    IF <nd_obj> (265) 42 43
-    ELSE <nd_obj> (266) 43
+    PRINT <nd_obj> (259) 46 47
+    READ <nd_obj> (260) 48
+    INT <nd_obj> (261) 21
+    FLOAT <nd_obj> (262) 22
+    WHILE <nd_obj> (263) 40
+    IF <nd_obj> (264) 42 43
+    ELSE <nd_obj> (265) 43
+    STRING_VAL <nd_obj> (266) 35 38 45 46 53 55
     NUMBER <nd_obj> (267) 33
-    DOUBLE_NUM <nd_obj> (268) 34
+    FLOAT_NUM <nd_obj> (268) 34
     ID <nd_obj> (269) 6 8 13 19 20 36 44 45 48 50 51
     TMEIG <nd_obj> (270) 62
     TMAIG <nd_obj> (271) 63
@@ -156,7 +151,7 @@ Terminals, with rules where they appear
     TMENO <nd_obj> (275) 60
     AND <nd_obj> (276) 66
     OR <nd_obj> (277) 67
-    STRING <nd_obj> (278) 23 35 38 45 46 53 55
+    STRING <nd_obj> (278) 23
     ADD <nd_obj> (279) 56
     MULTIPLY <nd_obj> (280) 58
     DIVIDE <nd_obj> (281) 59
@@ -279,7 +274,7 @@ State 0
 
     VOID    shift, and go to state 1
     INT     shift, and go to state 2
-    DOUBLE  shift, and go to state 3
+    FLOAT   shift, and go to state 3
     STRING  shift, and go to state 4
     TACHA   shift, and go to state 5
 
@@ -307,7 +302,7 @@ State 2
 
 State 3
 
-   22 Tipo: DOUBLE •
+   22 Tipo: FLOAT •
 
     $default  reduce using rule 22 (Tipo)
 
@@ -327,7 +322,7 @@ State 5
     PRINT   shift, and go to state 12
     READ    shift, and go to state 13
     INT     shift, and go to state 2
-    DOUBLE  shift, and go to state 3
+    FLOAT   shift, and go to state 3
     WHILE   shift, and go to state 14
     IF      shift, and go to state 15
     ID      shift, and go to state 16
@@ -363,7 +358,7 @@ State 7
 
     VOID    shift, and go to state 1
     INT     shift, and go to state 2
-    DOUBLE  shift, and go to state 3
+    FLOAT   shift, and go to state 3
     STRING  shift, and go to state 4
     TACHA   shift, and go to state 5
 
@@ -404,7 +399,7 @@ State 11
 
 State 12
 
-   46 CmdEscrita: PRINT • TAPAR STRING TFPAR TPEVI
+   46 CmdEscrita: PRINT • TAPAR STRING_VAL TFPAR TPEVI
    47           | PRINT • TAPAR ExpressaoAritmetica TFPAR TPEVI
 
     TAPAR  shift, and go to state 35
@@ -435,7 +430,7 @@ State 15
 State 16
 
    44 CmdAtrib: ID • TATRI ExpressaoAritmetica TPEVI
-   45         | ID • TATRI STRING TPEVI
+   45         | ID • TATRI STRING_VAL TPEVI
    50 ChamadaFuncao: ID • TAPAR ListaParametros TFPAR
    51              | ID • TAPAR TFPAR
 
@@ -446,13 +441,13 @@ State 16
 State 17
 
    37 Retorno: RETURN • ExpressaoAritmetica TPEVI
-   38        | RETURN • STRING TPEVI
+   38        | RETURN • STRING_VAL TPEVI
    39        | RETURN • TPEVI
 
-    NUMBER      shift, and go to state 41
-    DOUBLE_NUM  shift, and go to state 42
-    ID          shift, and go to state 43
-    STRING      shift, and go to state 44
+    STRING_VAL  shift, and go to state 41
+    NUMBER      shift, and go to state 42
+    FLOAT_NUM   shift, and go to state 43
+    ID          shift, and go to state 44
     TPEVI       shift, and go to state 45
 
     value                go to state 46
@@ -468,7 +463,7 @@ State 18
     PRINT   shift, and go to state 12
     READ    shift, and go to state 13
     INT     shift, and go to state 2
-    DOUBLE  shift, and go to state 3
+    FLOAT   shift, and go to state 3
     WHILE   shift, and go to state 14
     IF      shift, and go to state 15
     ID      shift, and go to state 16
@@ -628,13 +623,13 @@ State 34
 
 State 35
 
-   46 CmdEscrita: PRINT TAPAR • STRING TFPAR TPEVI
+   46 CmdEscrita: PRINT TAPAR • STRING_VAL TFPAR TPEVI
    47           | PRINT TAPAR • ExpressaoAritmetica TFPAR TPEVI
 
-    NUMBER      shift, and go to state 41
-    DOUBLE_NUM  shift, and go to state 42
-    ID          shift, and go to state 43
-    STRING      shift, and go to state 58
+    STRING_VAL  shift, and go to state 58
+    NUMBER      shift, and go to state 42
+    FLOAT_NUM   shift, and go to state 43
+    ID          shift, and go to state 44
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -652,10 +647,10 @@ State 37
 
    40 CmdEnquanto: WHILE TAPAR • ExpressaoLogica TFPAR Bloco
 
-    NUMBER      shift, and go to state 41
-    DOUBLE_NUM  shift, and go to state 42
-    ID          shift, and go to state 43
-    STRING      shift, and go to state 61
+    STRING_VAL  shift, and go to state 61
+    NUMBER      shift, and go to state 42
+    FLOAT_NUM   shift, and go to state 43
+    ID          shift, and go to state 44
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -669,10 +664,10 @@ State 38
    42 CmdSe: IF TAPAR • ExpressaoLogica TFPAR Bloco
    43      | IF TAPAR • ExpressaoLogica TFPAR Bloco ELSE Bloco
 
-    NUMBER      shift, and go to state 41
-    DOUBLE_NUM  shift, and go to state 42
-    ID          shift, and go to state 43
-    STRING      shift, and go to state 61
+    STRING_VAL  shift, and go to state 61
+    NUMBER      shift, and go to state 42
+    FLOAT_NUM   shift, and go to state 43
+    ID          shift, and go to state 44
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -686,10 +681,10 @@ State 39
    50 ChamadaFuncao: ID TAPAR • ListaParametros TFPAR
    51              | ID TAPAR • TFPAR
 
-    NUMBER      shift, and go to state 41
-    DOUBLE_NUM  shift, and go to state 42
-    ID          shift, and go to state 43
-    STRING      shift, and go to state 66
+    STRING_VAL  shift, and go to state 66
+    NUMBER      shift, and go to state 42
+    FLOAT_NUM   shift, and go to state 43
+    ID          shift, and go to state 44
     TFPAR       shift, and go to state 67
 
     value                go to state 46
@@ -701,12 +696,12 @@ State 39
 State 40
 
    44 CmdAtrib: ID TATRI • ExpressaoAritmetica TPEVI
-   45         | ID TATRI • STRING TPEVI
+   45         | ID TATRI • STRING_VAL TPEVI
 
-    NUMBER      shift, and go to state 41
-    DOUBLE_NUM  shift, and go to state 42
-    ID          shift, and go to state 43
-    STRING      shift, and go to state 70
+    STRING_VAL  shift, and go to state 70
+    NUMBER      shift, and go to state 42
+    FLOAT_NUM   shift, and go to state 43
+    ID          shift, and go to state 44
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -715,19 +710,30 @@ State 40
 
 State 41
 
+   35 value: STRING_VAL •
+   38 Retorno: RETURN STRING_VAL • TPEVI
+
+    TPEVI  shift, and go to state 72
+
+    TPEVI     [reduce using rule 35 (value)]
+    $default  reduce using rule 35 (value)
+
+
+State 42
+
    33 value: NUMBER •
 
     $default  reduce using rule 33 (value)
 
 
-State 42
+State 43
 
-   34 value: DOUBLE_NUM •
+   34 value: FLOAT_NUM •
 
     $default  reduce using rule 34 (value)
 
 
-State 43
+State 44
 
    36 value: ID •
    50 ChamadaFuncao: ID • TAPAR ListaParametros TFPAR
@@ -736,17 +742,6 @@ State 43
     TAPAR  shift, and go to state 39
 
     $default  reduce using rule 36 (value)
-
-
-State 44
-
-   35 value: STRING •
-   38 Retorno: RETURN STRING • TPEVI
-
-    TPEVI  shift, and go to state 72
-
-    TPEVI     [reduce using rule 35 (value)]
-    $default  reduce using rule 35 (value)
 
 
 State 45
@@ -868,8 +863,8 @@ State 57
 
 State 58
 
-   35 value: STRING •
-   46 CmdEscrita: PRINT TAPAR STRING • TFPAR TPEVI
+   35 value: STRING_VAL •
+   46 CmdEscrita: PRINT TAPAR STRING_VAL • TFPAR TPEVI
 
     TFPAR  shift, and go to state 84
 
@@ -900,7 +895,7 @@ State 60
 
 State 61
 
-   35 value: STRING •
+   35 value: STRING_VAL •
 
     $default  reduce using rule 35 (value)
 
@@ -959,8 +954,8 @@ State 65
 
 State 66
 
-   35 value: STRING •
-   55 ListaParametros: STRING •
+   35 value: STRING_VAL •
+   55 ListaParametros: STRING_VAL •
 
     TFPAR     reduce using rule 35 (value)
     TFPAR     [reduce using rule 55 (ListaParametros)]
@@ -980,7 +975,7 @@ State 68
 
    50 ChamadaFuncao: ID TAPAR ListaParametros • TFPAR
    52 ListaParametros: ListaParametros • TVIRG ExpressaoAritmetica
-   53                | ListaParametros • TVIRG STRING
+   53                | ListaParametros • TVIRG STRING_VAL
 
     TFPAR  shift, and go to state 99
     TVIRG  shift, and go to state 100
@@ -1003,8 +998,8 @@ State 69
 
 State 70
 
-   35 value: STRING •
-   45 CmdAtrib: ID TATRI STRING • TPEVI
+   35 value: STRING_VAL •
+   45 CmdAtrib: ID TATRI STRING_VAL • TPEVI
 
     TPEVI  shift, and go to state 101
 
@@ -1028,7 +1023,7 @@ State 71
 
 State 72
 
-   38 Retorno: RETURN STRING TPEVI •
+   38 Retorno: RETURN STRING_VAL TPEVI •
 
     $default  reduce using rule 38 (Retorno)
 
@@ -1072,10 +1067,10 @@ State 78
 
    71 ExpressaoAritmetica: ExpressaoAritmetica OperadoresAritmeticos • ExpressaoAritmetica
 
-    NUMBER      shift, and go to state 41
-    DOUBLE_NUM  shift, and go to state 42
-    ID          shift, and go to state 43
-    STRING      shift, and go to state 61
+    STRING_VAL  shift, and go to state 61
+    NUMBER      shift, and go to state 42
+    FLOAT_NUM   shift, and go to state 43
+    ID          shift, and go to state 44
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -1108,7 +1103,7 @@ State 82
     6 Funcao: TipoRetorno ID $@1 TAPAR • DeclParametros TFPAR BlocoPrincipal
 
     INT     shift, and go to state 2
-    DOUBLE  shift, and go to state 3
+    FLOAT   shift, and go to state 3
     STRING  shift, and go to state 4
 
     DeclParametros  go to state 105
@@ -1125,7 +1120,7 @@ State 83
 
 State 84
 
-   46 CmdEscrita: PRINT TAPAR STRING TFPAR • TPEVI
+   46 CmdEscrita: PRINT TAPAR STRING_VAL TFPAR • TPEVI
 
     TPEVI  shift, and go to state 109
 
@@ -1171,10 +1166,10 @@ State 90
 
    69 ExpressaoLogica: ExpressaoLogica OperadoresLogicos • ExpressaoLogica
 
-    NUMBER      shift, and go to state 41
-    DOUBLE_NUM  shift, and go to state 42
-    ID          shift, and go to state 43
-    STRING      shift, and go to state 61
+    STRING_VAL  shift, and go to state 61
+    NUMBER      shift, and go to state 42
+    FLOAT_NUM   shift, and go to state 43
+    ID          shift, and go to state 44
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -1229,10 +1224,10 @@ State 97
 
    68 expressaoRelacional: ExpressaoAritmetica OperadoresRelacionais • ExpressaoAritmetica
 
-    NUMBER      shift, and go to state 41
-    DOUBLE_NUM  shift, and go to state 42
-    ID          shift, and go to state 43
-    STRING      shift, and go to state 61
+    STRING_VAL  shift, and go to state 61
+    NUMBER      shift, and go to state 42
+    FLOAT_NUM   shift, and go to state 43
+    ID          shift, and go to state 44
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -1259,12 +1254,12 @@ State 99
 State 100
 
    52 ListaParametros: ListaParametros TVIRG • ExpressaoAritmetica
-   53                | ListaParametros TVIRG • STRING
+   53                | ListaParametros TVIRG • STRING_VAL
 
-    NUMBER      shift, and go to state 41
-    DOUBLE_NUM  shift, and go to state 42
-    ID          shift, and go to state 43
-    STRING      shift, and go to state 117
+    STRING_VAL  shift, and go to state 117
+    NUMBER      shift, and go to state 42
+    FLOAT_NUM   shift, and go to state 43
+    ID          shift, and go to state 44
 
     value                go to state 46
     ChamadaFuncao        go to state 47
@@ -1273,7 +1268,7 @@ State 100
 
 State 101
 
-   45 CmdAtrib: ID TATRI STRING TPEVI •
+   45 CmdAtrib: ID TATRI STRING_VAL TPEVI •
 
     $default  reduce using rule 45 (CmdAtrib)
 
@@ -1345,7 +1340,7 @@ State 108
 
 State 109
 
-   46 CmdEscrita: PRINT TAPAR STRING TFPAR TPEVI •
+   46 CmdEscrita: PRINT TAPAR STRING_VAL TFPAR TPEVI •
 
     $default  reduce using rule 46 (CmdEscrita)
 
@@ -1436,8 +1431,8 @@ State 116
 
 State 117
 
-   35 value: STRING •
-   53 ListaParametros: ListaParametros TVIRG STRING •
+   35 value: STRING_VAL •
+   53 ListaParametros: ListaParametros TVIRG STRING_VAL •
 
     TFPAR     reduce using rule 35 (value)
     TFPAR     [reduce using rule 53 (ListaParametros)]
@@ -1475,7 +1470,7 @@ State 120
    11 DeclParametros: DeclParametros TVIRG • Parametro
 
     INT     shift, and go to state 2
-    DOUBLE  shift, and go to state 3
+    FLOAT   shift, and go to state 3
     STRING  shift, and go to state 4
 
     Parametro  go to state 126

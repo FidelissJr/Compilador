@@ -12,14 +12,16 @@ digito [0-9]
 "read"                     {strcpy(yylval.nd_obj.nome,(yytext)); return READ; }
 "print"                    {strcpy(yylval.nd_obj.nome,(yytext)); return PRINT; }
 "int"                      {strcpy(yylval.nd_obj.nome,(yytext)); return INT; }
-"double"                    {strcpy(yylval.nd_obj.nome,(yytext)); return DOUBLE; }
+"float"                    {strcpy(yylval.nd_obj.nome,(yytext)); return FLOAT; }
+"string"                    {strcpy(yylval.nd_obj.nome,(yytext)); return STRING; }
 "void"                     {strcpy(yylval.nd_obj.nome,(yytext)); return VOID; }
 "return"                   {strcpy(yylval.nd_obj.nome,(yytext)); return RETURN; }
 "while"                    {strcpy(yylval.nd_obj.nome,(yytext)); return WHILE; }
 "if"                       {strcpy(yylval.nd_obj.nome,(yytext)); return IF; }
 "else"                     {strcpy(yylval.nd_obj.nome,(yytext)); return ELSE; }
 [-]?{digito}+              {strcpy(yylval.nd_obj.nome,(yytext)); return NUMBER; }
-[-]?{digito}+\.{digito}+   {strcpy(yylval.nd_obj.nome,(yytext)); return DOUBLE_NUM; }
+[-]?{digito}+\.{digito}+   {strcpy(yylval.nd_obj.nome,(yytext)); return FLOAT_NUM; }
+\"([^\\"]|\\.)*\"            { strncpy(yylval.nd_obj.nome, yytext, 100); return STRING_VAL; }
 {letras}({letras}|{digito})* {strcpy(yylval.nd_obj.nome,(yytext)); return ID; }
 "<="                       {strcpy(yylval.nd_obj.nome,(yytext)); return TMEIG; }
 ">="                       {strcpy(yylval.nd_obj.nome,(yytext)); return TMAIG; }
@@ -44,8 +46,6 @@ digito [0-9]
 [ \t\r]+                   { /* Ignora espaços em branco */ }
 \n                         { }
 .                          { return *yytext; }
-\"([^\\"]|\\.)*\"            { strncpy(yylval.nd_obj.nome, yytext, 100); return STRING; }
-['].[']                    { return CHARACTER; }
 
 %%
 int yywrap() {

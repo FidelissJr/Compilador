@@ -23,8 +23,8 @@
 	} nd_obj; 
 } 
 
-%token <nd_obj> VOID CHARACTER PRINT READ INT DOUBLE WHILE IF ELSE
-NUMBER DOUBLE_NUM ID TMEIG TMAIG TIGUA TDIFE TMAIO TMENO AND OR STRING ADD MULTIPLY DIVIDE SUBTRACT RETURN 
+%token <nd_obj> VOID PRINT READ INT FLOAT WHILE IF ELSE STRING_VAL
+NUMBER FLOAT_NUM ID TMEIG TMAIG TIGUA TDIFE TMAIO TMENO AND OR STRING ADD MULTIPLY DIVIDE SUBTRACT RETURN 
 TAPAR TFPAR TACHA TFCHA TPEVI TATRI TVIRG
 
 %type <nd_obj> Programa ListaFuncoes DeclParametros BlocoPrincipal Declaracoes Tipo ListaId Bloco ListaCmd Comando Retorno Funcao
@@ -98,7 +98,7 @@ ListaId: ListaId TVIRG ID {
 ;
 
 Tipo: INT { insert_type(); }
-| DOUBLE { insert_type(); }
+| FLOAT { insert_type(); }
 | STRING{ insert_type(); }
 ;
 
@@ -118,13 +118,13 @@ Comando: CmdSe { $$.comando = criarComando(CMD_IF); $$.comando->tipoComando.ifCm
 ;
 
 value: NUMBER { add('C', "int"); }
-| DOUBLE_NUM { add('C', "double"); }
-| STRING { add('C', "string"); }
+| FLOAT_NUM { add('C', "float"); }
+| STRING_VAL { add('C', "string"); }
 | ID
 ;
 
 Retorno: RETURN ExpressaoAritmetica TPEVI {$$.node = criarNode(NULL, $2.node, "return ");}
-|RETURN STRING TPEVI {$$.node = criarNode(NULL, criarNode(NULL, NULL, $2.nome), "return ");}
+|RETURN STRING_VAL TPEVI {$$.node = criarNode(NULL, criarNode(NULL, NULL, $2.nome), "return ");}
 |RETURN TPEVI {$$.node = criarNode(NULL, NULL, "return");}
 ;
 
@@ -139,10 +139,10 @@ CmdSe: IF TAPAR ExpressaoLogica TFPAR Bloco {$$.ifCmd = criarIfCmd($3.node, $5.b
 ;
 
 CmdAtrib: ID TATRI ExpressaoAritmetica TPEVI {$$.atribuicao = criarAtribuicao($1.nome, $3.node, $3.chamadaFuncao);}
-| ID TATRI STRING TPEVI {$$.atribuicao = criarAtribuicao($1.nome, criarNode(NULL, NULL, $3.nome), NULL);}
+| ID TATRI STRING_VAL TPEVI {$$.atribuicao = criarAtribuicao($1.nome, criarNode(NULL, NULL, $3.nome), NULL);}
 ;
 
-CmdEscrita: PRINT TAPAR STRING TFPAR TPEVI {$$.node = criarNode(NULL, criarNode(NULL, NULL, $3.nome), "print");}
+CmdEscrita: PRINT TAPAR STRING_VAL TFPAR TPEVI {$$.node = criarNode(NULL, criarNode(NULL, NULL, $3.nome), "print");}
 | PRINT TAPAR ExpressaoAritmetica TFPAR TPEVI {$$.node = criarNode(NULL, $3.node, "print");}
 ;
 
@@ -156,9 +156,9 @@ ChamadaFuncao: ID TAPAR ListaParametros TFPAR { $$.chamadaFuncao = criarChamadaF
 | ID TAPAR TFPAR { $$.chamadaFuncao = criarChamadaFuncao($1.nome, NULL, yylineno);}
 
 ListaParametros: ListaParametros TVIRG ExpressaoAritmetica { $$.node = criarNode($1.node, $3.node, ","); }	
-| ListaParametros TVIRG STRING { $$.node = criarNode($1.node, criarNode(NULL, NULL, $3.nome), ","); }
+| ListaParametros TVIRG STRING_VAL { $$.node = criarNode($1.node, criarNode(NULL, NULL, $3.nome), ","); }
 | ExpressaoAritmetica { $$.node = $1.node; }
-| STRING { $$.node = criarNode(NULL, NULL, $1.nome); }
+| STRING_VAL { $$.node = criarNode(NULL, NULL, $1.nome); }
 ;
 
 OperadoresAritmeticos:  ADD
@@ -759,7 +759,7 @@ void verificarAtribuicao(struct atribuicao *atribuicao, struct tabelaSimbolos *t
 		}
 		else{
 			validaTipos(atribuicao->node, registro->tipoDado, tabelaSimbolos);	
-			intDoubleConverter(atribuicao->node, registro->tipoDado, tabelaSimbolos);
+			intFloatConverter(atribuicao->node, registro->tipoDado, tabelaSimbolos);
 		}
 
 		
@@ -985,28 +985,28 @@ void validarExpressoes(struct node *tree, struct tabelaSimbolos *tabelaSimbolos)
 	validarExpressoes(tree->right, tabelaSimbolos);
 }
 
-void intDoubleConverter(struct node *tree, char *tipoDado, struct tabelaSimbolos *tabelaSimbolos) {
+void intFloatConverter(struct node *tree, char *tipoDado, struct tabelaSimbolos *tabelaSimbolos) {
 		if (tree->left) {
-            intDoubleConverter(tree->left, tipoDado, tabelaSimbolos);
+            intFloatConverter(tree->left, tipoDado, tabelaSimbolos);
         }
 
 		struct tabelaSimbolos* registro = buscarNaTabela(tabelaSimbolos, tree->token);
 
 		if(registro != NULL){
-			if(strcmp(registro->tipoDado, "int") == 0 && strcmp(tipoDado, "double") == 0) {
-				struct node* newNode = criarNode(NULL, tree->left, "(double)");
+			if(strcmp(registro->tipoDado, "int") == 0 && strcmp(tipoDado, "float") == 0) {
+				struct node* newNode = criarNode(NULL, tree->left, "(float)");
 				tree->left = newNode;
 				
 				char msg[100];
-				sprintf(msg, "Conversão implícita de int para double. Linha: %d", registro->linha);
+				sprintf(msg, "Conversão implícita de int para float. Linha: %d", registro->linha);
 				throwSemanticError(msg);
 			}
-			else if(strcmp(registro->tipoDado, "double") == 0 && strcmp(tipoDado, "int") == 0) {
+			else if(strcmp(registro->tipoDado, "float") == 0 && strcmp(tipoDado, "int") == 0) {
 				struct node* newNode = criarNode(NULL, tree->left, "(int)");
 				tree->left = newNode;
 
 				char msg[100];
-				sprintf(msg, "Conversão implícita de double para int. Linha: %d", registro->linha);
+				sprintf(msg, "Conversão implícita de float para int. Linha: %d", registro->linha);
 				throwSemanticError(msg);
 			}
 		}
@@ -1014,7 +1014,7 @@ void intDoubleConverter(struct node *tree, char *tipoDado, struct tabelaSimbolos
         //printf("%s", tree->token);
         
         if (tree->right) {
-            intDoubleConverter(tree->right, tipoDado, tabelaSimbolos);
+            intFloatConverter(tree->right, tipoDado, tabelaSimbolos);
         }
 }
 
