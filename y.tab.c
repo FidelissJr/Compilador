@@ -1910,19 +1910,22 @@ int main() {
 	
 	struct funcao *atual = head->funcao;
 
-	/* while(atual != NULL) {
+	while(atual != NULL) {
 		imprimirTabelaCompleta(atual->blocoPrincipal->tabelaSimbolos);
 		printf("\n\n\n");
 		atual = atual->next;
-	} */
+	}
 
 	if(head == NULL)
 		printf("NULLLL");
 	
-	//imprimir(head); //Imprime o código
+	//imprimir(head); //Imprime o código fonte
 
-	//Verificacao semantica
+	//Compila o codigo e adiciona as conversões
 	verificarSemantica(head);
+
+	imprimir(head); //imprime o codigo pos compilacao
+	gerarJVM(head);
 
 	//Liberar memoria
 	free(tabelaSimbolosMain);
@@ -2426,8 +2429,6 @@ void verificarSemantica(struct raiz* raiz) {
 		verificarListaCmd(listaCmdAtual, tabelaAtual);
 		atual = atual->next;
 	}
-
-	imprimir(raiz);
 }
 
 void verificarListaCmd(struct listaCmd *listaCmd, struct tabelaSimbolos *tabelaSimbolos) {
@@ -2730,3 +2731,255 @@ void intFloatConverter(struct node *tree, char *tipoDado, struct tabelaSimbolos 
         }
 }
 
+void gerarJVM(struct raiz* raiz) {
+
+	if (raiz == NULL) {
+		printf("A raiz é nula.\n");
+		return;
+	}
+	
+	struct funcao *atual = raiz->funcao;
+
+	while(atual != NULL) {
+		contadorAtalhosL = 0; 
+		pilhaAlocacoes = NULL;
+		struct listaCmd *listaCmdAtual = atual->blocoPrincipal->listaCmd;
+		gerarJVMListaCmd(listaCmdAtual);
+		atual = atual->next;	
+	}
+}
+
+void gerarJVMListaCmd(struct listaCmd *lista) {
+    while (lista != NULL) {
+        if (lista->comando != NULL) {
+            switch (lista->comando->identificador) {
+                case CMD_ATRIB:
+					imprimirAtribuicaoJVM(lista->comando->tipoComando.atribuicao);
+					break;
+                case CMD_WHILE:
+                    printWhileJVM(lista->comando->tipoComando.whileCmd);
+                    break;
+				case CMD_NODE:
+					printNodeJVM(lista->comando->tipoComando.node);
+					break;
+				/*case CMD_IF:
+                    printIfCmd(lista->comando->tipoComando.ifCmd);
+                    break;
+				case CMD_CHAMADAFUNCAO:
+					printChamadaFuncao(lista->comando->tipoComando.chamadaFuncao);
+					break; */
+                default:
+                    printf("Unknown command type.\n");
+                    break;
+            }
+        }
+        lista = lista->next;
+    }
+}
+
+void imprimirAtribuicaoJVM(struct atribuicao *atribuicao) {
+	if (atribuicao != NULL) {
+		if(atribuicao->node != NULL){
+			/* if(atribuicao->nome != NULL) {
+				printf("%s = ", atribuicao->nome);
+			} */
+			/* if(atribuicao->chamadaFuncao != NULL){
+				printChamadaFuncao(atribuicao->chamadaFuncao);
+			} */
+
+			adicionarPilha(atribuicao->nome);
+			printNodeJVM(atribuicao->node);
+			struct pilha* registro = buscarNaPilha(atribuicao->nome);
+			/* int count = countAlocacoesPilha(); */
+			printf("\nistore %d", registro->posicao);
+		}
+	}
+}
+
+void printNodeJVM(struct node *tree) {
+	if(verifyIfNodeIsReturn(tree)) {
+		printExpressionJVM(tree->right);
+		printf("\nireturn");
+		return;
+	}
+	else if(verifyIfNodeIsArithimeticExpression(tree) == 0) {	
+		printf("\nldc %s", tree->token);
+
+		if (tree->left) {
+			printNodeJVM(tree->left);
+		}
+	
+		if (tree->right) {
+			printNodeJVM(tree->right);
+		}
+	}	
+	else
+		printExpressionJVM(tree);
+}
+
+void printExpressionJVM(struct node *tree) {
+    if (tree == NULL) {
+        return; // Se o nó for nulo, apenas retorna
+    }
+
+    // Processa primeiro o lado esquerdo da árvore
+    if (tree->left) {
+        printExpressionJVM(tree->left);
+    }
+
+    // Processa o lado direito da árvore
+    if (tree->right) {
+        printExpressionJVM(tree->right);
+    }
+
+    // Verifica se o token é um operador ou um operando e gera o bytecode correspondente
+    if (strcmp(tree->token, "+") == 0) {
+        printf("\niadd");
+    } else if (strcmp(tree->token, "*") == 0) {
+        printf("\nimul");
+    } 
+	else {
+		struct pilha* registro = buscarNaPilha(tree->token);
+		if(registro != NULL)
+        	printf("\niload %d", registro->posicao);
+		else
+			printf("\nlcd %s", tree->token);
+    }
+}
+
+int verifyIfNodeIsArithimeticExpression(struct node *tree) {
+	if (tree->left) {
+		verifyIfNodeIsArithimeticExpression(tree->left);
+	}
+
+	if (tree->right) {
+		verifyIfNodeIsArithimeticExpression(tree->right);
+	}
+
+	if(strcmp(tree->token, "+") == 0 || strcmp(tree->token, "-") == 0 || strcmp(tree->token, "*") == 0 || strcmp(tree->token, "/") == 0) {
+		return 1;
+	}
+
+	return 0;
+}
+
+int verifyIfNodeIsReturn(struct node *tree) {
+	if (tree->left) {
+		verifyIfNodeIsReturn(tree->left);
+	}
+
+	if(strcmp(tree->token, "return ") == 0) {
+		return 1;
+	}
+
+	if (tree->right) {
+		verifyIfNodeIsReturn(tree->right);
+	}
+
+	return 0;
+}
+
+void adicionarPilha(char* variavel){
+	struct pilha* registro = buscarNaPilha(variavel);
+	if(registro != NULL) {
+		return;
+	}
+
+	struct pilha* novo = (struct pilha*) malloc(sizeof(struct pilha));
+	novo->variavel = strdup(variavel);
+	int countAlocacoes = 1;
+
+	if(pilhaAlocacoes == NULL) {
+		pilhaAlocacoes = novo;
+	}
+	else {
+		struct pilha* temp = pilhaAlocacoes;
+		while(temp->next != NULL) {
+			countAlocacoes++;
+			temp = temp->next;
+		}
+		countAlocacoes++;
+		temp->next = novo;
+	}
+	novo->posicao = countAlocacoes;
+}
+
+struct pilha* buscarNaPilha(char* variavel) {
+	struct pilha* atual = pilhaAlocacoes;
+	while(atual != NULL) {
+		if(strcmp(atual->variavel, variavel) == 0) {
+			return atual;
+		}
+		atual = atual->next;
+	}
+	return NULL;
+}
+
+int countAlocacoesPilha(){
+	int count = 0;
+	struct pilha* atual = pilhaAlocacoes;
+	while(atual != NULL) {
+		count++;
+		atual = atual->next;
+	}
+	return count;
+}
+
+void printWhileJVM(struct whileCmd *whileC) {
+	char* atalho = gerarAtalhoL();
+	char* atalhoBlocoTrue = gerarAtalhoL();
+	char* atalhoBlocoFalse = gerarAtalhoL();
+	printf("\n%s: ", atalho);
+    if (whileC != NULL){
+         printRelationalExpressionJVM(whileC->condition);   
+		 printf(" %s", atalhoBlocoTrue);
+		 printf("\ngoto %s\n", atalhoBlocoFalse);
+		 printf("\n%s: ", atalhoBlocoTrue);
+		 gerarJVMListaCmd(whileC->bloco->listaCmd);
+		 printf("%s", atalhoBlocoFalse);
+	}
+}
+
+void printRelationalExpressionJVM(struct node *tree) {
+	if (tree == NULL) {
+		return; // Se o nó for nulo, apenas retorna
+	}
+
+	// Processa primeiro o lado esquerdo da árvore
+	if (tree->left) {
+		printRelationalExpressionJVM(tree->left);
+	}
+
+	// Processa o lado direito da árvore
+	if (tree->right) {
+		printRelationalExpressionJVM(tree->right);
+	}
+
+	// Verifica se o token é um operador ou um operando e gera o bytecode correspondente
+	if (strcmp(tree->token, ">") == 0) {
+		printf("\nif_icmple");
+	} else if (strcmp(tree->token, "<") == 0) {
+		printf("\nif_icmpge");
+	} else if (strcmp(tree->token, ">=") == 0) {
+		printf("\nif_icmplt");
+	} else if (strcmp(tree->token, "<=") == 0) {
+		printf("\nif_icmpgt");
+	} else if (strcmp(tree->token, "==") == 0) {
+		printf("\nif_icmpne");
+	} else if (strcmp(tree->token, "!=") == 0) {
+		printf("\nif_icmpeq");
+	}else {
+		struct pilha* registro = buscarNaPilha(tree->token);
+		if(registro != NULL)
+        	printf("\niload %d", registro->posicao);
+		else
+			printf("\nlcd %s", tree->token);
+    }
+}
+
+char* gerarAtalhoL(){
+	contadorAtalhosL++;
+	char* atalho = (char*) malloc(10);
+	sprintf(atalho, "L%d", contadorAtalhosL);
+	return atalho;
+}

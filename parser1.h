@@ -73,7 +73,22 @@ int validaTipagemParametros(struct node *tree, char *tipoDado, struct tabelaSimb
 void validarExpressoes(struct node *tree, struct tabelaSimbolos *tabelaSimbolos);
 void intFloatConverter(struct node *tree, char *tipoDado, struct tabelaSimbolos *tabelaSimbolos);
 
-int count = 0;
+// JVM Methods
+void gerarJVM(struct raiz *raiz);
+void gerarJVMListaCmd(struct listaCmd *lista);
+void imprimirAtribuicaoJVM(struct atribuicao *atribuicao);
+void printNodeJVM(struct node *n);
+int verifyIfNodeIsArithimeticExpression(struct node *tree);
+int verifyIfNodeIsReturn(struct node *tree);
+void printExpressionJVM(struct node *tree);
+void adicionarPilha(char *variavel);
+struct pilha *buscarNaPilha(char *variavel);
+int countAlocacoesPilha();
+void printWhileJVM(struct whileCmd *whileC);
+void printRelationalExpressionJVM(struct node *tree);
+char *gerarAtalhoL();
+
+int contadorAtalhosL = 0;
 int q;
 char type[10];
 extern int yylineno;
@@ -81,6 +96,7 @@ extern int yylineno;
 // Tabela Sintatica Abstrata
 struct tabelaSimbolos *tabelaSimbolosMain = NULL;
 struct tabelaSimbolos *tabelaSimbolosFuncoesMain = NULL;
+struct pilha *pilhaAlocacoes = NULL;
 struct raiz
 {
     struct funcao *funcao;
@@ -177,4 +193,12 @@ struct ifCmd
     struct node *condition;   // Condição do if
     struct bloco *trueBlock;  // Bloco de instruções se a condição for verdadeira
     struct bloco *falseBlock; // Bloco de instruções se a condição for falsa (else)
+};
+
+// JVM
+struct pilha
+{
+    char *variavel;
+    int posicao;
+    struct pilha *next;
 };

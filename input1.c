@@ -28,7 +28,7 @@ int fat(int n)
 
 int somatorio(int n)
 {
-    string teste;
+    string a;
     int i;
     float s;
 
@@ -38,8 +38,6 @@ int somatorio(int n)
 }
 void imprimir(string s, string r)
 {
-    int s;
-
     print(s);
     print(r);
     return 0;

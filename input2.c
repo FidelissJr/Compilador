@@ -1,20 +1,18 @@
-int fat(int n1)
+int fat(int a, int b, int c)
 {
-    int f;
-    int n;
-    int y;
-    f = 0;
+    a = 1;
+    b = 20;
+    c = b + a * 2;
 
-    while (n > 0)
+    while (b < 10)
     {
-        f = f * n;
-        n = n - 1;
+        c = b + 1;
     }
 
-    return f;
+    c = 60;
+
+    return c;
 }
 {
-    int a, b;
-    a = 9.7;
     fat(5, 9, 8);
 }
