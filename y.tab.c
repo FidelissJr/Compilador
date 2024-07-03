@@ -1360,7 +1360,7 @@ yyreduce:
 #line 36 "parser1.y"
                                       { 
 	(yyvsp[0].nd_obj).blocoPrincipal->tabelaSimbolos = tabelaSimbolosMain;
-	struct funcao* main = criarFuncao("", "", NULL, (yyvsp[0].nd_obj).blocoPrincipal);
+	struct funcao* main = criarFuncao("void", "", NULL, (yyvsp[0].nd_obj).blocoPrincipal);
 	(yyvsp[-1].nd_obj).funcao = adicionarFuncao((yyvsp[-1].nd_obj).funcao, main);
 	(yyval.nd_obj).head = criarRaiz((yyvsp[-1].nd_obj).funcao); 
 	head = (yyval.nd_obj).head;
@@ -1910,6 +1910,10 @@ int main() {
 	
 	struct funcao *atual = head->funcao;
 
+	printf("Funções:\n");
+	imprimirTabelaCompleta(tabelaSimbolosFuncoesMain);
+	printf("\n\n\n");
+
 	while(atual != NULL) {
 		imprimirTabelaCompleta(atual->blocoPrincipal->tabelaSimbolos);
 		printf("\n\n\n");
@@ -1926,6 +1930,8 @@ int main() {
 
 	imprimir(head); //imprime o codigo pos compilacao
 	gerarJVM(head);
+
+	
 
 	//Liberar memoria
 	free(tabelaSimbolosMain);
@@ -2744,7 +2750,27 @@ void gerarJVM(struct raiz* raiz) {
 		contadorAtalhosL = 0; 
 		pilhaAlocacoes = NULL;
 		struct listaCmd *listaCmdAtual = atual->blocoPrincipal->listaCmd;
+		
+		char* tipoRetorno = atual->tipoRetorno;
+		
+		if(strcmp(tipoRetorno, "void") == 0) {
+			tipoRetorno = "V";
+		}
+		else if(strcmp(tipoRetorno, "int") == 0) {
+			tipoRetorno = "I";
+		}
+		else if(strcmp(tipoRetorno, "float") == 0) {
+			tipoRetorno = "F";
+		}
+
+		printf("tipoRetorno: %s", tipoRetorno);
+
+		printf("\n.method public static %s()%s", atual->nome, tipoRetorno);
+		printf("\n.limit locals 8");
+		printf("\n.limit stack 8");
+
 		gerarJVMListaCmd(listaCmdAtual);
+		printf("\n.end method\n\n");
 		atual = atual->next;	
 	}
 }
@@ -2762,12 +2788,12 @@ void gerarJVMListaCmd(struct listaCmd *lista) {
 				case CMD_NODE:
 					printNodeJVM(lista->comando->tipoComando.node);
 					break;
-				/*case CMD_IF:
-                    printIfCmd(lista->comando->tipoComando.ifCmd);
+				case CMD_IF:
+                    printIfJVM(lista->comando->tipoComando.ifCmd);
                     break;
 				case CMD_CHAMADAFUNCAO:
-					printChamadaFuncao(lista->comando->tipoComando.chamadaFuncao);
-					break; */
+					printChamadaFuncaoJVM(lista->comando->tipoComando.chamadaFuncao);
+					break;
                 default:
                     printf("Unknown command type.\n");
                     break;
@@ -2842,8 +2868,10 @@ void printExpressionJVM(struct node *tree) {
 		struct pilha* registro = buscarNaPilha(tree->token);
 		if(registro != NULL)
         	printf("\niload %d", registro->posicao);
-		else
-			printf("\nlcd %s", tree->token);
+		else{
+			if(strcmp(tree->token, ",") != 0)
+				printf("\nlcd %s", tree->token);
+		}
     }
 }
 
@@ -2937,6 +2965,40 @@ void printWhileJVM(struct whileCmd *whileC) {
 		 printf("\n%s: ", atalhoBlocoTrue);
 		 gerarJVMListaCmd(whileC->bloco->listaCmd);
 		 printf("%s", atalhoBlocoFalse);
+	}
+}
+
+void printIfJVM(struct ifCmd *ifCmd) {
+	char* atalhoBlocoTrue = gerarAtalhoL();
+	char* atalhoSaidaIf = gerarAtalhoL();
+
+	if (ifCmd != NULL) {
+		 printRelationalExpressionJVM(ifCmd->condition);   
+		 printf(" %s", atalhoBlocoTrue);
+
+		 if(ifCmd->falseBlock != NULL){
+			 char* atalhoBlocoFalse = gerarAtalhoL();
+		 	 printf("\ngoto %s", atalhoBlocoFalse);
+			 printf("\n%s: ", atalhoBlocoFalse);
+		 	 gerarJVMListaCmd(ifCmd->falseBlock->listaCmd);
+			 printf("\ngoto %s", atalhoSaidaIf);
+		 }
+
+		 printf("\n%s: ", atalhoBlocoTrue);
+		 gerarJVMListaCmd(ifCmd->trueBlock->listaCmd);
+
+		printf("\ngoto %s\n", atalhoSaidaIf);
+		printf("\n%s: ", atalhoSaidaIf);
+	}
+}
+
+void printChamadaFuncaoJVM(struct chamadaFuncao* chamadaFuncao) {
+	if (chamadaFuncao != NULL) {
+		struct funcao* funcao = buscarFuncao(chamadaFuncao->nome);
+		if (chamadaFuncao->parametros != NULL) {
+			printExpressionJVM(chamadaFuncao->parametros);
+		}
+		printf("invokestatic %s(I)V", chamadaFuncao->nome);
 	}
 }
 

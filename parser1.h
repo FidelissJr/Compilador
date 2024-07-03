@@ -87,6 +87,8 @@ int countAlocacoesPilha();
 void printWhileJVM(struct whileCmd *whileC);
 void printRelationalExpressionJVM(struct node *tree);
 char *gerarAtalhoL();
+void printIfJVM(struct ifCmd *ifCmd);
+void printChamadaFuncaoJVM(struct chamadaFuncao *chamadaFuncao);
 
 int contadorAtalhosL = 0;
 int q;
