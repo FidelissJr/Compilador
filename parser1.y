@@ -1116,6 +1116,12 @@ void printNodeJVM(struct node *tree) {
 		printf("\nireturn");
 		return;
 	}
+	else if(verifyIfNodeIsPrint(tree)) {
+		printf("\ngetstatic java/lang/System/out Ljava/io/PrintStream;");
+		printExpressionJVM(tree->right);
+		printf("\ninvokevirtual java/io/PrintStream/print(I)V");
+		return;
+	}
 	else if(verifyIfNodeIsArithimeticExpression(tree) == 0) {	
 		printf("\nldc %s", tree->token);
 
@@ -1190,6 +1196,23 @@ int verifyIfNodeIsReturn(struct node *tree) {
 
 	if (tree->right) {
 		verifyIfNodeIsReturn(tree->right);
+	}
+
+	return 0;
+}
+
+
+int verifyIfNodeIsPrint(struct node *tree) {
+	if (tree->left) {
+		verifyIfNodeIsPrint(tree->left);
+	}
+
+	if(strcmp(tree->token, "print") == 0) {
+		return 1;
+	}
+
+	if (tree->right) {
+		verifyIfNodeIsPrint(tree->right);
 	}
 
 	return 0;

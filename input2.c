@@ -36,6 +36,7 @@ int chamaFuncao(int b)
     int a;
     a = 100;
     teste(a);
+    print(a);
     return a;
 }
 {
